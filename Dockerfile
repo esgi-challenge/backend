@@ -12,4 +12,6 @@ WORKDIR /backend
 
 COPY --from=builder /builder/backend ./
 
+EXPOSE 8080
+
 CMD [ "./backend" ]
