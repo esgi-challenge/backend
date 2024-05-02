@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GCP with service account
         uses: "google-github-actions/auth@v1"
@@ -28,7 +28,7 @@ jobs:
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
@@ -46,12 +46,12 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: Log in to GCP with service account
-        uses: "google-github-actions/auth@v1"
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
 
       - id: deploy
-        uses: "google-github-actions/deploy-cloudrun@v1"
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: "challenge-esgi-preprod-backend"
           image: "europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:${{ github.sha }}"
