@@ -58,3 +58,4 @@ jobs:
           region: europe-west1
           env_vars: |
             APP_ENV=PREPROD
+            API_PORT=8080

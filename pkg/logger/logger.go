@@ -11,6 +11,7 @@ type Logger interface {
 	Info(msg string, args ...any)
 	Warn(msg string, args ...any)
 	Error(msg string, args ...any)
+	Fatal(msg string, args ...any)
 }
 
 type logger struct {
@@ -39,4 +40,9 @@ func (l *logger) Warn(msg string, args ...any) {
 
 func (l *logger) Error(msg string, args ...any) {
 	l.yolog.Error(msg, args...)
+}
+
+func (l *logger) Fatal(msg string, args ...any) {
+	l.yolog.Error(msg, args...)
+	os.Exit(1)
 }
