@@ -3,7 +3,7 @@ package logger_test
 import (
 	"testing"
 
-    "github.com/esgi-challenges/backend/pkg/logger"
+    "github.com/esgi-challenge/backend/pkg/logger"
 )
 
 func TestLogger(t *testing.T) {

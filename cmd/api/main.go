@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-    "github.com/esgi-challenges/backend/pkg/logger"
+    "github.com/esgi-challenge/backend/pkg/logger"
 )
 
 func main() {

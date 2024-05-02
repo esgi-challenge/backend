@@ -1,3 +1,3 @@
-module github.com/esgi-challenges/backend
+module github.com/esgi-challenge/backend
 
 go 1.22.2
