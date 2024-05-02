@@ -4,6 +4,7 @@ WORKDIR /builder
 
 COPY . .
 
+RUN go mod download
 RUN go build cmd/api/main.go
 
 FROM alpine

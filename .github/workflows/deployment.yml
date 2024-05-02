@@ -56,3 +56,5 @@ jobs:
           service: "challenge-esgi-preprod-backend"
           image: "europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:${{ github.sha }}"
           region: europe-west1
+          env_vars: |
+            APP_ENV=PREPROD
