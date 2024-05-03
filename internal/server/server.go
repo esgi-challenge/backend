@@ -14,7 +14,7 @@ import (
 )
 
 const (
-  ctxTimeout = 2
+	ctxTimeout = 2
 )
 
 type Server struct {
@@ -25,47 +25,47 @@ type Server struct {
 
 func NewServer(cfg *config.Config, logger logger.Logger) *Server {
 	return &Server{
-    router: gin.New(),
+		router: gin.New(),
 		cfg:    cfg,
 		logger: logger,
 	}
 }
 
 func (s *Server) Run() error {
-  s.logger.Info("Server: Setting up handlers...")
-  if err := s.SetupHandlers(); err != nil {
-    return err
-  }
-  s.logger.Info("Server: Handlers set")
+	s.logger.Info("Server: Setting up handlers...")
+	if err := s.SetupHandlers(); err != nil {
+		return err
+	}
+	s.logger.Info("Server: Handlers set")
 
 	server := &http.Server{
 		Addr:    s.cfg.BaseUrl + ":" + s.cfg.Port,
-    Handler: s.router,
+		Handler: s.router,
 	}
 
-  go func() {
-    s.logger.Info("Server: Listening on " + s.cfg.BaseUrl + ":" + s.cfg.Port)
+	go func() {
+		s.logger.Info("Server: Listening on " + s.cfg.BaseUrl + ":" + s.cfg.Port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.Fatal("Server: ", err)
 		}
 	}()
 
-  // Create channel to listen for termination events
+	// Create channel to listen for termination events
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-  // Channel in read only
+	// Channel in read only
 	<-quit
-  s.logger.Info("Server: Shutting down...")
+	s.logger.Info("Server: Shutting down...")
 
-  // Creating context with <ctxTimeout> seconds timeout, after that all app operations will be canceled
+	// Creating context with <ctxTimeout> seconds timeout, after that all app operations will be canceled
 	ctx, shutdown := context.WithTimeout(context.Background(), ctxTimeout*time.Second)
 	defer shutdown()
 
-  // Wait for context timeout before shutting down
+	// Wait for context timeout before shutting down
 	select {
 	case <-ctx.Done():
-    s.logger.Info("Server: Shutdown complete")
+		s.logger.Info("Server: Shutdown complete")
 	}
 
 	return server.Shutdown(ctx)

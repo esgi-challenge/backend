@@ -7,19 +7,19 @@ import (
 )
 
 func (mw *MiddlewareManager) RequestMiddleware() gin.HandlerFunc {
-  return func(ctx *gin.Context) {
-    time := time.Now()
+	return func(ctx *gin.Context) {
+		time := time.Now()
 
-    req := ctx.Request
+		req := ctx.Request
 
-    mw.logger.Info("Server: Request received", 
-      "method", req.Method,
-      "url", req.URL,
-      "host", req.Host,
-      "remoteaddr", req.RemoteAddr,
-      "time", time,
-    ) 
+		mw.logger.Info("Server: Request received",
+			"method", req.Method,
+			"url", req.URL,
+			"host", req.Host,
+			"remoteaddr", req.RemoteAddr,
+			"time", time,
+		)
 
-    ctx.Next()
-  }
+		ctx.Next()
+	}
 }

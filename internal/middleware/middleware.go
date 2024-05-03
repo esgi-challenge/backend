@@ -6,10 +6,10 @@ import (
 )
 
 type MiddlewareManager struct {
-  cfg *config.Config
-  logger logger.Logger
+	cfg    *config.Config
+	logger logger.Logger
 }
 
 func InitMiddlewareManager(cfg *config.Config, logger logger.Logger) *MiddlewareManager {
-  return &MiddlewareManager{cfg: cfg, logger: logger}
+	return &MiddlewareManager{cfg: cfg, logger: logger}
 }
