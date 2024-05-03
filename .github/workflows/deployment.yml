@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   build-push-image:
     name: Deploy image to gcloud artifact
@@ -59,3 +58,4 @@ jobs:
           env_vars: |
             APP_ENV=PREPROD
             API_PORT=8080
+            BASE_URL=0.0.0.0

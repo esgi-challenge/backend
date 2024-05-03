@@ -12,7 +12,7 @@ type Config struct {
 }
 
 func LoadConfig(filePath string, env string) (*Config, error) {
-	if env == "DEV" {
+	if env == "LOCAL" {
 		if _, err := os.Stat(filePath); err != nil {
 			return nil, err
 		}

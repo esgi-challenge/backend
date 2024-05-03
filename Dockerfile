@@ -9,6 +9,9 @@ RUN go build -o backend cmd/api/main.go
 
 FROM alpine
 
+# curl not installed in alpine by default so wget is used
+HEALTHCHECK --interval=2m --timeout=3s --retries=3 CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/api/healthz || exit 1
+
 WORKDIR /backend
 
 COPY --from=builder /builder/backend ./

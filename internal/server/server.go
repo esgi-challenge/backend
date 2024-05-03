@@ -13,47 +13,60 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+  ctxTimeout = 2
+)
+
 type Server struct {
-	engine *gin.Engine
+	router *gin.Engine
 	cfg    *config.Config
 	logger logger.Logger
 }
 
 func NewServer(cfg *config.Config, logger logger.Logger) *Server {
 	return &Server{
-		engine: gin.New(),
+    router: gin.New(),
 		cfg:    cfg,
 		logger: logger,
 	}
 }
 
 func (s *Server) Run() error {
-	s.engine.GET("/", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "Hello world")
-	})
+  s.logger.Info("Server: Setting up handlers...")
+  if err := s.SetupHandlers(); err != nil {
+    return err
+  }
+  s.logger.Info("Server: Handlers set")
 
 	server := &http.Server{
-		Addr:    ":" + s.cfg.Port,
-		Handler: s.engine,
+		Addr:    s.cfg.BaseUrl + ":" + s.cfg.Port,
+    Handler: s.router,
 	}
 
-	go func() {
-		s.logger.Info("Server listening on PORT: " + s.cfg.Port)
-		if err := server.ListenAndServe(); err != nil {
-			s.logger.Fatal("Error starting the server: ", err)
+  go func() {
+    s.logger.Info("Server: Listening on " + s.cfg.BaseUrl + ":" + s.cfg.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			s.logger.Fatal("Server: ", err)
 		}
 	}()
 
-	stopSignal := make(chan os.Signal)
-	signal.Notify(stopSignal, syscall.SIGINT, syscall.SIGTERM)
+  // Create channel to listen for termination events
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	<-stopSignal
-	s.logger.Info("Shutting down the server...")
+  // Channel in read only
+	<-quit
+  s.logger.Info("Server: Shutting down...")
 
-	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+  // Creating context with <ctxTimeout> seconds timeout, after that all app operations will be canceled
+	ctx, shutdown := context.WithTimeout(context.Background(), ctxTimeout*time.Second)
 	defer shutdown()
 
-	s.logger.Info("Server shutdown complete.")
+  // Wait for context timeout before shutting down
+	select {
+	case <-ctx.Done():
+    s.logger.Info("Server: Shutdown complete")
+	}
 
 	return server.Shutdown(ctx)
 }

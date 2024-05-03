@@ -12,8 +12,8 @@ import (
 func main() {
 	env := os.Getenv("APP_ENV")
 	if env == "" {
-		log.Println("Environment not set, launching on DEV")
-		env = "DEV"
+		log.Println("Environment not set, launching on LOCAL, a .env file is needed then.")
+		env = "LOCAL"
 	}
 
 	log.Printf("Launching backend API for %v environment...", env)
