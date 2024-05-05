@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.9"
 
 services:
   backend:
@@ -11,6 +11,11 @@ services:
       APP_ENV: ${APP_ENV:-DOCKER}
       BASE_URL: ${BASE_URL:-0.0.0.0}
       API_PORT: ${API_PORT:-8080}
+      PG_HOST: ${PG_HOST:-database}
+      PG_PORT: ${PG_PORT:-5432}
+      PG_USER: ${PG_USER:-postgres}
+      PG_PASSWORD: ${PG_PASSWORD:-postgres}
+      PG_DBNAME: ${PG_DBNAME:-challenge}
 
   database:
     image: postgres:alpine
