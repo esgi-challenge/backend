@@ -19,7 +19,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GCP with service account
-        uses: "google-github-actions/auth@v1"
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
 
@@ -37,6 +37,7 @@ jobs:
             europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
 
   deploy-cloud-run:
     name: Deploy To Cloud run
@@ -52,17 +53,17 @@ jobs:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
 
       - id: deploy
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: "challenge-esgi-preprod-backend"
           image: "europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:latest"
           region: europe-west1
           env_vars: |
-            APP_ENV=PREPROD
             API_PORT=8080
+            APP_ENV=PREPROD
             BASE_URL=0.0.0.0
+            PG_DBNAME=${{ secrets.PG_DBNAME }}
             PG_HOST=${{ secrets.PG_HOST }}
+            PG_PASSWORD=${{ secrets.PG_PASSWORD }}
             PG_PORT=${{ secrets.PG_PORT }}
             PG_USER=${{ secrets.PG_USER }}
-            PG_PASSWORD=${{ secrets.PG_PASSWORD }}
-            PG_DBNAME=${{ secrets.PG_DBNAME }}
