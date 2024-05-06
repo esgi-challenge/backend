@@ -32,7 +32,9 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:${{ github.sha }}
+          tags: |
+            europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:${{ github.sha }}
+            europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -53,9 +55,14 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: "challenge-esgi-preprod-backend"
-          image: "europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:${{ github.sha }}"
+          image: "europe-west1-docker.pkg.dev/challenge-esgi-419811/challenge-esgi-service-repository/backend-preprod:latest"
           region: europe-west1
           env_vars: |
             APP_ENV=PREPROD
             API_PORT=8080
             BASE_URL=0.0.0.0
+            PG_HOST=${{ secrets.PG_HOST }}
+            PG_PORT=${{ secrets.PG_PORT }}
+            PG_USER=${{ secrets.PG_USER }}
+            PG_PASSWORD=${{ secrets.PG_PASSWORD }}
+            PG_DBNAME=${{ secrets.PG_DBNAME }}
