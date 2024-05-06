@@ -6,6 +6,7 @@ import (
 
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/server"
+	"github.com/esgi-challenge/backend/pkg/database"
 	"github.com/esgi-challenge/backend/pkg/logger"
 )
 
@@ -30,7 +31,14 @@ func main() {
 	logger.InitLogger()
 	log.Println("Logger: Initialized")
 
-	s := server.NewServer(config, logger)
+	logger.Info("Database: Init connection")
+	psqlDB, err := database.NewPostgresClient(config)
+	if err != nil {
+		logger.Fatalf("Database: %s", err)
+	}
+	logger.Info("Database: Postgres connected")
+
+	s := server.NewServer(config, psqlDB, logger)
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}

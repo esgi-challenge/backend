@@ -11,6 +11,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 const (
@@ -20,13 +21,15 @@ const (
 type Server struct {
 	router *gin.Engine
 	cfg    *config.Config
+	psqlDB *gorm.DB
 	logger logger.Logger
 }
 
-func NewServer(cfg *config.Config, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, psqlDB *gorm.DB, logger logger.Logger) *Server {
 	return &Server{
 		router: gin.New(),
 		cfg:    cfg,
+		psqlDB: psqlDB,
 		logger: logger,
 	}
 }
@@ -46,7 +49,7 @@ func (s *Server) Run() error {
 	go func() {
 		s.logger.Info("Server: Listening on " + s.cfg.BaseUrl + ":" + s.cfg.Port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			s.logger.Fatal("Server: ", err)
+			s.logger.Fatalf("Server: %s", err)
 		}
 	}()
 
