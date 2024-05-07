@@ -10,6 +10,8 @@ test:
 format:
 	gofmt -w -s .
 
-dev:
-	echo "Starting docker environment"
-	docker-compose -f docker-compose.yml up --build
+swag-init:
+	swag init -g **/**/*.go
+
+swag-fmt:
+	swag fmt -g **/**/*.go

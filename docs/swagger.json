@@ -1,0 +1,31 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Backend written in Go for the S2 ESGI Challenge",
+        "title": "Backend",
+        "contact": {}
+    },
+    "basePath": "/api",
+    "paths": {
+        "/healthz": {
+            "get": {
+                "description": "Check if API is up",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Check API health",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+basePath: /api
+info:
+  contact: {}
+  description: Backend written in Go for the S2 ESGI Challenge
+  title: Backend
+paths:
+  /healthz:
+    get:
+      description: Check if API is up
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Check API health
+swagger: "2.0"

@@ -10,6 +10,9 @@ import (
 	"github.com/esgi-challenge/backend/pkg/logger"
 )
 
+// @title			Backend
+// @description	Backend written in Go for the S2 ESGI Challenge
+// @BasePath		/api
 func main() {
 	env := os.Getenv("APP_ENV")
 	if env == "" {

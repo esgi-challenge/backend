@@ -3,9 +3,12 @@ package server
 import (
 	"net/http"
 
-	"github.com/esgi-challenge/backend/internal/middleware"
+	_ "github.com/esgi-challenge/backend/docs"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 
+	"github.com/esgi-challenge/backend/internal/middleware"
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
@@ -24,6 +27,7 @@ func (s *Server) SetupHandlers() error {
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
 
 	s.router.Use(mw.RequestMiddleware())
+	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := s.router.Group("/api")
 
@@ -31,9 +35,20 @@ func (s *Server) SetupHandlers() error {
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
 
 	health := api.Group("/healthz")
-	health.GET("", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "OK"})
-	})
+	health.GET("", healthHandler())
 
 	return nil
+}
+
+// Health
+//
+//	@Summary		Check API health
+//	@Description	Check if API is up
+//	@Produce		json
+//	@Success		200	{object}	map[string]string
+//	@Router			/healthz [get]
+func healthHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"status": "OK"})
+	}
 }
