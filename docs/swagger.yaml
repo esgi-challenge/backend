@@ -1,9 +1,67 @@
 basePath: /api
+definitions:
+  github_com_esgi-challenge_backend_internal_models.Example:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
 info:
   contact: {}
   description: Backend written in Go for the S2 ESGI Challenge
   title: Backend
 paths:
+  /examples:
+    get:
+      consumes:
+      - application/json
+      description: Get all example
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all example
+      tags:
+      - Example
+    post:
+      consumes:
+      - application/json
+      description: create new example
+      parameters:
+      - description: Example infos
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "406":
+          description: Not Acceptable
+          schema:
+            type: string
+      summary: Create new example
+      tags:
+      - Example
   /healthz:
     get:
       description: Check if API is up

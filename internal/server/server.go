@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	ctxTimeout = 2
+	ctxTimeout = 0
 )
 
 type Server struct {
