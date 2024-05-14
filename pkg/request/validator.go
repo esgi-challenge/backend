@@ -9,27 +9,26 @@ import (
 )
 
 func ValidateJSON[T interface{}](input T, ctx *gin.Context) (T, error) {
-  bindError := ctx.ShouldBindJSON(&input)
-  if bindError != nil {
-    var missingFields []string
-    for _, err := range bindError.(validator.ValidationErrors) {
-      missingFields = append(missingFields, err.Field())
-    }
+	bindError := ctx.ShouldBindJSON(&input)
+	if bindError != nil {
+		var missingFields []string
+		for _, err := range bindError.(validator.ValidationErrors) {
+			missingFields = append(missingFields, err.Field())
+		}
 
-    return input, errors.New("Missing fields: " + strings.ToLower(strings.Join(missingFields, ", ")))
-  }
+		return input, errors.New("Missing fields: " + strings.ToLower(strings.Join(missingFields, ", ")))
+	}
 
-  validate := validator.New()
-  validateError := validate.Struct(input)
-  if validateError != nil {
-    var invalidFields []string
-    for _, err := range validateError.(validator.ValidationErrors) {
-      invalidFields = append(invalidFields, err.Field())
-    }
+	validate := validator.New()
+	validateError := validate.Struct(input)
+	if validateError != nil {
+		var invalidFields []string
+		for _, err := range validateError.(validator.ValidationErrors) {
+			invalidFields = append(invalidFields, err.Field())
+		}
 
-    return input, errors.New("Invalid fields: " + strings.ToLower(strings.Join(invalidFields, ", ")))
-  }
+		return input, errors.New("Invalid fields: " + strings.ToLower(strings.Join(invalidFields, ", ")))
+	}
 
-  return input, nil
+	return input, nil
 }
-

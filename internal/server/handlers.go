@@ -8,10 +8,10 @@ import (
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 
-	"github.com/esgi-challenge/backend/internal/middleware"
 	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
 	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
 	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
+	"github.com/esgi-challenge/backend/internal/middleware"
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
