@@ -55,22 +55,22 @@ func (l *logger) Fatal(msg string, args ...any) {
 
 func (l *logger) Debugf(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
-	l.yolog.Debug(msg, args...)
+	l.yolog.Debug(msg)
 }
 
 func (l *logger) Infof(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
-	l.yolog.Info(msg, args...)
+	l.yolog.Info(msg)
 }
 
 func (l *logger) Warnf(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
-	l.yolog.Warn(msg, args...)
+	l.yolog.Warn(msg)
 }
 
 func (l *logger) Errorf(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
-	l.yolog.Error(msg, args...)
+	l.yolog.Error(msg)
 }
 
 func (l *logger) Fatalf(format string, args ...any) {

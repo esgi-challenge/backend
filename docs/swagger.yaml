@@ -2,10 +2,39 @@ basePath: /api
 definitions:
   github_com_esgi-challenge_backend_internal_models.Example:
     properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - description
+    - title
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ExampleCreate:
+    properties:
       description:
         type: string
       title:
         type: string
+    required:
+    - description
+    - title
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
     type: object
 info:
   contact: {}
@@ -43,7 +72,7 @@ paths:
         name: example
         required: true
         schema:
-          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleCreate'
       produces:
       - application/json
       responses:

@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/internal/example"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/esgi-challenge/backend/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,22 +27,27 @@ func NewExampleHandlers(exampleUseCase example.UseCase, cfg *config.Config, logg
 //	@Tags			Example
 //	@Accept			json
 //	@Produce		json
-//	@Param			example	body		models.Example	true	"Example infos"
+//	@Param			example	body		models.ExampleCreate	true	"Example infos"
 //	@Success		201		{object}	models.Example
 //	@Failure		400		{object}	string
 //	@Failure		406		{object}	string
 //	@Router			/examples [post]
 func (u *exampleHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		example := &models.Example{}
+    var body models.ExampleCreate
 
-    if err := ctx.BindJSON(example); err != nil {
-      ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-      u.logger.Errorf("Request: %v", err)
+    exampleCreate, err := request.ValidateJSON(body, ctx)
+    if err != nil {
+      ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+      u.logger.Infof("Request: %v", err.Error())
       return
     }
 
-		example, err := u.exampleUseCase.Create(example)
+		example := &models.Example{
+      Title: exampleCreate.Title,
+      Description: exampleCreate.Description,
+    }
+		exampleDb, err := u.exampleUseCase.Create(example)
 
     if err != nil {
       ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
@@ -49,7 +55,7 @@ func (u *exampleHandlers) Create() gin.HandlerFunc {
       return
     }
 
-		ctx.JSON(http.StatusCreated, example)
+		ctx.JSON(http.StatusCreated, exampleDb)
 	}
 }
 

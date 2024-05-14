@@ -65,7 +65,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Example"
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleCreate"
                         }
                     }
                 ],
@@ -115,12 +115,55 @@ const docTemplate = `{
     "definitions": {
         "github_com_esgi-challenge_backend_internal_models.Example": {
             "type": "object",
+            "required": [
+                "description",
+                "title"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.ExampleCreate": {
+            "type": "object",
+            "required": [
+                "description",
+                "title"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
                 }
             }
         }
