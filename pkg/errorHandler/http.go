@@ -10,8 +10,10 @@ import (
 
 var (
 	NotFound            = errors.New("Not Found")
+	BadRequest          = errors.New("Bad Request")
 	BadURLParams        = errors.New("Invalid URL params")
 	BadBodyParams       = errors.New("Invalid Body params")
+	Conflict            = errors.New("Conflict")
 	InternalServerError = errors.New("Internal Server Error")
 )
 
@@ -44,6 +46,10 @@ func ParseError(err error) HttpErr {
 	switch {
 	case errors.Is(err, gorm.ErrRecordNotFound):
 		return NewHttpError(http.StatusNotFound, NotFound.Error())
+	case errors.Is(err, gorm.ErrInvalidData):
+		return NewHttpError(http.StatusBadRequest, NotFound.Error())
+	case errors.Is(err, gorm.ErrDuplicatedKey):
+		return NewHttpError(http.StatusConflict, Conflict.Error())
 	default:
 		if httpErr, ok := err.(HttpErr); ok {
 			return httpErr

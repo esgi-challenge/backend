@@ -10,3 +10,8 @@ type ExampleCreate struct {
 	Title       string `json:"title" binding:"required" validate:"min=8,max=64"`
 	Description string `json:"description" binding:"required"`
 }
+
+type ExampleUpdate struct {
+	Title       string `json:"title" binding:"required" validate:"min=8,max=64"`
+	Description string `json:"description" binding:"required"`
+}

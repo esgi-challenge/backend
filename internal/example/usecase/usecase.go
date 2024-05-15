@@ -29,6 +29,10 @@ func (u *exampleUseCase) GetById(id uint) (*models.Example, error) {
 	return u.exampleRepo.GetById(id)
 }
 
+func (u *exampleUseCase) Update(id uint, updatedExample *models.Example) (*models.Example, error) {
+	return u.exampleRepo.Update(id, updatedExample)
+}
+
 func (u *exampleUseCase) Delete(id uint) error {
 	_, err := u.GetById(id)
 	if err != nil {

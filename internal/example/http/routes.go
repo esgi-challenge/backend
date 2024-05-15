@@ -10,4 +10,5 @@ func SetupExampleRoutes(exampleGroup *gin.RouterGroup, h example.Handlers) {
 	exampleGroup.GET("", h.GetAll())
 	exampleGroup.GET("/:id", h.GetById())
 	exampleGroup.DELETE("/:id", h.Delete())
+	exampleGroup.PUT("/:id", h.Update())
 }
