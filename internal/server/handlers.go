@@ -8,6 +8,9 @@ import (
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 
+	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
+	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
+	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
 	"github.com/esgi-challenge/backend/internal/middleware"
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
@@ -16,12 +19,15 @@ import (
 
 func (s *Server) SetupHandlers() error {
 	// Repo
+	exampleRepo := exampleRepo.NewExampleRepository(s.psqlDB)
 	userRepo := userRepo.NewUserRepository(s.psqlDB)
 
 	// UseCase
+	exampleUseCase := exampleUseCase.NewExampleUseCase(exampleRepo, s.cfg, s.logger)
 	userUseCase := userUseCase.NewUserUseCase(userRepo, s.cfg, s.logger)
 
 	// Handlers
+	exampleHandlers := exampleHttp.NewExampleHandlers(exampleUseCase, s.cfg, s.logger)
 	userHandlers := userHttp.NewUserHandlers(userUseCase, s.cfg, s.logger)
 
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
@@ -31,7 +37,10 @@ func (s *Server) SetupHandlers() error {
 
 	api := s.router.Group("/api")
 
+	exampleGroup := api.Group("/examples")
 	userGroup := api.Group("/users")
+
+	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
 
 	health := api.Group("/healthz")

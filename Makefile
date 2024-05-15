@@ -11,7 +11,7 @@ format:
 	gofmt -w -s .
 
 swag-init:
-	swag init -g **/**/*.go
+	swag init --parseDependency --parseInternal -g **/**/*.go 
 
 swag-fmt:
 	swag fmt -g **/**/*.go

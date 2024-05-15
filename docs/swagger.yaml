@@ -1,9 +1,184 @@
 basePath: /api
+definitions:
+  github_com_esgi-challenge_backend_internal_models.Example:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ExampleCreate:
+    properties:
+      description:
+        type: string
+      title:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - description
+    - title
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ExampleUpdate:
+    properties:
+      description:
+        type: string
+      title:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - description
+    - title
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
 info:
   contact: {}
   description: Backend written in Go for the S2 ESGI Challenge
   title: Backend
 paths:
+  /examples:
+    get:
+      description: Get all example
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all example
+      tags:
+      - Example
+    post:
+      consumes:
+      - application/json
+      description: create new example
+      parameters:
+      - description: Example infos
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new example
+      tags:
+      - Example
+  /examples/{id}:
+    delete:
+      description: Delete example by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete example by id
+      tags:
+      - Example
+    get:
+      description: Get example by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get example by id
+      tags:
+      - Example
+    put:
+      consumes:
+      - application/json
+      description: Update example
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Example infos
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Example'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update example
+      tags:
+      - Example
   /healthz:
     get:
       description: Check if API is up
