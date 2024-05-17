@@ -45,6 +45,8 @@ func (u *exampleUseCase) Update(id uint, updatedExample *models.Example) (*model
 }
 
 func (u *exampleUseCase) Delete(id uint) error {
+  // Check not needed but added to handle a not found error because gorm do not return 
+  // error if delete on a row that does not exist
 	_, err := u.GetById(id)
 	if err != nil {
 		return err
