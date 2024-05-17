@@ -30,10 +30,23 @@ func (u *exampleUseCase) GetById(id uint) (*models.Example, error) {
 }
 
 func (u *exampleUseCase) Update(id uint, updatedExample *models.Example) (*models.Example, error) {
+	// Temporary fix for known issue :
+	// https://github.com/go-gorm/gorm/issues/5724
+	//////////////////////////////////////
+	dbExample, err := u.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	updatedExample.CreatedAt = dbExample.CreatedAt
+	///////////////////////////////////////
+
+	updatedExample.ID = id
 	return u.exampleRepo.Update(id, updatedExample)
 }
 
 func (u *exampleUseCase) Delete(id uint) error {
+	// Check not needed but added to handle a not found error because gorm do not return
+	// error if delete on a row that does not exist
 	_, err := u.GetById(id)
 	if err != nil {
 		return err

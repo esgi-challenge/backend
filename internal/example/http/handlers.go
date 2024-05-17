@@ -165,7 +165,7 @@ func (u *exampleHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, exampleDb)
+		ctx.JSON(http.StatusOK, exampleDb)
 	}
 }
 

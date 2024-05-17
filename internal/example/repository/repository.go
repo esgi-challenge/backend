@@ -43,18 +43,6 @@ func (r *exampleRepo) GetById(id uint) (*models.Example, error) {
 }
 
 func (r *exampleRepo) Update(id uint, example *models.Example) (*models.Example, error) {
-  // Temporary fix for known issue :
-  // https://github.com/go-gorm/gorm/issues/5724
-  //////////////////////////////////////
-  dbExample, err := r.GetById(id)
-  if err != nil {
-    return nil, err
-  }
-  example.CreatedAt = dbExample.CreatedAt
-  ///////////////////////////////////////
-
-  example.ID = id
-
 	if err := r.db.Save(example).Error; err != nil {
 		return nil, err
 	}
@@ -63,7 +51,7 @@ func (r *exampleRepo) Update(id uint, example *models.Example) (*models.Example,
 }
 
 func (r *exampleRepo) Delete(id uint) error {
-	if err := r.db.Delete(&models.Example{}, id).Error; err != nil {
+	if err := r.db.Debug().Delete(&models.Example{}, id).Error; err != nil {
 		return err
 	}
 
