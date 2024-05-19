@@ -1,0 +1,17 @@
+package models
+
+type {{ name }} struct {
+	GormModel
+	Title       string `json:"title" gorm:"column:title"`
+	Description string `json:"description" gorm:"column:description"`
+}
+
+type {{ name }}Create struct {
+	Title       string `json:"title" binding:"required" validate:"min=8,max=64"`
+	Description string `json:"description" binding:"required"`
+}
+
+type {{ name }}Update struct {
+	Title       string `json:"title" binding:"required" validate:"min=8,max=64"`
+	Description string `json:"description" binding:"required"`
+}
