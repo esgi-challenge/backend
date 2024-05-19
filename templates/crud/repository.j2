@@ -1,0 +1,13 @@
+package {{ name_lower }}
+
+import (
+	"github.com/esgi-challenge/backend/internal/models"
+)
+
+type Repository interface {
+	Create({{ name_lower }} *models.{{ name }}) (*models.{{ name }}, error)
+	GetAll() (*[]models.{{ name }}, error)
+	GetById(id uint) (*models.{{ name }}, error)
+	Update(id uint, {{ name_lower }} *models.{{ name }}) (*models.{{ name }}, error)
+	Delete(id uint) error
+}

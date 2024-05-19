@@ -1,0 +1,14 @@
+package http
+
+import (
+	"github.com/esgi-challenge/backend/internal/{{ name_lower }}"
+	"github.com/gin-gonic/gin"
+)
+
+func Setup{{ name }}Routes({{ name_lower }}Group *gin.RouterGroup, h {{ name_lower }}.Handlers) {
+	{{ name_lower }}Group.POST("", h.Create())
+	{{ name_lower }}Group.GET("", h.GetAll())
+	{{ name_lower }}Group.GET("/:id", h.GetById())
+	{{ name_lower }}Group.DELETE("/:id", h.Delete())
+	{{ name_lower }}Group.PUT("/:id", h.Update())
+}
