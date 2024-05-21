@@ -14,13 +14,13 @@ import (
 )
 
 type exampleHandlers struct {
-	exampleUseCase example.UseCase
 	cfg            *config.Config
+	exampleUseCase example.UseCase
 	logger         logger.Logger
 }
 
-func NewExampleHandlers(exampleUseCase example.UseCase, cfg *config.Config, logger logger.Logger) example.Handlers {
-	return &exampleHandlers{exampleUseCase: exampleUseCase, cfg: cfg, logger: logger}
+func NewExampleHandlers(cfg *config.Config, exampleUseCase example.UseCase, logger logger.Logger) example.Handlers {
+  return &exampleHandlers{cfg: cfg, exampleUseCase: exampleUseCase, logger: logger}
 }
 
 // Create
@@ -127,7 +127,7 @@ func (u *exampleHandlers) GetById() gin.HandlerFunc {
 //	@Tags			Example
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
+//	@Param			id		path		int						true	"id"
 //	@Param			example	body		models.ExampleUpdate	true	"Example infos"
 //	@Success		201		{object}	models.Example
 //	@Failure		400		{object}	errorHandler.HttpErr

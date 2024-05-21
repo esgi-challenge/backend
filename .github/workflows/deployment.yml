@@ -67,3 +67,4 @@ jobs:
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
             PG_PORT=${{ secrets.PG_PORT }}
             PG_USER=${{ secrets.PG_USER }}
+            GIN_MODE=release

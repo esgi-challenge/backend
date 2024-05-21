@@ -13,8 +13,8 @@ type exampleUseCase struct {
 	logger      logger.Logger
 }
 
-func NewExampleUseCase(exampleRepo example.Repository, cfg *config.Config, logger logger.Logger) example.UseCase {
-	return &exampleUseCase{exampleRepo: exampleRepo, cfg: cfg, logger: logger}
+func NewExampleUseCase(cfg *config.Config, exampleRepo example.Repository, logger logger.Logger) example.UseCase {
+  return &exampleUseCase{cfg: cfg, exampleRepo: exampleRepo, logger: logger}
 }
 
 func (u *exampleUseCase) Create(example *models.Example) (*models.Example, error) {

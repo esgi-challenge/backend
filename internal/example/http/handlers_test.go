@@ -28,7 +28,7 @@ func TestCreate(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewExampleHandlers(mockUseCase, nil, logger)
+	handlers := NewExampleHandlers(nil, mockUseCase, logger)
 
 	example := &models.ExampleCreate{
 		Title:       "longtitle",
@@ -108,7 +108,7 @@ func TestGetById(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewExampleHandlers(mockUseCase, nil, logger)
+	handlers := NewExampleHandlers(nil, mockUseCase, logger)
 
 	example := &models.Example{
 		Title:       "title",
@@ -169,7 +169,7 @@ func TestGetAll(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewExampleHandlers(mockUseCase, nil, logger)
+	handlers := NewExampleHandlers(nil, mockUseCase, logger)
 
 	examples := &[]models.Example{
 		{
@@ -221,7 +221,7 @@ func TestUpdate(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewExampleHandlers(mockUseCase, nil, logger)
+	handlers := NewExampleHandlers(nil, mockUseCase, logger)
 
 	example := &models.ExampleUpdate{
 		Title:       "longtitle",
@@ -317,7 +317,7 @@ func TestDelete(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewExampleHandlers(mockUseCase, nil, logger)
+	handlers := NewExampleHandlers(nil, mockUseCase, logger)
 
 	t.Run("Delete request", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/api/examples/1", nil)

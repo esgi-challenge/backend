@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"github.com/esgi-challenge/backend/internal/middleware"
 
 	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
 	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
 	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
-	"github.com/esgi-challenge/backend/internal/middleware"
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
@@ -23,11 +23,11 @@ func (s *Server) SetupHandlers() error {
 	userRepo := userRepo.NewUserRepository(s.psqlDB)
 
 	// UseCase
-	exampleUseCase := exampleUseCase.NewExampleUseCase(exampleRepo, s.cfg, s.logger)
+	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
 	userUseCase := userUseCase.NewUserUseCase(userRepo, s.cfg, s.logger)
 
 	// Handlers
-	exampleHandlers := exampleHttp.NewExampleHandlers(exampleUseCase, s.cfg, s.logger)
+	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
 	userHandlers := userHttp.NewUserHandlers(userUseCase, s.cfg, s.logger)
 
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)

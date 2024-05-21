@@ -19,7 +19,7 @@ func TestCreate(t *testing.T) {
 
 	logger := logger.NewLogger()
 	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewExampleUseCase(mockRepo, nil, logger)
+	useCase := NewExampleUseCase(nil, mockRepo, logger)
 
 	example := &models.Example{
 		Title:       "title",
@@ -42,7 +42,7 @@ func TestGetById(t *testing.T) {
 
 	logger := logger.NewLogger()
 	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewExampleUseCase(mockRepo, nil, logger)
+	useCase := NewExampleUseCase(nil, mockRepo, logger)
 
 	example := &models.Example{
 		Title:       "title",
@@ -65,7 +65,7 @@ func TestGetAll(t *testing.T) {
 
 	logger := logger.NewLogger()
 	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewExampleUseCase(mockRepo, nil, logger)
+	useCase := NewExampleUseCase(nil, mockRepo, logger)
 
 	examples := &[]models.Example{
 		{
@@ -97,7 +97,7 @@ func TestDelete(t *testing.T) {
 
 	logger := logger.NewLogger()
 	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewExampleUseCase(mockRepo, nil, logger)
+	useCase := NewExampleUseCase(nil, mockRepo, logger)
 
 	example := &models.Example{
 		Title:       "title",
@@ -131,7 +131,7 @@ func TestUpdate(t *testing.T) {
 
 	logger := logger.NewLogger()
 	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewExampleUseCase(mockRepo, nil, logger)
+	useCase := NewExampleUseCase(nil, mockRepo, logger)
 
 	example := &models.Example{
 		Title:       "title",
