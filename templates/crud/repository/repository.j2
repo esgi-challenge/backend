@@ -1,0 +1,59 @@
+package repository
+
+import (
+	"github.com/esgi-challenge/backend/internal/{{ name_lower }}"
+	"github.com/esgi-challenge/backend/internal/models"
+	"gorm.io/gorm"
+)
+
+type {{ name_lower }}Repo struct {
+	db *gorm.DB
+}
+
+func New{{ name }}Repository(db *gorm.DB) {{ name_lower }}.Repository {
+	return &{{ name_lower }}Repo{db: db}
+}
+
+func (r *{{ name_lower }}Repo) Create({{ name_lower }} *models.{{ name }}) (*models.{{ name }}, error) {
+	if err := r.db.Create({{ name_lower }}).Error; err != nil {
+		return nil, err
+	}
+
+	return {{ name_lower }}, nil
+}
+
+func (r *{{ name_lower }}Repo) GetAll() (*[]models.{{ name }}, error) {
+	var {{ name_lower }}s []models.{{ name }}
+
+	if err := r.db.Find(&{{ name_lower }}s).Error; err != nil {
+		return nil, err
+	}
+
+	return &{{ name_lower }}s, nil
+}
+
+func (r *{{ name_lower }}Repo) GetById(id uint) (*models.{{ name }}, error) {
+	var {{ name_lower }} models.{{ name }}
+
+	if err := r.db.First(&{{ name_lower }}, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &{{ name_lower }}, nil
+}
+
+func (r *{{ name_lower }}Repo) Update(id uint, {{ name_lower }} *models.{{ name }}) (*models.{{ name }}, error) {
+	if err := r.db.Save({{ name_lower }}).Error; err != nil {
+		return nil, err
+	}
+
+	return {{ name_lower }}, nil
+}
+
+func (r *{{ name_lower }}Repo) Delete(id uint) error {
+	if err := r.db.Debug().Delete(&models.{{ name }}{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -53,3 +53,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+    advices = """The CRUD has been created. To make it work correctly don't forget to :
+    - Import and initialize the Repository, UseCase and Handlers inside /internal/server/handlers.go
+    - Setup the new api.Group for your CRUD, and setup the routes with the .SetupXXXXRoutes() inside the /internal/server/handlers.go
+    - Generate the mocks with the 'make crud' command for the tests to work correctly
+    - Import the newly created model inside the /pkg/database/postgresql.go file to migrate the CRUD model"""
+    print(advices)

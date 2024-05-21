@@ -1,0 +1,204 @@
+package http
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/esgi-challenge/backend/config"
+	"github.com/esgi-challenge/backend/internal/{{ name_lower }}"
+	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/pkg/errorHandler"
+	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/esgi-challenge/backend/pkg/request"
+	"github.com/gin-gonic/gin"
+)
+
+type {{ name_lower }}Handlers struct {
+	cfg            *config.Config
+	{{ name_lower }}UseCase {{ name_lower }}.UseCase
+	logger         logger.Logger
+}
+
+func New{{ name }}Handlers(cfg *config.Config, {{ name_lower }}UseCase {{ name_lower }}.UseCase, logger logger.Logger) {{ name_lower }}.Handlers {
+  return &{{ name_lower }}Handlers{cfg: cfg, {{ name_lower }}UseCase: {{ name_lower }}UseCase, logger: logger}
+}
+
+// Create
+//
+//	@Summary		Create new {{ name_lower }}
+//	@Description	create new {{ name_lower }}
+//	@Tags			{{ name }}
+//	@Accept			json
+//	@Produce		json
+//	@Param			{{ name_lower }}	body		models.{{ name }}Create	true	"{{ name }} infos"
+//	@Success		201		{object}	models.{{ name }}
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/{{ name_lower }}s [post]
+func (u *{{ name_lower }}Handlers) Create() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var body models.{{ name }}Create
+
+		{{ name_lower }}Create, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		{{ name_lower }} := &models.{{ name }}{
+			Title:       {{ name_lower }}Create.Title,
+			Description: {{ name_lower }}Create.Description,
+		}
+		{{ name_lower }}Db, err := u.{{ name_lower }}UseCase.Create({{ name_lower }})
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, {{ name_lower }}Db)
+	}
+}
+
+// Read
+//
+//	@Summary		Get all {{ name_lower }}
+//	@Description	Get all {{ name_lower }}
+//	@Tags			{{ name }}
+//	@Produce		json
+//	@Success		200	{object}	[]models.{{ name }}
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/{{ name_lower }}s [get]
+func (u *{{ name_lower }}Handlers) GetAll() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		{{ name_lower }}s, err := u.{{ name_lower }}UseCase.GetAll()
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, {{ name_lower }}s)
+	}
+}
+
+// Read
+//
+//	@Summary		Get {{ name_lower }} by id
+//	@Description	Get {{ name_lower }} by id
+//	@Tags			{{ name }}
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Success		200	{object}	models.{{ name }}
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/{{ name_lower }}s/{id} [get]
+func (u *{{ name_lower }}Handlers) GetById() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		{{ name_lower }}, err := u.{{ name_lower }}UseCase.GetById(uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, {{ name_lower }})
+	}
+}
+
+// Update
+//
+//	@Summary		Update {{ name_lower }}
+//	@Description	Update {{ name_lower }}
+//	@Tags			{{ name }}
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Param			{{ name_lower }}	body		models.{{ name }}Update	true	"{{ name }} infos"
+//	@Success		201		{object}	models.{{ name }}
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/{{ name_lower }}s/{id} [put]
+func (u *{{ name_lower }}Handlers) Update() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		var body models.{{ name }}Update
+
+		{{ name_lower }}Update, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		{{ name_lower }} := &models.{{ name }}{
+			Title:       {{ name_lower }}Update.Title,
+			Description: {{ name_lower }}Update.Description,
+		}
+		{{ name_lower }}Db, err := u.{{ name_lower }}UseCase.Update(uint(idInt), {{ name_lower }})
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, {{ name_lower }}Db)
+	}
+}
+
+// Delete
+//
+//	@Summary		Delete {{ name_lower }} by id
+//	@Description	Delete {{ name_lower }} by id
+//	@Tags			{{ name }}
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Success		200	{object}	nil
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Router			/{{ name_lower }}s/{id} [delete]
+func (u *{{ name_lower }}Handlers) Delete() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		err = u.{{ name_lower }}UseCase.Delete(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, nil)
+	}
+}

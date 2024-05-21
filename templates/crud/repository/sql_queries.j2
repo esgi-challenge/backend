@@ -1,0 +1,12 @@
+package repository
+
+// This file has for only purpose to serve the repository_test.go file
+
+const (
+	createQuery = `INSERT INTO "{{ name_lower }}s" (.+) RETURNING`
+	getQuery    = `SELECT (.+) FROM "{{ name_lower }}s" WHERE "{{ name_lower }}s"."id" = \$1 (.+)`
+	getAllQuery = `SELECT (.+) FROM "{{ name_lower }}s" WHERE (.+)`
+	deleteQuery = `UPDATE "{{ name_lower }}s" SET "deleted_at"=\$1 WHERE "{{ name_lower }}s"."id" = \$2 (.+)`
+	// Update use INSERT mainly because of gorm way to work that INSERT instead of UPDATE if record does not exist
+	updateQuery = `INSERT INTO "{{ name_lower }}s" (.+) RETURNING`
+)

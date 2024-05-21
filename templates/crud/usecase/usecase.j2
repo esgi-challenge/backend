@@ -1,0 +1,56 @@
+package usecase
+
+import (
+	"github.com/esgi-challenge/backend/config"
+	"github.com/esgi-challenge/backend/internal/{{ name_lower }}"
+	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/pkg/logger"
+)
+
+type {{ name_lower }}UseCase struct {
+	{{ name_lower }}Repo {{ name_lower }}.Repository
+	cfg         *config.Config
+	logger      logger.Logger
+}
+
+func New{{ name }}UseCase(cfg *config.Config, {{ name_lower }}Repo {{ name_lower }}.Repository, logger logger.Logger) {{ name_lower }}.UseCase {
+  return &{{ name_lower }}UseCase{cfg: cfg, {{ name_lower }}Repo: {{ name_lower }}Repo, logger: logger}
+}
+
+func (u *{{ name_lower }}UseCase) Create({{ name_lower }} *models.{{ name }}) (*models.{{ name }}, error) {
+	return u.{{ name_lower }}Repo.Create({{ name_lower }})
+}
+
+func (u *{{ name_lower }}UseCase) GetAll() (*[]models.{{ name }}, error) {
+	return u.{{ name_lower }}Repo.GetAll()
+}
+
+func (u *{{ name_lower }}UseCase) GetById(id uint) (*models.{{ name }}, error) {
+	return u.{{ name_lower }}Repo.GetById(id)
+}
+
+func (u *{{ name_lower }}UseCase) Update(id uint, updated{{ name }} *models.{{ name }}) (*models.{{ name }}, error) {
+	// Temporary fix for known issue :
+	// https://github.com/go-gorm/gorm/issues/5724
+	//////////////////////////////////////
+	db{{ name }}, err := u.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	updated{{ name }}.CreatedAt = db{{ name }}.CreatedAt
+	///////////////////////////////////////
+
+	updated{{ name }}.ID = id
+	return u.{{ name_lower }}Repo.Update(id, updated{{ name }})
+}
+
+func (u *{{ name_lower }}UseCase) Delete(id uint) error {
+	// Check not needed but added to handle a not found error because gorm do not return
+	// error if delete on a row that does not exist
+	_, err := u.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	return u.{{ name_lower }}Repo.Delete(id)
+}
