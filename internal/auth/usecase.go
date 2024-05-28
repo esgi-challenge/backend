@@ -6,4 +6,5 @@ import (
 
 type UseCase interface {
 	Login(payload *models.AuthLogin) (*models.Auth, error)
+	Register(payload *models.AuthRegister) (*models.Auth, error)
 }

@@ -6,4 +6,5 @@ import (
 
 type Handlers interface {
 	Login() gin.HandlerFunc
+	Register() gin.HandlerFunc
 }

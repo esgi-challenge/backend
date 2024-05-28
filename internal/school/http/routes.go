@@ -7,6 +7,7 @@ import (
 
 func SetupSchoolRoutes(schoolGroup *gin.RouterGroup, h school.Handlers) {
 	schoolGroup.POST("", h.Create())
+	schoolGroup.POST("/:id", h.Invite())
 	schoolGroup.GET("", h.GetAll())
 	schoolGroup.GET("/:id", h.GetById())
 	schoolGroup.DELETE("/:id", h.Delete())

@@ -37,5 +37,29 @@ func (u *authUseCase) Login(payload *models.AuthLogin) (*models.Auth, error) {
 	return &models.Auth{
 		Token: token,
 	}, nil
-	// return u.schoolRepo.Login(school)
+}
+
+func (u *authUseCase) Register(payload *models.AuthRegister) (*models.Auth, error) {
+
+	user, err := u.userRepo.Create(&models.User{
+		Lastname:  payload.Lastname,
+		Firstname: payload.Firstname,
+		Email:     payload.Email,
+		Password:  payload.Password,
+		UserKind:  models.ADMINISTRATOR,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := jwt.Generate(u.cfg.JwtSecret, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Auth{
+		Token: token,
+	}, nil
 }
