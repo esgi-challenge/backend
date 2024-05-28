@@ -24,9 +24,11 @@ func NewUserHandlers(userUseCase user.UseCase, cfg *config.Config, logger logger
 func (u *userHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user := &models.User{
-			Username: "admin",
-			Email:    "admin@admin.fr",
-			Password: "password",
+			Firstname: "admin",
+			Lastname:  "admin",
+			Email:     "admin@admin.fr",
+			Password:  "password",
+			UserKind:  models.SUPERADMIN,
 		}
 		createdUser, err := u.userUseCase.Create(ctx, user)
 		if err != nil {

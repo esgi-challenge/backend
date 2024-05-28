@@ -12,6 +12,8 @@ var (
 	NotFound            = errors.New("Not Found")
 	BadRequest          = errors.New("Bad Request")
 	BadURLParams        = errors.New("Invalid URL params")
+	Unauthorized        = errors.New("You need to login")
+	Forbidden           = errors.New("You are not allowed to access this ressource")
 	BadBodyParams       = errors.New("Invalid Body params")
 	Conflict            = errors.New("Conflict")
 	InternalServerError = errors.New("Internal Server Error")
@@ -74,6 +76,22 @@ func BodyParamsErrorResponse() (int, interface{}) {
 	err := HttpError{
 		HttpStatus: http.StatusBadRequest,
 		HttpError:  BadBodyParams.Error(),
+	}
+	return ParseError(err).Status(), ParseError(err)
+}
+
+func UnauthorizedErrorResponse() (int, interface{}) {
+	err := HttpError{
+		HttpStatus: http.StatusUnauthorized,
+		HttpError:  Unauthorized.Error(),
+	}
+	return ParseError(err).Status(), ParseError(err)
+}
+
+func ForbiddenErrorResponse() (int, interface{}) {
+	err := HttpError{
+		HttpStatus: http.StatusForbidden,
+		HttpError:  Forbidden.Error(),
 	}
 	return ParseError(err).Status(), ParseError(err)
 }
