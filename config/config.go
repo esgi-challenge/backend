@@ -10,7 +10,8 @@ type Config struct {
 	Port    string `env:"API_PORT"`
 	BaseUrl string `env:"BASE_URL"`
 
-	Postgres PostgresConfig
+	JwtSecret string `env:"JWT_SECRET"`
+	Postgres  PostgresConfig
 }
 
 type PostgresConfig struct {

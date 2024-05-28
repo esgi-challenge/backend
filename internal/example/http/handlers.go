@@ -20,7 +20,7 @@ type exampleHandlers struct {
 }
 
 func NewExampleHandlers(cfg *config.Config, exampleUseCase example.UseCase, logger logger.Logger) example.Handlers {
-  return &exampleHandlers{cfg: cfg, exampleUseCase: exampleUseCase, logger: logger}
+	return &exampleHandlers{cfg: cfg, exampleUseCase: exampleUseCase, logger: logger}
 }
 
 // Create

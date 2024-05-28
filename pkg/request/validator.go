@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -31,4 +33,20 @@ func ValidateJSON[T interface{}](input T, ctx *gin.Context) (T, error) {
 	}
 
 	return input, nil
+}
+
+func ValidateRole(secretKey string, ctx *gin.Context, role models.UserKind) (*models.User, error) {
+	token := strings.Split(ctx.Request.Header["Authorization"][0], " ")[1]
+
+	user, err := jwt.DecryptToken(secretKey, token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user.UserKind < role {
+		return nil, errors.New("forbidden")
+	}
+
+	return user, nil
 }

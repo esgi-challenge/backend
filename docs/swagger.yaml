@@ -1,5 +1,22 @@
 basePath: /api
 definitions:
+  github_com_esgi-challenge_backend_internal_models.Auth:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  github_com_esgi-challenge_backend_internal_models.AuthLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   github_com_esgi-challenge_backend_internal_models.Example:
     properties:
       createdAt:
@@ -39,6 +56,30 @@ definitions:
     - description
     - title
     type: object
+  github_com_esgi-challenge_backend_internal_models.School:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: integer
+    type: object
+  github_com_esgi-challenge_backend_internal_models.SchoolCreate:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -52,6 +93,34 @@ info:
   description: Backend written in Go for the S2 ESGI Challenge
   title: Backend
 paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Log to the api
+      parameters:
+      - description: School infos
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Auth'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Log to the api
+      tags:
+      - Auth
   /examples:
     get:
       description: Get all example
@@ -192,4 +261,99 @@ paths:
               type: string
             type: object
       summary: Check API health
+  /schools:
+    get:
+      description: Get all school
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.School'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all school
+      tags:
+      - School
+    post:
+      consumes:
+      - application/json
+      description: create new school
+      parameters:
+      - description: School infos
+        in: body
+        name: school
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.School'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new school
+      tags:
+      - School
+  /schools/{id}:
+    delete:
+      description: Delete school by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete school by id
+      tags:
+      - School
+    get:
+      description: Get school by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.School'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get school by id
+      tags:
+      - School
 swagger: "2.0"
