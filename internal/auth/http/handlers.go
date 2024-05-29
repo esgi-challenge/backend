@@ -29,7 +29,7 @@ func NewAuthHandlers(cfg *config.Config, authUseCase auth.UseCase, logger logger
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			auth	body		models.AuthLogin	true	"School infos"
+//	@Param			auth	body		models.AuthLogin	true	"Login Credentials"
 //	@Success		201		{object}	models.Auth
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
@@ -51,6 +51,48 @@ func (u *authHandlers) Login() gin.HandlerFunc {
 		}
 
 		token, err := u.authUseCase.Login(payload)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, token)
+	}
+}
+
+// Create
+//
+//	@Summary		Register to the api
+//	@Description	Register to the api
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			auth	body		models.AuthRegister	true	"Register Infos"
+//	@Success		201		{object}	models.Auth
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/auth [post]
+func (u *authHandlers) Register() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var body models.AuthRegister
+
+		authRegister, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		payload := &models.AuthRegister{
+			Firstname: authRegister.Firstname,
+			Lastname:  authRegister.Lastname,
+			Email:     authRegister.Email,
+			Password:  authRegister.Password,
+		}
+
+		token, err := u.authUseCase.Register(payload)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))

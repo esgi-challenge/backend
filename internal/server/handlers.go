@@ -31,7 +31,7 @@ func (s *Server) SetupHandlers() error {
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
 	userUseCase := userUseCase.NewUserUseCase(userRepo, s.cfg, s.logger)
-	schoolUseCase := schoolUseCase.NewSchoolUseCase(s.cfg, schoolRepo, s.logger)
+	schoolUseCase := schoolUseCase.NewSchoolUseCase(s.cfg, schoolRepo, userRepo, s.logger)
 	authUseCase := authUseCase.NewAuthUseCase(s.cfg, userRepo, s.logger)
 
 	// Handlers

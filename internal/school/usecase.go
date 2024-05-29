@@ -5,8 +5,10 @@ import (
 )
 
 type UseCase interface {
-	Create(school *models.School) (*models.School, error)
+	Create(user *models.User, school *models.SchoolCreate) (*models.School, error)
+	Invite(user *models.User, school *models.SchoolInvite) (*models.User, error)
+
 	GetAll() (*[]models.School, error)
 	GetById(id uint) (*models.School, error)
-	Delete(id uint) error
+	Delete(user *models.User, id uint) error
 }

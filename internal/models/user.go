@@ -15,9 +15,11 @@ const (
 
 type User struct {
 	gorm.Model
-	Firstname string   `gorm:"column:firstname"`
-	Lastname  string   `gorm:"column:lastname"`
-	Email     string   `gorm:"column:email"`
-	Password  string   `gorm:"column:password"`
-	UserKind  UserKind `gorm:"column:userKind"`
+	Firstname      string   `gorm:"column:firstname"`
+	Lastname       string   `gorm:"column:lastname"`
+	Email          string   `gorm:"column:email"`
+	Password       string   `gorm:"column:password"`
+	InvitationCode string   `gorm:"column:invitationCode"`
+	UserKind       UserKind `gorm:"column:userKind"`
+	SchoolId       uint     `gorm:"column:schoolId"`
 }

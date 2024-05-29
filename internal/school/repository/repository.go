@@ -22,6 +22,16 @@ func (r *schoolRepo) Create(school *models.School) (*models.School, error) {
 	return school, nil
 }
 
+func (r *schoolRepo) GetByUser(user *models.User) (*models.School, error) {
+	var school models.School
+
+	if err := r.db.First(&school, "userid = ?", user.ID).Error; err != nil {
+		return nil, err
+	}
+
+	return &school, nil
+}
+
 func (r *schoolRepo) GetAll() (*[]models.School, error) {
 	var schools []models.School
 

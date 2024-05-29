@@ -58,10 +58,73 @@ func (u *schoolHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		school := &models.School{
+		school := &models.SchoolCreate{
 			Name: schoolCreate.Name,
 		}
-		schoolDb, err := u.schoolUseCase.Create(school)
+		schoolDb, err := u.schoolUseCase.Create(user, school)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, schoolDb)
+	}
+}
+
+// Invitie
+//
+//	@Summary		Invite a student to the school
+//	@Description	Invite a student to the school
+//	@Tags			School
+//	@Accept			json
+//	@Produce		json
+//	@Param			school	body		models.SchoolInvite	true	"School infos"
+//	@Success		201		{object}	models.SchoolInvite
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/schools [post]
+func (u *schoolHandlers) Invite() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		if user.UserKind != models.ADMINISTRATOR {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		var body models.SchoolInvite
+
+		schoolInvite, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		school := &models.SchoolInvite{
+			Firstname: schoolInvite.Firstname,
+			Lastname:  schoolInvite.Lastname,
+			Email:     schoolInvite.Email,
+			SchoolId:  uint(idInt),
+		}
+
+		schoolDb, err := u.schoolUseCase.Invite(user, school)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -175,7 +238,7 @@ func (u *schoolHandlers) Delete() gin.HandlerFunc {
 			return
 		}
 
-		err = u.schoolUseCase.Delete(uint(idInt))
+		err = u.schoolUseCase.Delete(user, uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
