@@ -16,6 +16,7 @@ type CampusCreate struct {
 }
 
 type CampusUpdate struct {
+	Name     string `json:"name" binding:"required"`
 	Location string `json:"location" binding:"required"`
 	Code     string `json:"code"`
 	SchoolId uint   `json:"schoolId" binding:"required"`

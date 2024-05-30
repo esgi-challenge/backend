@@ -84,7 +84,7 @@ func (u *schoolHandlers) Create() gin.HandlerFunc {
 //	@Success		201		{object}	models.SchoolInvite
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/schools [post]
+//	@Router			/schools/{id}/invite [post]
 func (u *schoolHandlers) Invite() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)

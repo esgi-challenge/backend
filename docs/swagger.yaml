@@ -17,6 +17,108 @@ definitions:
     - email
     - password
     type: object
+  github_com_esgi-challenge_backend_internal_models.AuthRegister:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - password
+    type: object
+  github_com_esgi-challenge_backend_internal_models.Campus:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      schoolId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.CampusCreate:
+    properties:
+      code:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      schoolId:
+        type: integer
+    required:
+    - location
+    - name
+    - schoolId
+    type: object
+  github_com_esgi-challenge_backend_internal_models.CampusUpdate:
+    properties:
+      code:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      schoolId:
+        type: integer
+    required:
+    - location
+    - name
+    - schoolId
+    type: object
+  github_com_esgi-challenge_backend_internal_models.Class:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      pathId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ClassCreate:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 8
+        type: string
+      pathId:
+        type: integer
+    required:
+    - name
+    - pathId
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ClassUpdate:
+    properties:
+      name:
+        type: string
+      pathId:
+        type: integer
+    required:
+    - name
+    - pathId
+    type: object
   github_com_esgi-challenge_backend_internal_models.Example:
     properties:
       createdAt:
@@ -56,6 +158,44 @@ definitions:
     - description
     - title
     type: object
+  github_com_esgi-challenge_backend_internal_models.Path:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      schoolId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.PathCreate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      schoolId:
+        type: integer
+    required:
+    - name
+    - schoolId
+    type: object
+  github_com_esgi-challenge_backend_internal_models.PathUpdate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      schoolId:
+        type: integer
+    type: object
   github_com_esgi-challenge_backend_internal_models.School:
     properties:
       createdAt:
@@ -80,6 +220,27 @@ definitions:
     required:
     - name
     type: object
+  github_com_esgi-challenge_backend_internal_models.SchoolInvite:
+    properties:
+      email:
+        maxLength: 128
+        minLength: 1
+        type: string
+      firstname:
+        maxLength: 128
+        minLength: 1
+        type: string
+      lastname:
+        maxLength: 128
+        minLength: 1
+        type: string
+      schoolId:
+        type: integer
+    required:
+    - email
+    - firstname
+    - lastname
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -97,14 +258,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: Log to the api
+      description: Register to the api
       parameters:
-      - description: School infos
+      - description: Register Infos
         in: body
         name: auth
         required: true
         schema:
-          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin'
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthRegister'
       produces:
       - application/json
       responses:
@@ -118,9 +279,263 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Log to the api
+      summary: Register to the api
       tags:
       - Auth
+  /campuss:
+    get:
+      description: Get all campus
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Campus'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all campus
+      tags:
+      - Campus
+    post:
+      consumes:
+      - application/json
+      description: create new campus
+      parameters:
+      - description: Campus infos
+        in: body
+        name: campus
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.CampusCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Campus'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new campus
+      tags:
+      - Campus
+  /campuss/{id}:
+    delete:
+      description: Delete campus by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete campus by id
+      tags:
+      - Campus
+    get:
+      description: Get campus by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Campus'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get campus by id
+      tags:
+      - Campus
+    put:
+      consumes:
+      - application/json
+      description: Update campus
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Campus infos
+        in: body
+        name: campus
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.CampusUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Campus'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update campus
+      tags:
+      - Campus
+  /classs:
+    get:
+      description: Get all class
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all class
+      tags:
+      - Class
+    post:
+      consumes:
+      - application/json
+      description: create new class
+      parameters:
+      - description: Class infos
+        in: body
+        name: class
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ClassCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new class
+      tags:
+      - Class
+  /classs/{id}:
+    delete:
+      description: Delete class by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete class by id
+      tags:
+      - Class
+    get:
+      description: Get class by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get class by id
+      tags:
+      - Class
+    put:
+      consumes:
+      - application/json
+      description: Update class
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Class infos
+        in: body
+        name: class
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ClassUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update class
+      tags:
+      - Class
   /examples:
     get:
       description: Get all example
@@ -261,6 +676,133 @@ paths:
               type: string
             type: object
       summary: Check API health
+  /paths:
+    get:
+      description: Get all path
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Path'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all path
+      tags:
+      - Path
+    post:
+      consumes:
+      - application/json
+      description: create new path
+      parameters:
+      - description: Path infos
+        in: body
+        name: path
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.PathCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Path'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new path
+      tags:
+      - Path
+  /paths/{id}:
+    delete:
+      description: Delete path by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete path by id
+      tags:
+      - Path
+    get:
+      description: Get path by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Path'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get path by id
+      tags:
+      - Path
+    put:
+      consumes:
+      - application/json
+      description: Update path
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Path infos
+        in: body
+        name: path
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.PathUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Path'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update path
+      tags:
+      - Path
   /schools:
     get:
       description: Get all school
@@ -354,6 +896,34 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Get school by id
+      tags:
+      - School
+  /schools/{id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite a student to the school
+      parameters:
+      - description: School infos
+        in: body
+        name: school
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Invite a student to the school
       tags:
       - School
 swagger: "2.0"
