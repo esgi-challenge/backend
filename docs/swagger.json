@@ -9,7 +9,7 @@
     "paths": {
         "/auth": {
             "post": {
-                "description": "Log to the api",
+                "description": "Register to the api",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,15 +19,15 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Log to the api",
+                "summary": "Register to the api",
                 "parameters": [
                     {
-                        "description": "School infos",
+                        "description": "Register Infos",
                         "name": "auth",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin"
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.AuthRegister"
                         }
                     }
                 ],
@@ -44,6 +44,380 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/campuss": {
+            "get": {
+                "description": "Get all campus",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Get all campus",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Campus"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "create new campus",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Create new campus",
+                "parameters": [
+                    {
+                        "description": "Campus infos",
+                        "name": "campus",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.CampusCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Campus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/campuss/{id}": {
+            "get": {
+                "description": "Get campus by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Get campus by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Campus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update campus",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Update campus",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Campus infos",
+                        "name": "campus",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.CampusUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Campus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete campus by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Delete campus by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/classs": {
+            "get": {
+                "description": "Get all class",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Get all class",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "create new class",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Create new class",
+                "parameters": [
+                    {
+                        "description": "Class infos",
+                        "name": "class",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ClassCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/classs/{id}": {
+            "get": {
+                "description": "Get class by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Get class by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update class",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Update class",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Class infos",
+                        "name": "class",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ClassUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete class by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Delete class by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {}
                     }
                 }
@@ -256,6 +630,193 @@
                 }
             }
         },
+        "/paths": {
+            "get": {
+                "description": "Get all path",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Path"
+                ],
+                "summary": "Get all path",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Path"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "create new path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Path"
+                ],
+                "summary": "Create new path",
+                "parameters": [
+                    {
+                        "description": "Path infos",
+                        "name": "path",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.PathCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Path"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/paths/{id}": {
+            "get": {
+                "description": "Get path by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Path"
+                ],
+                "summary": "Get path by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Path"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Update path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Path"
+                ],
+                "summary": "Update path",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Path infos",
+                        "name": "path",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.PathUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Path"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete path by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Path"
+                ],
+                "summary": "Delete path by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/schools": {
             "get": {
                 "description": "Get all school",
@@ -395,6 +956,48 @@
                     }
                 }
             }
+        },
+        "/schools/{id}/invite": {
+            "post": {
+                "description": "Invite a student to the school",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "School"
+                ],
+                "summary": "Invite a student to the school",
+                "parameters": [
+                    {
+                        "description": "School infos",
+                        "name": "school",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -421,6 +1024,157 @@
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.AuthRegister": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "lastname",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.Campus": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.CampusCreate": {
+            "type": "object",
+            "required": [
+                "location",
+                "name",
+                "schoolId"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.CampusUpdate": {
+            "type": "object",
+            "required": [
+                "location",
+                "name",
+                "schoolId"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.Class": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pathId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.ClassCreate": {
+            "type": "object",
+            "required": [
+                "name",
+                "pathId"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 8
+                },
+                "pathId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.ClassUpdate": {
+            "type": "object",
+            "required": [
+                "name",
+                "pathId"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "pathId": {
+                    "type": "integer"
                 }
             }
         },
@@ -481,6 +1235,64 @@
                 }
             }
         },
+        "github_com_esgi-challenge_backend_internal_models.Path": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.PathCreate": {
+            "type": "object",
+            "required": [
+                "name",
+                "schoolId"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.PathUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schoolId": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_esgi-challenge_backend_internal_models.School": {
             "type": "object",
             "properties": {
@@ -514,6 +1326,34 @@
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.SchoolInvite": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "lastname"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "firstname": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "lastname": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "schoolId": {
+                    "type": "integer"
                 }
             }
         },

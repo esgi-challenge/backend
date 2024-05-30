@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/esgi-challenge/backend/config"
-	"github.com/esgi-challenge/backend/internal/campus"
+	"github.com/esgi-challenge/backend/internal/class"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
@@ -13,29 +13,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type campusHandlers struct {
-	cfg           *config.Config
-	campusUseCase campus.UseCase
-	logger        logger.Logger
+type classHandlers struct {
+	cfg          *config.Config
+	classUseCase class.UseCase
+	logger       logger.Logger
 }
 
-func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, logger logger.Logger) campus.Handlers {
-	return &campusHandlers{cfg: cfg, campusUseCase: campusUseCase, logger: logger}
+func NewClassHandlers(cfg *config.Config, classUseCase class.UseCase, logger logger.Logger) class.Handlers {
+	return &classHandlers{cfg: cfg, classUseCase: classUseCase, logger: logger}
 }
 
 // Create
 //
-//	@Summary		Create new campus
-//	@Description	create new campus
-//	@Tags			Campus
+//	@Summary		Create new class
+//	@Description	create new class
+//	@Tags			Class
 //	@Accept			json
 //	@Produce		json
-//	@Param			campus	body		models.CampusCreate	true	"Campus infos"
-//	@Success		201		{object}	models.Campus
+//	@Param			class	body		models.ClassCreate	true	"Class infos"
+//	@Success		201		{object}	models.Class
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/campuss [post]
-func (u *campusHandlers) Create() gin.HandlerFunc {
+//	@Router			/classs [post]
+func (u *classHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
@@ -44,23 +44,20 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		var body models.CampusCreate
+		var body models.ClassCreate
 
-		campusCreate, err := request.ValidateJSON(body, ctx)
+		classCreate, err := request.ValidateJSON(body, ctx)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
 			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
-		campus := &models.Campus{
-			Name:     campusCreate.Name,
-			Code:     campusCreate.Code,
-			Location: campusCreate.Location,
-			SchoolId: campusCreate.SchoolId,
+		class := &models.Class{
+			Name:   classCreate.Name,
+			PathId: classCreate.PathId,
 		}
-
-		campusDb, err := u.campusUseCase.Create(user, campus)
+		classDb, err := u.classUseCase.Create(user, class)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -68,22 +65,22 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, campusDb)
+		ctx.JSON(http.StatusCreated, classDb)
 	}
 }
 
 // Read
 //
-//	@Summary		Get all campus
-//	@Description	Get all campus
-//	@Tags			Campus
+//	@Summary		Get all class
+//	@Description	Get all class
+//	@Tags			Class
 //	@Produce		json
-//	@Success		200	{object}	[]models.Campus
+//	@Success		200	{object}	[]models.Class
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/campuss [get]
-func (u *campusHandlers) GetAll() gin.HandlerFunc {
+//	@Router			/classs [get]
+func (u *classHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		campuss, err := u.campusUseCase.GetAll()
+		classs, err := u.classUseCase.GetAll()
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -91,23 +88,23 @@ func (u *campusHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, campuss)
+		ctx.JSON(http.StatusOK, classs)
 	}
 }
 
 // Read
 //
-//	@Summary		Get campus by id
-//	@Description	Get campus by id
-//	@Tags			Campus
+//	@Summary		Get class by id
+//	@Description	Get class by id
+//	@Tags			Class
 //	@Produce		json
 //	@Param			id	path		int	true	"id"
-//	@Success		200	{object}	models.Campus
+//	@Success		200	{object}	models.Class
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [get]
-func (u *campusHandlers) GetById() gin.HandlerFunc {
+//	@Router			/classs/{id} [get]
+func (u *classHandlers) GetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
@@ -118,7 +115,7 @@ func (u *campusHandlers) GetById() gin.HandlerFunc {
 			return
 		}
 
-		campus, err := u.campusUseCase.GetById(uint(idInt))
+		class, err := u.classUseCase.GetById(uint(idInt))
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -126,24 +123,24 @@ func (u *campusHandlers) GetById() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, campus)
+		ctx.JSON(http.StatusOK, class)
 	}
 }
 
 // Update
 //
-//	@Summary		Update campus
-//	@Description	Update campus
-//	@Tags			Campus
+//	@Summary		Update class
+//	@Description	Update class
+//	@Tags			Class
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int					true	"id"
-//	@Param			campus	body		models.CampusUpdate	true	"Campus infos"
-//	@Success		201		{object}	models.Campus
+//	@Param			class	body		models.ClassUpdate	true	"Class infos"
+//	@Success		201		{object}	models.Class
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [put]
-func (u *campusHandlers) Update() gin.HandlerFunc {
+//	@Router			/classs/{id} [put]
+func (u *classHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
@@ -161,22 +158,20 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		var body models.CampusUpdate
+		var body models.ClassUpdate
 
-		campusUpdate, err := request.ValidateJSON(body, ctx)
+		classUpdate, err := request.ValidateJSON(body, ctx)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
 			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
-		campus := &models.Campus{
-			Name:     campusUpdate.Name,
-			Code:     campusUpdate.Code,
-			Location: campusUpdate.Location,
-			SchoolId: campusUpdate.SchoolId,
+		class := &models.Class{
+			Name:   classUpdate.Name,
+			PathId: classUpdate.PathId,
 		}
-		campusDb, err := u.campusUseCase.Update(user, uint(idInt), campus)
+		classDb, err := u.classUseCase.Update(user, uint(idInt), class)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -184,23 +179,23 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, campusDb)
+		ctx.JSON(http.StatusOK, classDb)
 	}
 }
 
 // Delete
 //
-//	@Summary		Delete campus by id
-//	@Description	Delete campus by id
-//	@Tags			Campus
+//	@Summary		Delete class by id
+//	@Description	Delete class by id
+//	@Tags			Class
 //	@Produce		json
 //	@Param			id	path		int	true	"id"
 //	@Success		200	{object}	nil
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		400	{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [delete]
-func (u *campusHandlers) Delete() gin.HandlerFunc {
+//	@Router			/classs/{id} [delete]
+func (u *classHandlers) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
@@ -218,7 +213,7 @@ func (u *campusHandlers) Delete() gin.HandlerFunc {
 			return
 		}
 
-		err = u.campusUseCase.Delete(user, uint(idInt))
+		err = u.classUseCase.Delete(user, uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
