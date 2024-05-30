@@ -127,6 +127,59 @@ func (u *classHandlers) GetById() gin.HandlerFunc {
 	}
 }
 
+// Add
+//
+//	@Summary		Add student to class
+//	@Description	Add student to class
+//	@Tags			Class
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int					true	"id"
+//	@Param			class	body		models.ClassAdd	true	"Student infos"
+//	@Success		201		{object}	models.Class
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/classs/{id}/add [put]
+func (u *classHandlers) Add() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		var body models.ClassAdd
+
+		classAdd, err := request.ValidateJSON(body, ctx)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		classDb, err := u.classUseCase.Add(user, uint(idInt), &classAdd)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, classDb)
+	}
+}
+
 // Update
 //
 //	@Summary		Update class

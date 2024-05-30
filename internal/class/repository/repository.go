@@ -25,7 +25,7 @@ func (r *classRepo) Create(class *models.Class) (*models.Class, error) {
 func (r *classRepo) GetAll() (*[]models.Class, error) {
 	var classs []models.Class
 
-	if err := r.db.Find(&classs).Error; err != nil {
+	if err := r.db.Model(&models.Class{}).Preload("Students").Find(&classs).Error; err != nil {
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (r *classRepo) GetAll() (*[]models.Class, error) {
 func (r *classRepo) GetById(id uint) (*models.Class, error) {
 	var class models.Class
 
-	if err := r.db.First(&class, id).Error; err != nil {
+	if err := r.db.Model(&models.Class{}).Preload("Students").First(&class, id).Error; err != nil {
 		return nil, err
 	}
 

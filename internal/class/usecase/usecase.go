@@ -8,6 +8,7 @@ import (
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/path"
 	"github.com/esgi-challenge/backend/internal/school"
+	"github.com/esgi-challenge/backend/internal/user"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 )
@@ -16,16 +17,18 @@ type classUseCase struct {
 	classRepo  class.Repository
 	schoolRepo school.Repository
 	pathRepo   path.Repository
+	userRepo   user.Repository
 	cfg        *config.Config
 	logger     logger.Logger
 }
 
-func NewClassUseCase(cfg *config.Config, classRepo class.Repository, pathRepo path.Repository, schoolRepo school.Repository, logger logger.Logger) class.UseCase {
+func NewClassUseCase(cfg *config.Config, classRepo class.Repository, pathRepo path.Repository, schoolRepo school.Repository, userRepo user.Repository, logger logger.Logger) class.UseCase {
 	return &classUseCase{
 		cfg:        cfg,
 		classRepo:  classRepo,
 		pathRepo:   pathRepo,
 		schoolRepo: schoolRepo,
+		userRepo:   userRepo,
 		logger:     logger,
 	}
 }
@@ -59,6 +62,35 @@ func (u *classUseCase) GetAll() (*[]models.Class, error) {
 
 func (u *classUseCase) GetById(id uint) (*models.Class, error) {
 	return u.classRepo.GetById(id)
+}
+
+func (u *classUseCase) Add(user *models.User, id uint, addClass *models.ClassAdd) (*models.Class, error) {
+	student, err := u.userRepo.GetById(*addClass.UserId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	class, err := u.GetById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	contains := false
+
+	for _, k := range class.Students {
+		if k.ID == student.ID {
+			contains = true
+			break
+		}
+	}
+
+	if contains {
+		class.Students = append(class.Students, *student)
+	}
+
+	return u.Update(user, id, class)
 }
 
 func (u *classUseCase) Update(user *models.User, id uint, updatedClass *models.Class) (*models.Class, error) {
