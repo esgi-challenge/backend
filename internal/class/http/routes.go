@@ -6,6 +6,7 @@ import (
 )
 
 func SetupClassRoutes(classGroup *gin.RouterGroup, h class.Handlers) {
+	classGroup.POST("/:id/add", h.Add())
 	classGroup.POST("", h.Create())
 	classGroup.GET("", h.GetAll())
 	classGroup.GET("/:id", h.GetById())
