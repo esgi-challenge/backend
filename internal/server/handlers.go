@@ -11,6 +11,9 @@ import (
 
 	authHttp "github.com/esgi-challenge/backend/internal/auth/http"
 	authUseCase "github.com/esgi-challenge/backend/internal/auth/usecase"
+	campusHttp "github.com/esgi-challenge/backend/internal/campus/http"
+	campusRepo "github.com/esgi-challenge/backend/internal/campus/repository"
+	campusUseCase "github.com/esgi-challenge/backend/internal/campus/usecase"
 	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
 	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
 	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
@@ -27,18 +30,21 @@ func (s *Server) SetupHandlers() error {
 	exampleRepo := exampleRepo.NewExampleRepository(s.psqlDB)
 	userRepo := userRepo.NewUserRepository(s.psqlDB)
 	schoolRepo := schoolRepo.NewSchoolRepository(s.psqlDB)
+	campusRepo := campusRepo.NewCampusRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
 	userUseCase := userUseCase.NewUserUseCase(userRepo, s.cfg, s.logger)
 	schoolUseCase := schoolUseCase.NewSchoolUseCase(s.cfg, schoolRepo, userRepo, s.logger)
 	authUseCase := authUseCase.NewAuthUseCase(s.cfg, userRepo, s.logger)
+	campusUseCase := campusUseCase.NewCampusUseCase(s.cfg, campusRepo, schoolRepo, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
 	userHandlers := userHttp.NewUserHandlers(userUseCase, s.cfg, s.logger)
 	schoolHandlers := schoolHttp.NewSchoolHandlers(s.cfg, schoolUseCase, s.logger)
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, authUseCase, s.logger)
+	campusHandlers := campusHttp.NewCampusHandlers(s.cfg, campusUseCase, s.logger)
 
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
 
@@ -51,11 +57,13 @@ func (s *Server) SetupHandlers() error {
 	userGroup := api.Group("/users")
 	schoolGroup := api.Group("/schools")
 	authGroup := api.Group("/auth")
+	campusGroup := api.Group("/campus")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
 	schoolHttp.SetupSchoolRoutes(schoolGroup, schoolHandlers)
 	authHttp.SetupAuthRoutes(authGroup, authHandlers)
+	campusHttp.SetupCampusRoutes(campusGroup, campusHandlers)
 
 	health := api.Group("/healthz")
 	health.GET("", healthHandler())

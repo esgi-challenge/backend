@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/esgi-challenge/backend/internal/campus/mock"
 	"github.com/esgi-challenge/backend/internal/models"
-	"github.com/esgi-challenge/backend/internal/school/mock"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -28,30 +28,30 @@ func TestCreate(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewSchoolHandlers(nil, mockUseCase, logger)
+	handlers := NewCampusHandlers(nil, mockUseCase, logger)
 
-	school := &models.SchoolCreate{
+	campus := &models.CampusCreate{
 		Title:       "longtitle",
 		Description: "description",
 	}
 
-	body, err := json.Marshal(school)
+	body, err := json.Marshal(campus)
 	if err != nil {
 		t.Fatalf("Failed to marshal JSON: %v", err)
 	}
 
 	t.Run("Create request", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/api/schools", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/campuss", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Request = req
 
-		expectedSchool := &models.School{
+		expectedCampus := &models.Campus{
 			Title:       "title",
 			Description: "description",
 		}
-		mockUseCase.EXPECT().Create(gomock.Any()).Return(expectedSchool, nil)
+		mockUseCase.EXPECT().Create(gomock.Any()).Return(expectedCampus, nil)
 
 		handler := handlers.Create()
 		handler(ctx)
@@ -60,17 +60,17 @@ func TestCreate(t *testing.T) {
 	})
 
 	t.Run("Create request bad body", func(t *testing.T) {
-		badSchool := &models.SchoolCreate{
+		badCampus := &models.CampusCreate{
 			Title:       "bad",
 			Description: "description",
 		}
 
-		body, err := json.Marshal(badSchool)
+		body, err := json.Marshal(badCampus)
 		if err != nil {
 			t.Fatalf("Failed to marshal JSON: %v", err)
 		}
 
-		req := httptest.NewRequest(http.MethodPost, "/api/schools", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/campuss", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	t.Run("Create request server error", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/api/schools", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/campuss", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
@@ -108,21 +108,21 @@ func TestGetById(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewSchoolHandlers(nil, mockUseCase, logger)
+	handlers := NewCampusHandlers(nil, mockUseCase, logger)
 
-	school := &models.School{
+	campus := &models.Campus{
 		Title:       "title",
 		Description: "description",
 	}
 
 	t.Run("Get by id request", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/schools/"+strconv.Itoa(int(school.ID)), nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/campuss/"+strconv.Itoa(int(campus.ID)), nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
-		ctx.Params = gin.Params{{Key: "id", Value: strconv.Itoa(int(school.ID))}}
+		ctx.Params = gin.Params{{Key: "id", Value: strconv.Itoa(int(campus.ID))}}
 		ctx.Request = req
 
-		mockUseCase.EXPECT().GetById(school.ID).Return(school, nil)
+		mockUseCase.EXPECT().GetById(campus.ID).Return(campus, nil)
 
 		handlerFunc := handlers.GetById()
 		handlerFunc(ctx)
@@ -131,7 +131,7 @@ func TestGetById(t *testing.T) {
 	})
 
 	t.Run("Get by id request wrong url param", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/schools/badParam", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/campuss/badParam", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "badParam"}}
@@ -144,7 +144,7 @@ func TestGetById(t *testing.T) {
 	})
 
 	t.Run("Get by id request not found", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/schools/10", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/campuss/10", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "10"}}
@@ -169,9 +169,9 @@ func TestGetAll(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewSchoolHandlers(nil, mockUseCase, logger)
+	handlers := NewCampusHandlers(nil, mockUseCase, logger)
 
-	schools := &[]models.School{
+	campuss := &[]models.Campus{
 		{
 			Title:       "title1",
 			Description: "description1",
@@ -183,12 +183,12 @@ func TestGetAll(t *testing.T) {
 	}
 
 	t.Run("Get all request", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/schools", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/campuss", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Request = req
 
-		mockUseCase.EXPECT().GetAll().Return(schools, nil)
+		mockUseCase.EXPECT().GetAll().Return(campuss, nil)
 
 		handlerFunc := handlers.GetAll()
 		handlerFunc(ctx)
@@ -197,7 +197,7 @@ func TestGetAll(t *testing.T) {
 	})
 
 	t.Run("Get all request server error", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/schools", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/campuss", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Request = req
@@ -221,31 +221,31 @@ func TestUpdate(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewSchoolHandlers(nil, mockUseCase, logger)
+	handlers := NewCampusHandlers(nil, mockUseCase, logger)
 
-	school := &models.SchoolUpdate{
+	campus := &models.CampusUpdate{
 		Title:       "longtitle",
 		Description: "description",
 	}
 
-	body, err := json.Marshal(school)
+	body, err := json.Marshal(campus)
 	if err != nil {
 		t.Fatalf("Failed to marshal JSON: %v", err)
 	}
 
 	t.Run("Update request", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPut, "/api/schools/1", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPut, "/api/campuss/1", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "1"}}
 		ctx.Request = req
 
-		expectedSchool := &models.School{
+		expectedCampus := &models.Campus{
 			Title:       "updated",
 			Description: "description",
 		}
-		mockUseCase.EXPECT().Update(uint(1), gomock.Any()).Return(expectedSchool, nil)
+		mockUseCase.EXPECT().Update(uint(1), gomock.Any()).Return(expectedCampus, nil)
 
 		handler := handlers.Update()
 		handler(ctx)
@@ -254,7 +254,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Update request wrong url param", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPut, "/api/schools/badParam", nil)
+		req := httptest.NewRequest(http.MethodPut, "/api/campuss/badParam", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "badParam"}}
@@ -267,17 +267,17 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Update request bad body", func(t *testing.T) {
-		badSchool := &models.SchoolUpdate{
+		badCampus := &models.CampusUpdate{
 			Title:       "bad",
 			Description: "description",
 		}
 
-		body, err := json.Marshal(badSchool)
+		body, err := json.Marshal(badCampus)
 		if err != nil {
 			t.Fatalf("Failed to marshal JSON: %v", err)
 		}
 
-		req := httptest.NewRequest(http.MethodPut, "/api/schools/1", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPut, "/api/campuss/1", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
@@ -291,7 +291,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Update request server error", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPut, "/api/schools/1", bytes.NewBuffer(body))
+		req := httptest.NewRequest(http.MethodPut, "/api/campuss/1", bytes.NewBuffer(body))
 		req.Header.Set("Content-type", "application/json")
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
@@ -317,10 +317,10 @@ func TestDelete(t *testing.T) {
 	logger := logger.NewLogger()
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
-	handlers := NewSchoolHandlers(nil, mockUseCase, logger)
+	handlers := NewCampusHandlers(nil, mockUseCase, logger)
 
 	t.Run("Delete request", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/api/schools/1", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/campuss/1", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "1"}}
@@ -335,7 +335,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Delete request wrong url param", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/api/schools/badParam", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/campuss/badParam", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "badParam"}}
@@ -348,7 +348,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Delete request not found", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/api/schools/10", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/campuss/10", nil)
 		res := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Params = gin.Params{{Key: "id", Value: "10"}}

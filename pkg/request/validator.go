@@ -63,7 +63,10 @@ func ValidateRole(secretKey string, ctx *gin.Context, role models.UserKind) (*mo
 	}
 
 	if user.UserKind < role {
-		return nil, errors.New("forbidden")
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusForbidden,
+			HttpError:  errorHandler.Forbidden.Error(),
+		}
 	}
 
 	return user, nil
