@@ -64,7 +64,7 @@ func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInv
 		Lastname:       schoolInvite.Lastname,
 		Firstname:      schoolInvite.Firstname,
 		InvitationCode: uuid.NewString(),
-		SchoolId:       school.ID,
+		SchoolId:       &school.ID,
 	})
 }
 

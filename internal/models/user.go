@@ -21,6 +21,6 @@ type User struct {
 	Password       string   `gorm:"column:password"`
 	InvitationCode string   `gorm:"column:invitationCode"`
 	UserKind       UserKind `gorm:"column:userKind"`
-	SchoolId       uint     `gorm:"column:schoolId"`
-	ClassRefer     uint
+	SchoolId       *uint    `gorm:"column:schoolId"`
+	ClassRefer     *uint
 }
