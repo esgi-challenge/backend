@@ -32,6 +32,10 @@ import (
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
+
+	scheduleHttp "github.com/esgi-challenge/backend/internal/schedule/http"
+	scheduleRepo "github.com/esgi-challenge/backend/internal/schedule/repository"
+	scheduleUseCase "github.com/esgi-challenge/backend/internal/schedule/usecase"
 )
 
 func (s *Server) SetupHandlers() error {
@@ -43,6 +47,7 @@ func (s *Server) SetupHandlers() error {
 	pathRepo := pathRepo.NewPathRepository(s.psqlDB)
 	classRepo := classRepo.NewClassRepository(s.psqlDB)
 	courseRepo := courseRepo.NewCourseRepository(s.psqlDB)
+	scheduleRepo := scheduleRepo.NewScheduleRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -53,6 +58,7 @@ func (s *Server) SetupHandlers() error {
 	pathUseCase := pathUseCase.NewPathUseCase(s.cfg, pathRepo, schoolRepo, s.logger)
 	classUseCase := classUseCase.NewClassUseCase(s.cfg, classRepo, pathRepo, schoolRepo, userRepo, s.logger)
 	courseUseCase := courseUseCase.NewCourseUseCase(s.cfg, courseRepo, pathRepo, schoolRepo, s.logger)
+	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -63,6 +69,7 @@ func (s *Server) SetupHandlers() error {
 	pathHandlers := pathHttp.NewPathHandlers(s.cfg, pathUseCase, s.logger)
 	classHandlers := classHttp.NewClassHandlers(s.cfg, classUseCase, s.logger)
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
+	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
 
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
 
@@ -79,6 +86,7 @@ func (s *Server) SetupHandlers() error {
 	pathGroup := api.Group("/path")
 	classGroup := api.Group("/classes")
 	courseGroup := api.Group("/courses")
+	schedulesGroup := api.Group("/schedules")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
@@ -88,6 +96,7 @@ func (s *Server) SetupHandlers() error {
 	pathHttp.SetupPathRoutes(pathGroup, pathHandlers)
 	classHttp.SetupClassRoutes(classGroup, classHandlers)
 	courseHttp.SetupCourseRoutes(courseGroup, courseHandlers)
+	scheduleHttp.SetupScheduleRoutes(schedulesGroup, scheduleHandlers)
 
 	health := api.Group("/healthz")
 	health.GET("", healthHandler())
