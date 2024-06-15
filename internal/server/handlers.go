@@ -17,6 +17,9 @@ import (
 	classHttp "github.com/esgi-challenge/backend/internal/class/http"
 	classRepo "github.com/esgi-challenge/backend/internal/class/repository"
 	classUseCase "github.com/esgi-challenge/backend/internal/class/usecase"
+	courseHttp "github.com/esgi-challenge/backend/internal/course/http"
+	courseRepo "github.com/esgi-challenge/backend/internal/course/repository"
+	courseUseCase "github.com/esgi-challenge/backend/internal/course/usecase"
 	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
 	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
 	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
@@ -39,6 +42,7 @@ func (s *Server) SetupHandlers() error {
 	campusRepo := campusRepo.NewCampusRepository(s.psqlDB)
 	pathRepo := pathRepo.NewPathRepository(s.psqlDB)
 	classRepo := classRepo.NewClassRepository(s.psqlDB)
+	courseRepo := courseRepo.NewCourseRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -48,6 +52,7 @@ func (s *Server) SetupHandlers() error {
 	campusUseCase := campusUseCase.NewCampusUseCase(s.cfg, campusRepo, schoolRepo, s.logger)
 	pathUseCase := pathUseCase.NewPathUseCase(s.cfg, pathRepo, schoolRepo, s.logger)
 	classUseCase := classUseCase.NewClassUseCase(s.cfg, classRepo, pathRepo, schoolRepo, userRepo, s.logger)
+	courseUseCase := courseUseCase.NewCourseUseCase(s.cfg, courseRepo, pathRepo, schoolRepo, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -57,6 +62,7 @@ func (s *Server) SetupHandlers() error {
 	campusHandlers := campusHttp.NewCampusHandlers(s.cfg, campusUseCase, s.logger)
 	pathHandlers := pathHttp.NewPathHandlers(s.cfg, pathUseCase, s.logger)
 	classHandlers := classHttp.NewClassHandlers(s.cfg, classUseCase, s.logger)
+	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
 
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
 
@@ -71,7 +77,8 @@ func (s *Server) SetupHandlers() error {
 	authGroup := api.Group("/auth")
 	campusGroup := api.Group("/campus")
 	pathGroup := api.Group("/path")
-	classGroup := api.Group("/class")
+	classGroup := api.Group("/classes")
+	courseGroup := api.Group("/courses")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
@@ -80,6 +87,7 @@ func (s *Server) SetupHandlers() error {
 	campusHttp.SetupCampusRoutes(campusGroup, campusHandlers)
 	pathHttp.SetupPathRoutes(pathGroup, pathHandlers)
 	classHttp.SetupClassRoutes(classGroup, classHandlers)
+	courseHttp.SetupCourseRoutes(courseGroup, courseHandlers)
 
 	health := api.Group("/healthz")
 	health.GET("", healthHandler())
