@@ -62,7 +62,7 @@ jobs:
             API_PORT=8080
             APP_ENV=PROD
             BASE_URL=0.0.0.0
-            JWT_TOKEN=${{ secrets.JWT_TOKEN }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
             PG_DBNAME=${{ secrets.PG_DBNAME }}
             PG_HOST=${{ secrets.PG_HOST }}
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
