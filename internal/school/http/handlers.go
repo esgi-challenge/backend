@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/school"
+	"github.com/esgi-challenge/backend/pkg/email"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -73,7 +74,7 @@ func (u *schoolHandlers) Create() gin.HandlerFunc {
 	}
 }
 
-// Invitie
+// Invite
 //
 //	@Summary		Invite a student to the school
 //	@Description	Invite a student to the school
@@ -126,6 +127,14 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 
 		schoolDb, err := u.schoolUseCase.Invite(user, school)
 
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		emailM := email.InitEmailManager(u.cfg.Smtp.Username, u.cfg.Smtp.Password, u.cfg.Smtp.Host)
+		err = emailM.SendInvitationEmail([]string{user.Email}, user.Firstname, user.Lastname)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())

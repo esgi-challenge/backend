@@ -60,7 +60,7 @@ jobs:
           region: europe-west1
           env_vars: |
             API_PORT=8080
-            APP_ENV=PREPROD
+            APP_ENV=PROD
             BASE_URL=0.0.0.0
             JWT_TOKEN=${{ secrets.JWT_TOKEN }}
             PG_DBNAME=${{ secrets.PG_DBNAME }}
@@ -68,4 +68,7 @@ jobs:
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
             PG_PORT=${{ secrets.PG_PORT }}
             PG_USER=${{ secrets.PG_USER }}
+            SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+            SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
             GIN_MODE=release
