@@ -21,3 +21,7 @@ func NewUserUseCase(userRepo user.Repository, cfg *config.Config, logger logger.
 func (u *userUseCase) Create(ctx *gin.Context, user *models.User) (*models.User, error) {
 	return u.userRepo.Create(user)
 }
+
+func (u *userUseCase) GetAll() (*[]models.User, error) {
+	return u.userRepo.GetAll()
+}

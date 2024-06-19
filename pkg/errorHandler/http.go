@@ -12,7 +12,7 @@ var (
 	NotFound            = errors.New("Not Found")
 	BadRequest          = errors.New("Bad Request")
 	BadURLParams        = errors.New("Invalid URL params")
-	Unauthorized        = errors.New("You need to login")
+	Unauthorized        = errors.New("Unauthorized")
 	Forbidden           = errors.New("You are not allowed to access this ressource")
 	BadBodyParams       = errors.New("Invalid Body params")
 	Conflict            = errors.New("Conflict")

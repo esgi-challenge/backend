@@ -9,12 +9,14 @@ import (
 )
 
 type Config struct {
-	Port    string `env:"API_PORT"`
-	BaseUrl string `env:"BASE_URL"`
+	Port          string `env:"API_PORT"`
+	BaseUrl       string `env:"BASE_URL"`
+	JwtSecret     string `env:"JWT_SECRET"`
+	AdminEmail    string `env:"ADMIN_EMAIL"`
+	AdminPassword string `env:"ADMIN_PASSWORD"`
 
-	JwtSecret string `env:"JWT_SECRET"`
-	Postgres  PostgresConfig
-	Smtp      SMTPConfig
+	Postgres PostgresConfig
+	Smtp     SMTPConfig
 }
 
 type PostgresConfig struct {
@@ -72,9 +74,11 @@ func LoadConfig(filePath string, env string) (*Config, error) {
 	}
 
 	config := &Config{
-		Port:      os.Getenv("API_PORT"),
-		BaseUrl:   os.Getenv("BASE_URL"),
-		JwtSecret: os.Getenv("JWT_SECRET"),
+		Port:          os.Getenv("API_PORT"),
+		BaseUrl:       os.Getenv("BASE_URL"),
+		AdminEmail:    os.Getenv("ADMIN_EMAIL"),
+		AdminPassword: os.Getenv("ADMIN_PASSWORD"),
+		JwtSecret:     os.Getenv("JWT_SECRET"),
 		Postgres: PostgresConfig{
 			Host:     os.Getenv("PG_HOST"),
 			Port:     os.Getenv("PG_PORT"),

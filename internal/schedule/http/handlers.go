@@ -31,9 +31,9 @@ func NewScheduleHandlers(cfg *config.Config, scheduleUseCase schedule.UseCase, l
 //	@Accept			json
 //	@Produce		json
 //	@Param			schedule	body		models.ScheduleCreate	true	"Schedule infos"
-//	@Success		201		{object}	models.Schedule
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201			{object}	models.Schedule
+//	@Failure		400			{object}	errorHandler.HttpErr
+//	@Failure		500			{object}	errorHandler.HttpErr
 //	@Router			/schedules [post]
 func (u *scheduleHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -150,11 +150,11 @@ func (u *scheduleHandlers) GetById() gin.HandlerFunc {
 //	@Tags			Schedule
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
+//	@Param			id			path		int						true	"id"
 //	@Param			schedule	body		models.ScheduleUpdate	true	"Schedule infos"
-//	@Success		201		{object}	models.Schedule
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201			{object}	models.Schedule
+//	@Failure		400			{object}	errorHandler.HttpErr
+//	@Failure		500			{object}	errorHandler.HttpErr
 //	@Router			/schedules/{id} [put]
 func (u *scheduleHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

@@ -33,7 +33,7 @@ func NewAuthHandlers(cfg *config.Config, authUseCase auth.UseCase, logger logger
 //	@Success		201		{object}	models.Auth
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/auth [post]
+//	@Router			/auth/login [post]
 func (u *authHandlers) Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var body models.AuthLogin

@@ -25,7 +25,12 @@ func (u *authUseCase) Login(payload *models.AuthLogin) (*models.Auth, error) {
 	user, err := u.userRepo.GetByEmail(payload.Email)
 
 	if err != nil {
-		return nil, errors.New("authentication unaccepted")
+		return nil, errors.New("Wrong email")
+	}
+
+	isPasswordGood := user.CheckPassword(payload.Password)
+	if !isPasswordGood {
+		return nil, errors.New("Wrong password")
 	}
 
 	token, err := jwt.Generate(u.cfg.JwtSecret, user)

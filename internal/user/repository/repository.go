@@ -22,6 +22,16 @@ func (r *userRepo) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
+func (r *userRepo) GetAll() (*[]models.User, error) {
+	var users []models.User
+
+	if err := r.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}
+
 func (r *userRepo) GetById(id uint) (*models.User, error) {
 	var user models.User
 

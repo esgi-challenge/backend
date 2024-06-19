@@ -1,13 +1,16 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 
 	_ "github.com/esgi-challenge/backend/docs"
 	"github.com/esgi-challenge/backend/internal/middleware"
+	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 
 	authHttp "github.com/esgi-challenge/backend/internal/auth/http"
 	authUseCase "github.com/esgi-challenge/backend/internal/auth/usecase"
@@ -100,6 +103,35 @@ func (s *Server) SetupHandlers() error {
 
 	health := api.Group("/healthz")
 	health.GET("", healthHandler())
+
+	s.logger.Info("Checking if admin existing...")
+	_, err := userRepo.GetByEmail(s.cfg.AdminEmail)
+
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		s.logger.Infof("There is no admin user, creating one...")
+		admin := &models.User{
+			Firstname: "admin",
+			Lastname:  "admin",
+			Email:     s.cfg.AdminEmail,
+			Password:  s.cfg.AdminPassword,
+			UserKind:  models.SUPERADMIN,
+		}
+		err := admin.HashPassword()
+		if err != nil {
+			s.logger.Fatalf("Admin error: %v", err)
+		}
+
+		_, err = userRepo.Create(admin)
+		if err != nil {
+			s.logger.Fatalf("Admin error: %v", err)
+		}
+
+		s.logger.Info("Admin user has been created !")
+	} else if err != nil {
+		s.logger.Fatalf("Admin error: %v", err)
+	} else {
+		s.logger.Info("Admin user already exist !")
+	}
 
 	return nil
 }

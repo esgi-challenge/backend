@@ -63,6 +63,8 @@ jobs:
             APP_ENV=PROD
             BASE_URL=0.0.0.0
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+            ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+            ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
             PG_DBNAME=${{ secrets.PG_DBNAME }}
             PG_HOST=${{ secrets.PG_HOST }}
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}

@@ -6,5 +6,5 @@ import (
 )
 
 func SetupUserRoutes(userGroup *gin.RouterGroup, h user.Handlers) {
-	userGroup.GET("", h.Create())
+	userGroup.GET("", h.GetAll())
 }

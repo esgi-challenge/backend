@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/esgi-challenge/backend/internal/schedule/mock"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/schedule/mock"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

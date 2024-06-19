@@ -7,4 +7,5 @@ import (
 
 type UseCase interface {
 	Create(ctx *gin.Context, user *models.User) (*models.User, error)
+	GetAll() (*[]models.User, error)
 }

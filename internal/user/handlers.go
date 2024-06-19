@@ -5,5 +5,5 @@ import (
 )
 
 type Handlers interface {
-	Create() gin.HandlerFunc
+	GetAll() gin.HandlerFunc
 }

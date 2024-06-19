@@ -1,12 +1,12 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/esgi-challenge/backend/config"
-	"github.com/esgi-challenge/backend/internal/models"
+	_ "github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/user"
+	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
@@ -21,21 +21,25 @@ func NewUserHandlers(userUseCase user.UseCase, cfg *config.Config, logger logger
 	return &userHandlers{userUseCase: userUseCase, cfg: cfg, logger: logger}
 }
 
-func (u *userHandlers) Create() gin.HandlerFunc {
+// Read
+//
+//	@Summary		Get all users
+//	@Description	Get all users
+//	@Tags			User
+//	@Produce		json
+//	@Success		200	{object}	[]models.User
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/users [get]
+func (u *userHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user := &models.User{
-			Firstname: "admin",
-			Lastname:  "admin",
-			Email:     "admin@admin.fr",
-			Password:  "password",
-			UserKind:  models.SUPERADMIN,
-		}
-		createdUser, err := u.userUseCase.Create(ctx, user)
-		if err != nil {
-			fmt.Print("Error")
-		}
-		fmt.Print(createdUser)
+		users, err := u.userUseCase.GetAll()
 
-		ctx.JSON(http.StatusOK, gin.H{"status": "OK"})
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, users)
 	}
 }

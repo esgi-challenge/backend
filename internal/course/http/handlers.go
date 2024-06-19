@@ -136,7 +136,7 @@ func (u *courseHandlers) GetById() gin.HandlerFunc {
 //	@Tags			Course
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
+//	@Param			id		path		int					true	"id"
 //	@Param			course	body		models.CourseUpdate	true	"Course infos"
 //	@Success		201		{object}	models.Course
 //	@Failure		400		{object}	errorHandler.HttpErr

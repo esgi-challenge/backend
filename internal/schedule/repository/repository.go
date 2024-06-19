@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/esgi-challenge/backend/internal/schedule"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/schedule"
 	"gorm.io/gorm"
 )
 

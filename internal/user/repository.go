@@ -6,6 +6,7 @@ import (
 
 type Repository interface {
 	Create(user *models.User) (*models.User, error)
+	GetAll() (*[]models.User, error)
 	GetById(id uint) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 }
