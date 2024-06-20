@@ -123,9 +123,10 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 			Lastname:  schoolInvite.Lastname,
 			Email:     schoolInvite.Email,
 			SchoolId:  uint(idInt),
+			Type:      schoolInvite.Type,
 		}
 
-		schoolDb, err := u.schoolUseCase.Invite(user, school)
+		invitedUser, err := u.schoolUseCase.Invite(user, school)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -134,14 +135,14 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 		}
 
 		emailM := email.InitEmailManager(u.cfg.Smtp.Username, u.cfg.Smtp.Password, u.cfg.Smtp.Host)
-		err = emailM.SendInvitationEmail([]string{user.Email}, user.Firstname, user.Lastname)
+		err = emailM.SendInvitationEmail([]string{invitedUser.Email}, invitedUser.Firstname, invitedUser.Lastname, invitedUser.InvitationCode)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, schoolDb)
+		ctx.JSON(http.StatusCreated, invitedUser)
 	}
 }
 

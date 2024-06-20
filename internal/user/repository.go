@@ -9,4 +9,5 @@ type Repository interface {
 	GetAll() (*[]models.User, error)
 	GetById(id uint) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
+	Update(id uint, user *models.User) (*models.User, error)
 }

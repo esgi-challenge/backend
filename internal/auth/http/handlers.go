@@ -22,7 +22,7 @@ func NewAuthHandlers(cfg *config.Config, authUseCase auth.UseCase, logger logger
 	return &authHandlers{cfg: cfg, authUseCase: authUseCase, logger: logger}
 }
 
-// Create
+// Login
 //
 //	@Summary		Log to the api
 //	@Description	Log to the api
@@ -30,7 +30,7 @@ func NewAuthHandlers(cfg *config.Config, authUseCase auth.UseCase, logger logger
 //	@Accept			json
 //	@Produce		json
 //	@Param			auth	body		models.AuthLogin	true	"Login Credentials"
-//	@Success		201		{object}	models.Auth
+//	@Success		200		{object}	models.Auth
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
 //	@Router			/auth/login [post]
@@ -58,7 +58,7 @@ func (u *authHandlers) Login() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, token)
+		ctx.JSON(http.StatusOK, token)
 	}
 }
 

@@ -50,3 +50,11 @@ func (r *userRepo) GetByEmail(email string) (*models.User, error) {
 
 	return user, nil
 }
+
+func (r *userRepo) Update(id uint, user *models.User) (*models.User, error) {
+	if err := r.db.Save(user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

@@ -46,6 +46,8 @@ func (u *schoolUseCase) Create(user *models.User, school *models.SchoolCreate) (
 }
 
 func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInvite) (*models.User, error) {
+	var userKind models.UserKind = models.STUDENT
+
 	school, err := u.schoolRepo.GetById(schoolInvite.SchoolId)
 
 	if err != nil {
@@ -59,12 +61,17 @@ func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInv
 		}
 	}
 
+	if schoolInvite.Type == "TEACHER" {
+		userKind = models.TEACHER
+	}
+
 	return u.userRepo.Create(&models.User{
 		Email:          schoolInvite.Email,
 		Lastname:       schoolInvite.Lastname,
 		Firstname:      schoolInvite.Firstname,
 		InvitationCode: uuid.NewString(),
 		SchoolId:       &school.ID,
+		UserKind:       userKind,
 	})
 }
 

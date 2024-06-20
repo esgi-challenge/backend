@@ -13,14 +13,19 @@ const (
 
 type User struct {
 	GormModel
-	Firstname      string   `json:"firstname" gorm:"column:firstname"`
-	Lastname       string   `json:"lastname" gorm:"column:lastname"`
-	Email          string   `json:"email" gorm:"column:email"`
-	Password       string   `json:"password" gorm:"column:password"`
-	InvitationCode string   `json:"invitationCode" gorm:"column:invitationCode"`
-	UserKind       UserKind `json:"userKind" gorm:"column:userKind"`
-	SchoolId       *uint    `json:"schoolId" gorm:"column:schoolId"`
-	ClassRefer     *uint    `json:"classRefer"`
+	Firstname         string   `json:"firstname" gorm:"column:firstname"`
+	Lastname          string   `json:"lastname" gorm:"column:lastname"`
+	Email             string   `json:"email" gorm:"column:email"`
+	Password          string   `json:"password" gorm:"column:password"`
+	InvitationCode    string   `json:"invitationCode" gorm:"column:invitationCode"`
+	PasswordResetCode string   `json:"passwordResetCode" gorm:"column:passwordResetCode"`
+	UserKind          UserKind `json:"userKind" gorm:"column:userKind"`
+	SchoolId          *uint    `json:"schoolId" gorm:"column:schoolId"`
+	ClassRefer        *uint    `json:"classRefer"`
+}
+
+type SendResetMail struct {
+	Email string `json:"email" binding:"required"`
 }
 
 func (u *User) HashPassword() error {

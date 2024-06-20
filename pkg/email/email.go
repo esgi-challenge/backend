@@ -8,6 +8,7 @@ import (
 )
 
 const port = "587"
+const baseUrl = "https://studies.com"
 
 type emailManager struct {
 	username string
@@ -32,7 +33,7 @@ func (e *emailManager) sendEmail(to []string, subject string, template *template
 	return smtp.SendMail(fmt.Sprintf("%s:%s", e.host, port), e.smtpAuth, e.username, to, body.Bytes())
 }
 
-func (e *emailManager) SendInvitationEmail(to []string, name string, lastname string) error {
+func (e *emailManager) SendInvitationEmail(to []string, name string, lastname string, invitationCode string) error {
 	t, err := template.ParseFiles("templates/emails/school-invitation.html")
 
 	if err != nil {
@@ -46,10 +47,31 @@ func (e *emailManager) SendInvitationEmail(to []string, name string, lastname st
 	}{
 		Name:           name,
 		Lastname:       lastname,
-		InvitationLink: "https://www.youtube.com/watch?v=xvFZjo5PgG0",
+		InvitationLink: fmt.Sprintf("%s/invite/%s", baseUrl, invitationCode),
 	}
 
 	err = e.sendEmail(to, "Studies Invitation", t, templateData)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *emailManager) SendResetEmail(to []string, resetCode string) error {
+	t, err := template.ParseFiles("templates/emails/reset-password.html")
+
+	if err != nil {
+		return err
+	}
+
+	templateData := struct {
+		ResetLink string
+	}{
+		ResetLink: fmt.Sprintf("%s/reset-password/%s", baseUrl, resetCode),
+	}
+
+	err = e.sendEmail(to, "Réinitialiser votre mot de passe", t, templateData)
 	if err != nil {
 		return err
 	}

@@ -16,6 +16,8 @@ type UserClaim struct {
 
 func Generate(secretKey string, user *models.User) (string, error) {
 	user.Password = ""
+	user.InvitationCode = ""
+	user.PasswordResetCode = ""
 
 	token := j.NewWithClaims(
 		j.SigningMethodHS256,

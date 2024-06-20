@@ -7,4 +7,5 @@ import (
 
 func SetupUserRoutes(userGroup *gin.RouterGroup, h user.Handlers) {
 	userGroup.GET("", h.GetAll())
+	userGroup.POST("/reset-link", h.SendResetMail())
 }
