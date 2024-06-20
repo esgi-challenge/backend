@@ -345,10 +345,13 @@ definitions:
         type: string
       schoolId:
         type: integer
+      type:
+        type: string
     required:
     - email
     - firstname
     - lastname
+    - type
     type: object
   github_com_esgi-challenge_backend_internal_models.User:
     properties:
@@ -369,6 +372,8 @@ definitions:
       lastname:
         type: string
       password:
+        type: string
+      passwordResetCode:
         type: string
       schoolId:
         type: integer
@@ -394,6 +399,62 @@ paths:
     post:
       consumes:
       - application/json
+      description: Reset User Password
+      parameters:
+      - description: Register Infos
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Auth'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Reset User Password
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Log to the api
+      parameters:
+      - description: Login Credentials
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Auth'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Log to the api
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
       description: Register to the api
       parameters:
       - description: Register Infos
@@ -416,34 +477,6 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Register to the api
-      tags:
-      - Auth
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: Log to the api
-      parameters:
-      - description: Login Credentials
-        in: body
-        name: auth
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Auth'
-        "400":
-          description: Bad Request
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Log to the api
       tags:
       - Auth
   /campuss:
@@ -1389,6 +1422,20 @@ paths:
             items:
               $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
             type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all users
+      tags:
+      - User
+  /users/reset-link:
+    post:
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
         "500":
           description: Internal Server Error
           schema: {}

@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/auth": {
             "post": {
-                "description": "Register to the api",
+                "description": "Reset User Password",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,7 +27,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register to the api",
+                "summary": "Reset User Password",
                 "parameters": [
                     {
                         "description": "Register Infos",
@@ -40,8 +40,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Auth"
                         }
@@ -78,6 +78,48 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.AuthLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Auth"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register to the api",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register to the api",
+                "parameters": [
+                    {
+                        "description": "Register Infos",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.AuthRegister"
                         }
                     }
                 ],
@@ -1498,6 +1540,27 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/reset-link": {
+            "post": {
+                "description": "Get all users",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1996,7 +2059,8 @@ const docTemplate = `{
             "required": [
                 "email",
                 "firstname",
-                "lastname"
+                "lastname",
+                "type"
             ],
             "properties": {
                 "email": {
@@ -2016,6 +2080,9 @@ const docTemplate = `{
                 },
                 "schoolId": {
                     "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -2047,6 +2114,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "passwordResetCode": {
                     "type": "string"
                 },
                 "schoolId": {

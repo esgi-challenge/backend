@@ -6,6 +6,6 @@ import (
 
 type UseCase interface {
 	Login(payload *models.AuthLogin) (*models.Auth, error)
-	Register(payload *models.AuthRegister) (*models.Auth, error)
+	Register(user *models.User) (*models.Auth, error)
 	ResetPassword(payload *models.AuthResetPassword) error
 }

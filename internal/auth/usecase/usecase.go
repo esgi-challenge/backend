@@ -44,15 +44,8 @@ func (u *authUseCase) Login(payload *models.AuthLogin) (*models.Auth, error) {
 	}, nil
 }
 
-func (u *authUseCase) Register(payload *models.AuthRegister) (*models.Auth, error) {
-
-	user, err := u.userRepo.Create(&models.User{
-		Lastname:  payload.Lastname,
-		Firstname: payload.Firstname,
-		Email:     payload.Email,
-		Password:  payload.Password,
-		UserKind:  models.ADMINISTRATOR,
-	})
+func (u *authUseCase) Register(user *models.User) (*models.Auth, error) {
+	user, err := u.userRepo.Create(user)
 
 	if err != nil {
 		return nil, err

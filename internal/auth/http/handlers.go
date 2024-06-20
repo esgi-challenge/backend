@@ -73,7 +73,7 @@ func (u *authHandlers) Login() gin.HandlerFunc {
 //	@Success		201		{object}	models.Auth
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/auth [post]
+//	@Router			/auth/register [post]
 func (u *authHandlers) Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var body models.AuthRegister
@@ -85,14 +85,21 @@ func (u *authHandlers) Register() gin.HandlerFunc {
 			return
 		}
 
-		payload := &models.AuthRegister{
+		user := &models.User{
 			Firstname: authRegister.Firstname,
 			Lastname:  authRegister.Lastname,
 			Email:     authRegister.Email,
 			Password:  authRegister.Password,
+      UserKind: models.ADMINISTRATOR,
 		}
+    err = user.HashPassword()
+    if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+    }
 
-		token, err := u.authUseCase.Register(payload)
+		token, err := u.authUseCase.Register(user)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
