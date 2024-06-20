@@ -103,3 +103,43 @@ func (u *authHandlers) Register() gin.HandlerFunc {
 		ctx.JSON(http.StatusCreated, token)
 	}
 }
+
+// Reset Password
+//
+//	@Summary		Reset User Password
+//	@Description	Reset User Password
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			auth	body		models.AuthRegister	true	"Register Infos"
+//	@Success		200		{object}	models.Auth
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/auth [post]
+func (u *authHandlers) ResetPassword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var body models.AuthResetPassword
+
+		authResetPassword, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		payload := &models.AuthResetPassword{
+			Code:     authResetPassword.Code,
+			Password: authResetPassword.Password,
+		}
+
+		err = u.authUseCase.ResetPassword(payload)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, nil)
+	}
+}

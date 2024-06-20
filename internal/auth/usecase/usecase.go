@@ -68,3 +68,24 @@ func (u *authUseCase) Register(payload *models.AuthRegister) (*models.Auth, erro
 		Token: token,
 	}, nil
 }
+
+func (u *authUseCase) ResetPassword(payload *models.AuthResetPassword) error {
+
+	user, err := u.userRepo.GetByResetCode(payload.Code)
+
+	if err != nil {
+		return err
+	}
+
+	user.Password = payload.Password
+	user.PasswordResetCode = ""
+	user.HashPassword()
+
+	_, err = u.userRepo.Update(user.ID, user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

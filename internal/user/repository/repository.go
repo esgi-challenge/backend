@@ -51,6 +51,15 @@ func (r *userRepo) GetByEmail(email string) (*models.User, error) {
 	return user, nil
 }
 
+func (r *userRepo) GetByResetCode(resetCode string) (*models.User, error) {
+	user := &models.User{}
+	if result := r.db.First(&user, "password_reset_code = ?", resetCode); result.Error != nil {
+		return nil, result.Error
+	}
+
+	return user, nil
+}
+
 func (r *userRepo) Update(id uint, user *models.User) (*models.User, error) {
 	if err := r.db.Save(user).Error; err != nil {
 		return nil, err

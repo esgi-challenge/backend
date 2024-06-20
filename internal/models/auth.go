@@ -12,6 +12,11 @@ type AuthRegister struct {
 	Lastname  string `json:"lastname" binding:"required"`
 }
 
+type AuthResetPassword struct {
+	Code     string `json:"code" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 type Auth struct {
 	Token string `json:"token" binding:"required"`
 }

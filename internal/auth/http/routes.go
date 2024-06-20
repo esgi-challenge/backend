@@ -8,4 +8,5 @@ import (
 func SetupAuthRoutes(schoolGroup *gin.RouterGroup, h auth.Handlers) {
 	schoolGroup.POST("/login", h.Login())
 	schoolGroup.POST("/register", h.Register())
+	schoolGroup.POST("/reset-password", h.ResetPassword())
 }
