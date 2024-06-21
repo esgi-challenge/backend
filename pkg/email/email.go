@@ -8,7 +8,7 @@ import (
 )
 
 const port = "587"
-const baseUrl = "https://studies.com"
+const baseUrl = "https://challenge-esgi-preprod-backend-23gkj46hpq-ew.a.run.app"
 
 type emailManager struct {
 	username string

@@ -17,7 +17,7 @@ type User struct {
 	Lastname          string   `json:"lastname" gorm:"column:lastname"`
 	Email             string   `json:"email" gorm:"column:email"`
 	Password          string   `json:"password" gorm:"column:password"`
-	InvitationCode    string   `json:"invitationCode" gorm:"column:invitationCode"`
+	InvitationCode    string   `json:"invitationCode" gorm:"column:invitation_code"`
 	PasswordResetCode string   `json:"passwordResetCode" gorm:"column:password_reset_code"`
 	UserKind          UserKind `json:"userKind" gorm:"column:userKind"`
 	SchoolId          *uint    `json:"schoolId" gorm:"column:schoolId"`

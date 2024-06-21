@@ -90,14 +90,14 @@ func (u *authHandlers) Register() gin.HandlerFunc {
 			Lastname:  authRegister.Lastname,
 			Email:     authRegister.Email,
 			Password:  authRegister.Password,
-      UserKind: models.ADMINISTRATOR,
+			UserKind:  models.ADMINISTRATOR,
 		}
-    err = user.HashPassword()
-    if err != nil {
+		err = user.HashPassword()
+		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
 			return
-    }
+		}
 
 		token, err := u.authUseCase.Register(user)
 
@@ -108,6 +108,46 @@ func (u *authHandlers) Register() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusCreated, token)
+	}
+}
+
+// Invitation Code
+//
+//	@Summary		Create Password With AuthCode
+//	@Description	Create Password With AuthCode
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			auth	body		models.AuthInvitationCode	true	"Register Infos"
+//	@Success		200		{object}	models.Auth
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/auth/invitation-code [post]
+func (u *authHandlers) InvitationCode() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var body models.AuthInvitationCode
+
+		authInvitationCode, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		payload := &models.AuthInvitationCode{
+			InvitationCode: authInvitationCode.InvitationCode,
+			Password:       authInvitationCode.Password,
+		}
+
+		token, err := u.authUseCase.InvitationCode(payload)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, token)
 	}
 }
 
@@ -147,6 +187,6 @@ func (u *authHandlers) ResetPassword() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, nil)
+		ctx.JSON(http.StatusNoContent, nil)
 	}
 }

@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/user"
 	"gorm.io/gorm"
@@ -15,6 +17,12 @@ func NewUserRepository(db *gorm.DB) user.Repository {
 }
 
 func (r *userRepo) Create(user *models.User) (*models.User, error) {
+	_, err := r.GetByEmail(user.Email)
+
+	if err != nil {
+		return nil, errors.New("this user already exist")
+	}
+
 	if err := r.db.Create(user).Error; err != nil {
 		return nil, err
 	}
@@ -54,6 +62,15 @@ func (r *userRepo) GetByEmail(email string) (*models.User, error) {
 func (r *userRepo) GetByResetCode(resetCode string) (*models.User, error) {
 	user := &models.User{}
 	if result := r.db.First(&user, "password_reset_code = ?", resetCode); result.Error != nil {
+		return nil, result.Error
+	}
+
+	return user, nil
+}
+
+func (r *userRepo) GetByInvitationCode(invitationCode string) (*models.User, error) {
+	user := &models.User{}
+	if result := r.db.First(&user, "invitation_code = ?", invitationCode); result.Error != nil {
 		return nil, result.Error
 	}
 

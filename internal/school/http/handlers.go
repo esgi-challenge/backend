@@ -45,11 +45,6 @@ func (u *schoolHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		if user.UserKind != models.ADMINISTRATOR {
-			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			return
-		}
-
 		var body models.SchoolCreate
 
 		schoolCreate, err := request.ValidateJSON(body, ctx)
@@ -91,11 +86,6 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
 		if user == nil || err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			return
-		}
-
-		if user.UserKind != models.ADMINISTRATOR {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}

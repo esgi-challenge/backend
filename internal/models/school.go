@@ -3,7 +3,7 @@ package models
 type School struct {
 	GormModel
 	Name   string `json:"name" gorm:"column:name"`
-	UserID uint   `gorm:"column:userId"`
+	UserID uint   `gorm:"column:userid"`
 }
 
 type SchoolCreate struct {
