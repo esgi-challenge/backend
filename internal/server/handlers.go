@@ -35,6 +35,7 @@ import (
 	userHttp "github.com/esgi-challenge/backend/internal/user/http"
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
+	wk "github.com/esgi-challenge/backend/internal/well-known"
 
 	scheduleHttp "github.com/esgi-challenge/backend/internal/schedule/http"
 	scheduleRepo "github.com/esgi-challenge/backend/internal/schedule/repository"
@@ -80,6 +81,7 @@ func (s *Server) SetupHandlers() error {
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := s.router.Group("/api")
+	wellknown := s.router.Group("/.well-known")
 
 	exampleGroup := api.Group("/examples")
 	userGroup := api.Group("/users")
@@ -100,6 +102,7 @@ func (s *Server) SetupHandlers() error {
 	classHttp.SetupClassRoutes(classGroup, classHandlers)
 	courseHttp.SetupCourseRoutes(courseGroup, courseHandlers)
 	scheduleHttp.SetupScheduleRoutes(schedulesGroup, scheduleHandlers)
+	wk.SetupPathRoutes(wellknown)
 
 	health := api.Group("/healthz")
 	health.GET("", healthHandler())
