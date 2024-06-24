@@ -15,7 +15,7 @@ type User struct {
 	GormModel
 	Firstname         string   `json:"firstname" gorm:"column:firstname"`
 	Lastname          string   `json:"lastname" gorm:"column:lastname"`
-	Email             string   `json:"email" gorm:"column:email"`
+	Email             string   `json:"email" gorm:"column:email;unique;not null"`
 	Password          string   `json:"password" gorm:"column:password"`
 	InvitationCode    string   `json:"invitationCode" gorm:"column:invitation_code"`
 	PasswordResetCode string   `json:"passwordResetCode" gorm:"column:password_reset_code"`

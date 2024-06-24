@@ -75,9 +75,11 @@ func (s *Server) SetupHandlers() error {
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
 	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
 
+	// Middlewares
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
 
 	s.router.Use(mw.RequestMiddleware())
+	s.router.Use(mw.CorsMiddleware())
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := s.router.Group("/api")

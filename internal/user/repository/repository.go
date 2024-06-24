@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/user"
@@ -17,13 +17,14 @@ func NewUserRepository(db *gorm.DB) user.Repository {
 }
 
 func (r *userRepo) Create(user *models.User) (*models.User, error) {
-	_, err := r.GetByEmail(user.Email)
+	userDb, _ := r.GetByEmail(user.Email)
 
-	if err != nil {
-		return nil, errors.New("this user already exist")
+	if userDb != nil {
+		return nil, gorm.ErrDuplicatedKey
 	}
 
 	if err := r.db.Create(user).Error; err != nil {
+		fmt.Print(err)
 		return nil, err
 	}
 
