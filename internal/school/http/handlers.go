@@ -147,7 +147,7 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 //	@Router			/schools [get]
 func (u *schoolHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
@@ -180,7 +180,7 @@ func (u *schoolHandlers) GetAll() gin.HandlerFunc {
 //	@Router			/schools/{id} [get]
 func (u *schoolHandlers) GetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
