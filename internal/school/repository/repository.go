@@ -59,3 +59,13 @@ func (r *schoolRepo) Delete(id uint) error {
 
 	return nil
 }
+
+func (r *schoolRepo) GetStudentsBySchoolID(schoolID uint) (*[]models.User, error) {
+    var students []models.User
+
+    if err := r.db.Where("school_id = ? AND user_kind = ?", schoolID, models.STUDENT).Find(&students).Error; err != nil {
+        return nil, err
+    }
+
+    return &students, nil
+}

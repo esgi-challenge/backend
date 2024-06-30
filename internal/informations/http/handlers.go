@@ -31,9 +31,9 @@ func NewInformationsHandlers(cfg *config.Config, informationsUseCase information
 //	@Accept			json
 //	@Produce		json
 //	@Param			informations	body		models.InformationsCreate	true	"Informations infos"
-//	@Success		201		{object}	models.Informations
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201				{object}	models.Informations
+//	@Failure		400				{object}	errorHandler.HttpErr
+//	@Failure		500				{object}	errorHandler.HttpErr
 //	@Router			/informationss [post]
 func (u *informationsHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -150,11 +150,11 @@ func (u *informationsHandlers) GetById() gin.HandlerFunc {
 //	@Tags			Informations
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
+//	@Param			id				path		int							true	"id"
 //	@Param			informations	body		models.InformationsUpdate	true	"Informations infos"
-//	@Success		201		{object}	models.Informations
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201				{object}	models.Informations
+//	@Failure		400				{object}	errorHandler.HttpErr
+//	@Failure		500				{object}	errorHandler.HttpErr
 //	@Router			/informationss/{id} [put]
 func (u *informationsHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

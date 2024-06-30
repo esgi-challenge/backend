@@ -147,12 +147,12 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 //	@Router			/schools [get]
 func (u *schoolHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+		// user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
-		if user == nil || err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			return
-		}
+		// if user == nil || err != nil {
+		// 	ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+		// 	return
+		// }
 
 		schools, err := u.schoolUseCase.GetAll()
 
@@ -205,6 +205,49 @@ func (u *schoolHandlers) GetById() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, school)
+	}
+}
+
+// Get students
+//
+//	@Summary		Get students by school id
+//	@Description	Get students by school id
+//	@Tags			School
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Success		200	{object}	[]models.User
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/schools/{id}/students [get]
+func (u *schoolHandlers) GetStudentsBySchoolID() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		_, err = u.schoolUseCase.GetById(uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		students, err := u.schoolUseCase.GetStudentsBySchoolID(uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, students)
 	}
 }
 

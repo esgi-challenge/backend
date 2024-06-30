@@ -10,4 +10,5 @@ type Handlers interface {
 	GetAll() gin.HandlerFunc
 	GetById() gin.HandlerFunc
 	Delete() gin.HandlerFunc
+  GetStudentsBySchoolID() gin.HandlerFunc
 }

@@ -100,3 +100,7 @@ func (u *schoolUseCase) Delete(user *models.User, id uint) error {
 
 	return u.schoolRepo.Delete(id)
 }
+
+func (u *schoolUseCase) GetStudentsBySchoolID(schoolID uint) (*[]models.User, error) {
+  return u.schoolRepo.GetStudentsBySchoolID(schoolID)
+}

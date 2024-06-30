@@ -10,4 +10,5 @@ type Repository interface {
 	GetAll() (*[]models.School, error)
 	GetById(id uint) (*models.School, error)
 	Delete(id uint) error
+  GetStudentsBySchoolID(schoolID uint) (*[]models.User, error)
 }
