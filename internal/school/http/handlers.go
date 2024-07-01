@@ -138,23 +138,40 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 
 // Read
 //
-//	@Summary		Get all school
-//	@Description	Get all school
+//	@Summary		Get by user
+//	@Description	Get by user
 //	@Tags			School
 //	@Produce		json
-//	@Success		200	{object}	[]models.School
+//	@Success		200	{object}	models.School
 //	@Failure		500	{object}	errorHandler.HttpErr
 //	@Router			/schools [get]
-func (u *schoolHandlers) GetAll() gin.HandlerFunc {
+func (u *schoolHandlers) GetByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
-		// if user == nil || err != nil {
-		// 	ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-		// 	return
-		// }
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+      u.logger.Warnf("Request: Unauthorized")
+			return
+		}
 
-		schools, err := u.schoolUseCase.GetAll()
+    var school *models.School
+
+    if user.UserKind == models.ADMINISTRATOR {
+		  school, err = u.schoolUseCase.GetByUser(user)
+      if err != nil {
+        ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+        u.logger.Warnf("Request: %v", err.Error())
+        return
+      }
+    } else if user.UserKind == models.STUDENT {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+      //implement getting school for student
+    } else {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+      u.logger.Warnf("Request: Unauthorized")
+			return
+    }
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -162,7 +179,7 @@ func (u *schoolHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, schools)
+		ctx.JSON(http.StatusOK, school)
 	}
 }
 
@@ -210,36 +227,25 @@ func (u *schoolHandlers) GetById() gin.HandlerFunc {
 
 // Get students
 //
-//	@Summary		Get students by school id
-//	@Description	Get students by school id
+//	@Summary		Get school students
+//	@Description	Get school students
 //	@Tags			School
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
 //	@Success		200	{object}	[]models.User
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/schools/{id}/students [get]
-func (u *schoolHandlers) GetStudentsBySchoolID() gin.HandlerFunc {
+//	@Router			/schools/students [get]
+func (u *schoolHandlers) GetSchoolStudents() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Params.ByName("id")
-		idInt, err := strconv.Atoi(id)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
-			u.logger.Infof("Request: %v", err.Error())
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}
 
-		_, err = u.schoolUseCase.GetById(uint(idInt))
-
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
-		students, err := u.schoolUseCase.GetStudentsBySchoolID(uint(idInt))
+		students, err := u.schoolUseCase.GetSchoolStudents(user.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))

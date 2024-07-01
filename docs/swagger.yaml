@@ -1633,15 +1633,9 @@ paths:
       summary: Invite a student to the school
       tags:
       - School
-  /schools/{id}/students:
+  /schools/students:
     get:
-      description: Get students by school id
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: integer
+      description: Get school students
       produces:
       - application/json
       responses:
@@ -1660,7 +1654,7 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Get students by school id
+      summary: Get school students
       tags:
       - School
   /users:

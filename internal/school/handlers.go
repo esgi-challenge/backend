@@ -7,8 +7,8 @@ import (
 type Handlers interface {
 	Create() gin.HandlerFunc
 	Invite() gin.HandlerFunc
-	GetAll() gin.HandlerFunc
+	GetByUser() gin.HandlerFunc
 	GetById() gin.HandlerFunc
 	Delete() gin.HandlerFunc
-  GetStudentsBySchoolID() gin.HandlerFunc
+  GetSchoolStudents() gin.HandlerFunc
 }

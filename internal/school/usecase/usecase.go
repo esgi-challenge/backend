@@ -83,6 +83,10 @@ func (u *schoolUseCase) GetById(id uint) (*models.School, error) {
 	return u.schoolRepo.GetById(id)
 }
 
+func (u *schoolUseCase) GetByUser(user *models.User) (*models.School, error) {
+	return u.schoolRepo.GetByUser(user)
+}
+
 func (u *schoolUseCase) Delete(user *models.User, id uint) error {
 	// Check not needed but added to handle a not found error because gorm do not return
 	// error if delete on a row that does not exist
@@ -101,6 +105,6 @@ func (u *schoolUseCase) Delete(user *models.User, id uint) error {
 	return u.schoolRepo.Delete(id)
 }
 
-func (u *schoolUseCase) GetStudentsBySchoolID(schoolID uint) (*[]models.User, error) {
-  return u.schoolRepo.GetStudentsBySchoolID(schoolID)
+func (u *schoolUseCase) GetSchoolStudents(adminID uint) (*[]models.User, error) {
+  return u.schoolRepo.GetSchoolStudentsByAdminID(adminID)
 }
