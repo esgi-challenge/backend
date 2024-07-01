@@ -10,5 +10,7 @@ type UseCase interface {
 
 	GetAll() (*[]models.School, error)
 	GetById(id uint) (*models.School, error)
+  GetByUser(user *models.User) (*models.School, error)
 	Delete(user *models.User, id uint) error
+  GetSchoolStudents(adminID uint) (*[]models.User, error)
 }

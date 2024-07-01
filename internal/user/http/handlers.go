@@ -46,6 +46,57 @@ func (u *userHandlers) GetAll() gin.HandlerFunc {
 	}
 }
 
+// Create
+//
+//	@Summary		Create user
+//	@Description	Create User
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user body		models.UserCreate	true	"User Infos"
+//	@Success		201		{object}	models.User
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/users [post]
+func (u *userHandlers) Create() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var body models.UserCreate
+
+		userCreate, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		user := &models.User{
+			Firstname: userCreate.Firstname,
+			Lastname:  userCreate.Lastname,
+			Email:     userCreate.Email,
+			Password:  userCreate.Password,
+			UserKind:  userCreate.UserKind,
+      SchoolId: userCreate.SchoolId,
+		}
+		err = user.HashPassword()
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		userDb, err := u.userUseCase.Create(user)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, userDb)
+	}
+}
+
+
 // Send Reset Mail
 //
 //	@Summary		Get all users
@@ -85,3 +136,4 @@ func (u *userHandlers) SendResetMail() gin.HandlerFunc {
 		ctx.JSON(http.StatusNoContent, nil)
 	}
 }
+
