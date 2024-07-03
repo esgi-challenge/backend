@@ -101,7 +101,7 @@ func (u *schoolHandlers) UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		studentDb, err := u.userUseCase.GetById(uint(idInt))
+		userDb, err := u.userUseCase.GetById(uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
@@ -110,7 +110,7 @@ func (u *schoolHandlers) UpdateUser() gin.HandlerFunc {
 
 		var body models.SchoolUserUpdate
 
-		studentUpdate, err := request.ValidateJSON(body, ctx)
+		userUpdate, err := request.ValidateJSON(body, ctx)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
 			u.logger.Infof("Request: %v", err.Error())
@@ -124,23 +124,23 @@ func (u *schoolHandlers) UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		if *studentDb.SchoolId != school.ID {
+		if *userDb.SchoolId != school.ID {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			u.logger.Info("Request: can't update user not from your school")
 			return
 		}
 
-		userUpdate := &models.User{
-			Firstname:  studentUpdate.Firstname,
-			Lastname:   studentUpdate.Lastname,
-			Email:      studentUpdate.Email,
-			SchoolId:   studentDb.SchoolId,
-			UserKind:   studentDb.UserKind,
-			Password:   studentDb.Password,
-			ClassRefer: studentDb.ClassRefer,
+		userUpdated := &models.User{
+			Firstname:  userUpdate.Firstname,
+			Lastname:   userUpdate.Lastname,
+			Email:      userUpdate.Email,
+			SchoolId:   userDb.SchoolId,
+			UserKind:   userDb.UserKind,
+			Password:   userDb.Password,
+			ClassRefer: userDb.ClassRefer,
 		}
 
-		updatedUser, err := u.userUseCase.Update(uint(idInt), userUpdate)
+		updatedUser, err := u.userUseCase.Update(uint(idInt), userUpdated)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -152,10 +152,10 @@ func (u *schoolHandlers) UpdateUser() gin.HandlerFunc {
 	}
 }
 
-// Add student
+// Add user
 //
-//	@Summary		Add a student to the school
-//	@Description	Add a student to the school
+//	@Summary		Add a user to the school
+//	@Description	Add a user to the school
 //	@Tags			School
 //	@Accept			json
 //	@Produce		json
@@ -163,7 +163,7 @@ func (u *schoolHandlers) UpdateUser() gin.HandlerFunc {
 //	@Success		201		{object}	models.User
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/schools/student [post]
+//	@Router			/schools/add/:kind [post]
 func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
@@ -172,6 +172,19 @@ func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}
+
+    kind := ctx.Params.ByName("kind")
+    var userKind models.UserKind
+
+    if kind == "student" {
+      userKind = models.STUDENT
+    } else if kind == "teacher" {
+      userKind = models.TEACHER
+    } else {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: Wrong kind")
+			return
+    }
 
 		var body models.SchoolUserCreate
 
@@ -195,7 +208,7 @@ func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 			Email:     studentCreate.Email,
 			Password:  studentCreate.Password,
 			SchoolId:  &school.ID,
-			UserKind:  0,
+			UserKind:  userKind,
 		}
 		err = userCreate.HashPassword()
 		if err != nil {
@@ -382,8 +395,8 @@ func (u *schoolHandlers) GetById() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/schools/students [get]
-func (u *schoolHandlers) GetSchoolStudents() gin.HandlerFunc {
+//	@Router			/users/{kind} [get]
+func (u *schoolHandlers) GetSchoolUsers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
@@ -391,8 +404,21 @@ func (u *schoolHandlers) GetSchoolStudents() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}
+
+    kind := ctx.Params.ByName("kind")
+    var userKind models.UserKind
+
+    if kind == "student" {
+      userKind = models.STUDENT
+    } else if kind == "teacher" {
+      userKind = models.TEACHER
+    } else {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: Wrong kind")
+			return
+    }
+
 		school, err := u.schoolUseCase.GetByUser(user)
-		students, err := u.schoolUseCase.GetSchoolStudents(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -400,7 +426,25 @@ func (u *schoolHandlers) GetSchoolStudents() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, students)
+    var users *[]models.User
+    var error error
+    if userKind == models.STUDENT {
+      users, error = u.schoolUseCase.GetSchoolStudents(school.ID)
+    } else if userKind == models.TEACHER {
+      users, error = u.schoolUseCase.GetSchoolTeachers(school.ID)
+    } else {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: Wrong kind")
+			return
+    }
+
+		if error != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", error.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, users)
 	}
 }
 
@@ -415,8 +459,8 @@ func (u *schoolHandlers) GetSchoolStudents() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		400	{object}	errorHandler.HttpErr
-//	@Router			/schools/student/{id} [delete]
-func (u *schoolHandlers) RemoveStudent() gin.HandlerFunc {
+//	@Router			/schools/{kind}/{id} [delete]
+func (u *schoolHandlers) RemoveUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
@@ -424,6 +468,19 @@ func (u *schoolHandlers) RemoveStudent() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}
+
+    kind := ctx.Params.ByName("kind")
+    var userKind models.UserKind
+
+    if kind == "student" {
+      userKind = models.STUDENT
+    } else if kind == "teacher" {
+      userKind = models.TEACHER
+    } else {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: Wrong kind")
+			return
+    }
 
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
@@ -441,7 +498,7 @@ func (u *schoolHandlers) RemoveStudent() gin.HandlerFunc {
 			return
 		}
 
-		err = u.schoolUseCase.RemoveStudent(uint(idInt), school)
+		err = u.schoolUseCase.RemoveUser(uint(idInt), userKind, school)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))

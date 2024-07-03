@@ -13,6 +13,7 @@ type UseCase interface {
 	GetByUser(user *models.User) (*models.School, error)
 	Delete(user *models.User, id uint) error
 	GetSchoolStudents(schoolId uint) (*[]models.User, error)
-	RemoveStudent(studentId uint, school *models.School) error
+	GetSchoolTeachers(schoolId uint) (*[]models.User, error)
+	RemoveUser(userId uint, userKind models.UserKind, school *models.School) error
 	AddUser(user *models.User) (*models.User, error)
 }
