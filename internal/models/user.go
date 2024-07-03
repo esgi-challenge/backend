@@ -25,12 +25,25 @@ type User struct {
 }
 
 type UserCreate struct {
-	Firstname         string   `json:"firstname"`
-	Lastname          string   `json:"lastname"`
-	Email             string   `json:"email"`
-	Password          string   `json:"password"`
-	UserKind          UserKind `json:"userKind"`
-	SchoolId          *uint    `json:"schoolId"`
+	Firstname string   `json:"firstname"`
+	Lastname  string   `json:"lastname"`
+	Email     string   `json:"email"`
+	Password  string   `json:"password"`
+	UserKind  UserKind `json:"userKind"`
+	SchoolId  *uint    `json:"schoolId"`
+}
+
+type SchoolUserCreate struct {
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
+type SchoolUserUpdate struct {
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Email     string `json:"email"`
 }
 
 type SendResetMail struct {

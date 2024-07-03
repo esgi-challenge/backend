@@ -85,3 +85,11 @@ func (r *userRepo) Update(id uint, user *models.User) (*models.User, error) {
 
 	return user, nil
 }
+
+func (r *userRepo) Delete(id uint) error {
+	if err := r.db.Debug().Delete(&models.User{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

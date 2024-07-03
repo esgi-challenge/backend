@@ -75,7 +75,7 @@ func (u *userHandlers) Create() gin.HandlerFunc {
 			Email:     userCreate.Email,
 			Password:  userCreate.Password,
 			UserKind:  userCreate.UserKind,
-      SchoolId: userCreate.SchoolId,
+			SchoolId:  userCreate.SchoolId,
 		}
 		err = user.HashPassword()
 		if err != nil {
@@ -95,7 +95,6 @@ func (u *userHandlers) Create() gin.HandlerFunc {
 		ctx.JSON(http.StatusCreated, userDb)
 	}
 }
-
 
 // Send Reset Mail
 //
@@ -136,4 +135,3 @@ func (u *userHandlers) SendResetMail() gin.HandlerFunc {
 		ctx.JSON(http.StatusNoContent, nil)
 	}
 }
-

@@ -73,7 +73,7 @@ func (s *Server) SetupHandlers() error {
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
 	userHandlers := userHttp.NewUserHandlers(userUseCase, s.cfg, s.logger)
-	schoolHandlers := schoolHttp.NewSchoolHandlers(s.cfg, schoolUseCase, s.logger)
+	schoolHandlers := schoolHttp.NewSchoolHandlers(s.cfg, schoolUseCase, userUseCase, s.logger)
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, authUseCase, s.logger)
 	campusHandlers := campusHttp.NewCampusHandlers(s.cfg, campusUseCase, s.logger)
 	pathHandlers := pathHttp.NewPathHandlers(s.cfg, pathUseCase, s.logger)

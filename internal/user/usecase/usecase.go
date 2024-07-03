@@ -26,6 +26,10 @@ func (u *userUseCase) GetAll() (*[]models.User, error) {
 	return u.userRepo.GetAll()
 }
 
+func (u *userUseCase) GetById(id uint) (*models.User, error) {
+	return u.userRepo.GetById(id)
+}
+
 func (u *userUseCase) SendResetMail(email string) (string, error) {
 	user, err := u.userRepo.GetByEmail(email)
 
@@ -43,4 +47,19 @@ func (u *userUseCase) SendResetMail(email string) (string, error) {
 	)
 
 	return resetCode, err
+}
+
+func (u *userUseCase) Update(id uint, updatedUser *models.User) (*models.User, error) {
+	// Temporary fix for known issue :
+	// https://github.com/go-gorm/gorm/issues/5724
+	//////////////////////////////////////
+	dbUser, err := u.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	updatedUser.CreatedAt = dbUser.CreatedAt
+	///////////////////////////////////////
+
+	updatedUser.ID = id
+	return u.userRepo.Update(id, updatedUser)
 }

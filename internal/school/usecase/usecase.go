@@ -45,6 +45,29 @@ func (u *schoolUseCase) Create(user *models.User, school *models.SchoolCreate) (
 	})
 }
 
+func (u *schoolUseCase) RemoveStudent(studentId uint, school *models.School) error {
+	students, err := u.schoolRepo.GetSchoolStudents(school.ID)
+	isInSchool := false
+
+	for _, v := range *students {
+		if v.ID == studentId {
+			isInSchool = true
+		}
+	}
+
+	if !isInSchool {
+		return gorm.ErrRecordNotFound
+	}
+
+	err = u.userRepo.Delete(studentId)
+
+	return err
+}
+
+func (u *schoolUseCase) AddUser(user *models.User) (*models.User, error) {
+	return u.userRepo.Create(user)
+}
+
 func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInvite) (*models.User, error) {
 	var userKind models.UserKind = models.STUDENT
 
@@ -105,6 +128,6 @@ func (u *schoolUseCase) Delete(user *models.User, id uint) error {
 	return u.schoolRepo.Delete(id)
 }
 
-func (u *schoolUseCase) GetSchoolStudents(adminID uint) (*[]models.User, error) {
-  return u.schoolRepo.GetSchoolStudentsByAdminID(adminID)
+func (u *schoolUseCase) GetSchoolStudents(schoolId uint) (*[]models.User, error) {
+	return u.schoolRepo.GetSchoolStudents(schoolId)
 }

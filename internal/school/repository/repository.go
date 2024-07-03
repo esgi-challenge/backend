@@ -60,17 +60,12 @@ func (r *schoolRepo) Delete(id uint) error {
 	return nil
 }
 
-func (r *schoolRepo) GetSchoolStudentsByAdminID(adminID uint) (*[]models.User, error) {
-    var students []models.User
-    var school models.School
+func (r *schoolRepo) GetSchoolStudents(schoolId uint) (*[]models.User, error) {
+	var students []models.User
 
-    if err := r.db.First(&school, "userid = ?", adminID).Error; err != nil {
-      return nil, err
-    }
+	if err := r.db.Where("school_id= ? AND user_kind = ?", schoolId, models.STUDENT).Find(&students).Error; err != nil {
+		return nil, err
+	}
 
-    if err := r.db.Where("school_id= ? AND user_kind = ?", school.ID, models.STUDENT).Find(&students).Error; err != nil {
-        return nil, err
-    }
-
-    return &students, nil
+	return &students, nil
 }
