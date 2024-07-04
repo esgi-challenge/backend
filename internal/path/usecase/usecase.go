@@ -44,7 +44,7 @@ func (u *pathUseCase) GetAll() (*[]models.Path, error) {
 }
 
 func (u *pathUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Path, error) {
-	return u.pathRepo.GetAll()
+	return u.pathRepo.GetAllBySchoolId(schoolId)
 }
 
 func (u *pathUseCase) GetById(id uint) (*models.Path, error) {

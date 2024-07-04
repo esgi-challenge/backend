@@ -362,7 +362,7 @@
                 }
             }
         },
-        "/classs": {
+        "/classes": {
             "get": {
                 "description": "Get all class",
                 "produces": [
@@ -429,7 +429,7 @@
                 }
             }
         },
-        "/classs/{id}": {
+        "/classes/{id}": {
             "get": {
                 "description": "Get class by id",
                 "produces": [
@@ -549,8 +549,8 @@
                 }
             }
         },
-        "/classs/{id}/add": {
-            "put": {
+        "/classes/{id}/add": {
+            "post": {
                 "description": "Add student to class",
                 "consumes": [
                     "application/json"
@@ -2128,6 +2128,9 @@
                     "type": "string"
                 },
                 "pathId": {
+                    "type": "integer"
+                },
+                "schoolId": {
                     "type": "integer"
                 },
                 "students": {

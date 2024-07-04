@@ -4,6 +4,7 @@ type Class struct {
 	GormModel
 	Name     string `json:"name" gorm:"column:name"`
 	PathId   uint   `json:"pathId" gorm:"column:pathId"`
+	SchoolId uint   `json:"schoolId" gorm:"column:school_id"`
 	Students []User `json:"students" gorm:"foreignKey:ClassRefer"`
 }
 

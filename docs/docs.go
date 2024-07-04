@@ -370,7 +370,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/classs": {
+        "/classes": {
             "get": {
                 "description": "Get all class",
                 "produces": [
@@ -437,7 +437,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/classs/{id}": {
+        "/classes/{id}": {
             "get": {
                 "description": "Get class by id",
                 "produces": [
@@ -557,8 +557,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/classs/{id}/add": {
-            "put": {
+        "/classes/{id}/add": {
+            "post": {
                 "description": "Add student to class",
                 "consumes": [
                     "application/json"
@@ -2136,6 +2136,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pathId": {
+                    "type": "integer"
+                },
+                "schoolId": {
                     "type": "integer"
                 },
                 "students": {
