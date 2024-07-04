@@ -32,6 +32,16 @@ func (r *classRepo) GetAll() (*[]models.Class, error) {
 	return &classs, nil
 }
 
+func (r *classRepo) GetAllBySchoolId(schoolId uint) (*[]models.Class, error) {
+	var classes []models.Class
+
+	if err := r.db.Model(&models.Class{}).Preload("Students").Where("school_id = ?", schoolId).Find(&classes).Error; err != nil {
+		return nil, err
+	}
+
+	return &classes, nil
+}
+
 func (r *classRepo) GetById(id uint) (*models.Class, error) {
 	var class models.Class
 

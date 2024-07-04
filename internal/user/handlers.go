@@ -7,5 +7,5 @@ import (
 type Handlers interface {
 	GetAll() gin.HandlerFunc
 	SendResetMail() gin.HandlerFunc
-  Create() gin.HandlerFunc
+	Create() gin.HandlerFunc
 }

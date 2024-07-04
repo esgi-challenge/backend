@@ -7,7 +7,8 @@ import (
 type UseCase interface {
 	Create(user *models.User, path *models.Path) (*models.Path, error)
 	GetAll() (*[]models.Path, error)
+	GetAllBySchoolId(schoolId uint) (*[]models.Path, error)
 	GetById(id uint) (*models.Path, error)
-	Update(user *models.User, id uint, updatedPath *models.Path) (*models.Path, error)
-	Delete(user *models.User, id uint) error
+	Update(id uint, updatedPath *models.Path) (*models.Path, error)
+	Delete(id uint) error
 }

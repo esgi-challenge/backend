@@ -32,6 +32,16 @@ func (r *pathRepo) GetAll() (*[]models.Path, error) {
 	return &paths, nil
 }
 
+func (r *pathRepo) GetAllBySchoolId(schoolId uint) (*[]models.Path, error) {
+	var paths []models.Path
+
+	if err := r.db.Where("school_id = ?", schoolId).Find(&paths).Error; err != nil {
+		return nil, err
+	}
+
+	return &paths, nil
+}
+
 func (r *pathRepo) GetById(id uint) (*models.Path, error) {
 	var path models.Path
 

@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/class"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -14,13 +15,14 @@ import (
 )
 
 type classHandlers struct {
-	cfg          *config.Config
-	classUseCase class.UseCase
-	logger       logger.Logger
+	cfg           *config.Config
+	classUseCase  class.UseCase
+	schoolUseCase school.UseCase
+	logger        logger.Logger
 }
 
-func NewClassHandlers(cfg *config.Config, classUseCase class.UseCase, logger logger.Logger) class.Handlers {
-	return &classHandlers{cfg: cfg, classUseCase: classUseCase, logger: logger}
+func NewClassHandlers(cfg *config.Config, classUseCase class.UseCase, schoolUseCase school.UseCase, logger logger.Logger) class.Handlers {
+	return &classHandlers{cfg: cfg, classUseCase: classUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -34,7 +36,7 @@ func NewClassHandlers(cfg *config.Config, classUseCase class.UseCase, logger log
 //	@Success		201		{object}	models.Class
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/classs [post]
+//	@Router			/classes [post]
 func (u *classHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
@@ -53,9 +55,17 @@ func (u *classHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		class := &models.Class{
-			Name:   classCreate.Name,
-			PathId: classCreate.PathId,
+			Name:     classCreate.Name,
+			PathId:   classCreate.PathId,
+			SchoolId: school.ID,
 		}
 		classDb, err := u.classUseCase.Create(user, class)
 
@@ -77,10 +87,24 @@ func (u *classHandlers) Create() gin.HandlerFunc {
 //	@Produce		json
 //	@Success		200	{object}	[]models.Class
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/classs [get]
+//	@Router			/classes [get]
 func (u *classHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		classs, err := u.classUseCase.GetAll()
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		class, err := u.classUseCase.GetAllBySchoolId(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -88,7 +112,7 @@ func (u *classHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, classs)
+		ctx.JSON(http.StatusOK, class)
 	}
 }
 
@@ -103,23 +127,37 @@ func (u *classHandlers) GetAll() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/classs/{id} [get]
+//	@Router			/classes/{id} [get]
 func (u *classHandlers) GetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Params.ByName("id")
-		idInt, err := strconv.Atoi(id)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
 		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
 
 		class, err := u.classUseCase.GetById(uint(idInt))
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if school.ID != class.SchoolId {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: You can't retrieve class not in your school")
 			return
 		}
 
@@ -139,15 +177,15 @@ func (u *classHandlers) GetById() gin.HandlerFunc {
 //	@Success		201		{object}	models.Class
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/classs/{id}/add [put]
+//	@Router			/classes/{id}/add [post]
 func (u *classHandlers) Add() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		// user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
-		if user == nil || err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			return
-		}
+		// if user == nil || err != nil {
+		// 	ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+		// 	return
+		// }
 
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
@@ -168,7 +206,7 @@ func (u *classHandlers) Add() gin.HandlerFunc {
 			return
 		}
 
-		classDb, err := u.classUseCase.Add(user, uint(idInt), &classAdd)
+		classDb, err := u.classUseCase.Add(uint(idInt), &classAdd)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -192,7 +230,7 @@ func (u *classHandlers) Add() gin.HandlerFunc {
 //	@Success		201		{object}	models.Class
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/classs/{id} [put]
+//	@Router			/classes/{id} [put]
 func (u *classHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
@@ -211,6 +249,26 @@ func (u *classHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		classDb, err := u.classUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if classDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to update class not on your school")
+			return
+		}
+
 		var body models.ClassUpdate
 
 		classUpdate, err := request.ValidateJSON(body, ctx)
@@ -221,10 +279,11 @@ func (u *classHandlers) Update() gin.HandlerFunc {
 		}
 
 		class := &models.Class{
-			Name:   classUpdate.Name,
-			PathId: classUpdate.PathId,
+			Name:     classUpdate.Name,
+			PathId:   classUpdate.PathId,
+			SchoolId: classDb.SchoolId,
 		}
-		classDb, err := u.classUseCase.Update(user, uint(idInt), class)
+		updatedClass, err := u.classUseCase.Update(uint(idInt), class)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -232,7 +291,7 @@ func (u *classHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, classDb)
+		ctx.JSON(http.StatusOK, updatedClass)
 	}
 }
 
@@ -247,7 +306,7 @@ func (u *classHandlers) Update() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		400	{object}	errorHandler.HttpErr
-//	@Router			/classs/{id} [delete]
+//	@Router			/classes/{id} [delete]
 func (u *classHandlers) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)

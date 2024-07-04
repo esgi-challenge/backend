@@ -56,6 +56,10 @@ func (u *classUseCase) Create(user *models.User, class *models.Class) (*models.C
 	return u.classRepo.Create(class)
 }
 
+func (u *classUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Class, error) {
+	return u.classRepo.GetAllBySchoolId(schoolId)
+}
+
 func (u *classUseCase) GetAll() (*[]models.Class, error) {
 	return u.classRepo.GetAll()
 }
@@ -64,7 +68,7 @@ func (u *classUseCase) GetById(id uint) (*models.Class, error) {
 	return u.classRepo.GetById(id)
 }
 
-func (u *classUseCase) Add(user *models.User, id uint, addClass *models.ClassAdd) (*models.Class, error) {
+func (u *classUseCase) Add(id uint, addClass *models.ClassAdd) (*models.Class, error) {
 	student, err := u.userRepo.GetById(*addClass.UserId)
 
 	if err != nil {
@@ -90,29 +94,10 @@ func (u *classUseCase) Add(user *models.User, id uint, addClass *models.ClassAdd
 		class.Students = append(class.Students, *student)
 	}
 
-	return u.Update(user, id, class)
+	return u.Update(id, class)
 }
 
-func (u *classUseCase) Update(user *models.User, id uint, updatedClass *models.Class) (*models.Class, error) {
-	path, err := u.pathRepo.GetById(updatedClass.PathId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if school.UserID != user.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  errorHandler.Forbidden.Error(),
-		}
-	}
-
+func (u *classUseCase) Update(id uint, updatedClass *models.Class) (*models.Class, error) {
 	// Temporary fix for known issue :
 	// https://github.com/go-gorm/gorm/issues/5724
 	//////////////////////////////////////
@@ -120,25 +105,6 @@ func (u *classUseCase) Update(user *models.User, id uint, updatedClass *models.C
 
 	if err != nil {
 		return nil, err
-	}
-
-	path, err = u.pathRepo.GetById(dbClass.PathId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	school, err = u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if school.UserID != user.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  errorHandler.Forbidden.Error(),
-		}
 	}
 
 	updatedClass.CreatedAt = dbClass.CreatedAt

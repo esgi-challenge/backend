@@ -12,4 +12,5 @@ type Repository interface {
 	GetByInvitationCode(invitationCode string) (*models.User, error)
 	GetByResetCode(resetCode string) (*models.User, error)
 	Update(id uint, user *models.User) (*models.User, error)
+	Delete(id uint) error
 }
