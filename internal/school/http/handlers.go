@@ -173,18 +173,18 @@ func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 			return
 		}
 
-    kind := ctx.Params.ByName("kind")
-    var userKind models.UserKind
+		kind := ctx.Params.ByName("kind")
+		var userKind models.UserKind
 
-    if kind == "student" {
-      userKind = models.STUDENT
-    } else if kind == "teacher" {
-      userKind = models.TEACHER
-    } else {
+		if kind == "student" {
+			userKind = models.STUDENT
+		} else if kind == "teacher" {
+			userKind = models.TEACHER
+		} else {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
 			u.logger.Infof("Request: Wrong kind")
 			return
-    }
+		}
 
 		var body models.SchoolUserCreate
 
@@ -405,18 +405,18 @@ func (u *schoolHandlers) GetSchoolUsers() gin.HandlerFunc {
 			return
 		}
 
-    kind := ctx.Params.ByName("kind")
-    var userKind models.UserKind
+		kind := ctx.Params.ByName("kind")
+		var userKind models.UserKind
 
-    if kind == "student" {
-      userKind = models.STUDENT
-    } else if kind == "teacher" {
-      userKind = models.TEACHER
-    } else {
+		if kind == "student" {
+			userKind = models.STUDENT
+		} else if kind == "teacher" {
+			userKind = models.TEACHER
+		} else {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
 			u.logger.Infof("Request: Wrong kind")
 			return
-    }
+		}
 
 		school, err := u.schoolUseCase.GetByUser(user)
 
@@ -426,17 +426,17 @@ func (u *schoolHandlers) GetSchoolUsers() gin.HandlerFunc {
 			return
 		}
 
-    var users *[]models.User
-    var error error
-    if userKind == models.STUDENT {
-      users, error = u.schoolUseCase.GetSchoolStudents(school.ID)
-    } else if userKind == models.TEACHER {
-      users, error = u.schoolUseCase.GetSchoolTeachers(school.ID)
-    } else {
+		var users *[]models.User
+		var error error
+		if userKind == models.STUDENT {
+			users, error = u.schoolUseCase.GetSchoolStudents(school.ID)
+		} else if userKind == models.TEACHER {
+			users, error = u.schoolUseCase.GetSchoolTeachers(school.ID)
+		} else {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
 			u.logger.Infof("Request: Wrong kind")
 			return
-    }
+		}
 
 		if error != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -469,18 +469,18 @@ func (u *schoolHandlers) RemoveUser() gin.HandlerFunc {
 			return
 		}
 
-    kind := ctx.Params.ByName("kind")
-    var userKind models.UserKind
+		kind := ctx.Params.ByName("kind")
+		var userKind models.UserKind
 
-    if kind == "student" {
-      userKind = models.STUDENT
-    } else if kind == "teacher" {
-      userKind = models.TEACHER
-    } else {
+		if kind == "student" {
+			userKind = models.STUDENT
+		} else if kind == "teacher" {
+			userKind = models.TEACHER
+		} else {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
 			u.logger.Infof("Request: Wrong kind")
 			return
-    }
+		}
 
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)

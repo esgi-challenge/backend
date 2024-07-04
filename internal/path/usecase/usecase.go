@@ -43,35 +43,19 @@ func (u *pathUseCase) GetAll() (*[]models.Path, error) {
 	return u.pathRepo.GetAll()
 }
 
+func (u *pathUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Path, error) {
+	return u.pathRepo.GetAll()
+}
+
 func (u *pathUseCase) GetById(id uint) (*models.Path, error) {
 	return u.pathRepo.GetById(id)
 }
 
-func (u *pathUseCase) Update(user *models.User, id uint, updatedPath *models.Path) (*models.Path, error) {
-	school, err := u.schoolRepo.GetById(updatedPath.SchoolId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if school.UserID != user.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  "This school is not yours",
-		}
-	}
-
+func (u *pathUseCase) Update(id uint, updatedPath *models.Path) (*models.Path, error) {
 	// Temporary fix for known issue :
 	// https://github.com/go-gorm/gorm/issues/5724
 	//////////////////////////////////////
 	dbPath, err := u.GetById(id)
-
-	if dbPath.SchoolId != school.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusBadRequest,
-			HttpError:  errorHandler.BadRequest.Error(),
-		}
-	}
 
 	if err != nil {
 		return nil, err
@@ -83,25 +67,6 @@ func (u *pathUseCase) Update(user *models.User, id uint, updatedPath *models.Pat
 	return u.pathRepo.Update(id, updatedPath)
 }
 
-func (u *pathUseCase) Delete(user *models.User, id uint) error {
-	path, err := u.GetById(id)
-
-	if err != nil {
-		return err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return err
-	}
-
-	if school.UserID != user.ID {
-		return errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  "This school is not yours",
-		}
-	}
-
+func (u *pathUseCase) Delete(id uint) error {
 	return u.pathRepo.Delete(id)
 }

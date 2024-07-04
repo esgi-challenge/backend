@@ -1625,9 +1625,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/schools/student": {
+        "/schools/add/:kind": {
             "post": {
-                "description": "Add a student to the school",
+                "description": "Add a user to the school",
                 "consumes": [
                     "application/json"
                 ],
@@ -1637,7 +1637,7 @@ const docTemplate = `{
                 "tags": [
                     "School"
                 ],
-                "summary": "Add a student to the school",
+                "summary": "Add a user to the school",
                 "parameters": [
                     {
                         "description": "School infos",
@@ -1700,73 +1700,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove student from school",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "School"
-                ],
-                "summary": "Remove student from school",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/schools/students": {
-            "get": {
-                "description": "Get school students",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "School"
-                ],
-                "summary": "Get school students",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {}
                     },
                     "500": {
@@ -1891,6 +1824,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/schools/{kind}/{id}": {
+            "delete": {
+                "description": "Remove student from school",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "School"
+                ],
+                "summary": "Remove student from school",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "Get all users",
@@ -1971,6 +1938,41 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/users/{kind}": {
+            "get": {
+                "description": "Get school students",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "School"
+                ],
+                "summary": "Get school students",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -2390,17 +2392,17 @@ const docTemplate = `{
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
-                "description": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "longName": {
                     "type": "string"
                 },
                 "schoolId": {
                     "type": "integer"
+                },
+                "shortName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -2410,32 +2412,25 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.PathCreate": {
             "type": "object",
             "required": [
-                "name",
-                "schoolId"
+                "shortName"
             ],
             "properties": {
-                "description": {
+                "longName": {
                     "type": "string"
                 },
-                "name": {
+                "shortName": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },
         "github_com_esgi-challenge_backend_internal_models.PathUpdate": {
             "type": "object",
             "properties": {
-                "description": {
+                "longName": {
                     "type": "string"
                 },
-                "name": {
+                "shortName": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },

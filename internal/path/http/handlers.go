@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/path"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -14,13 +15,14 @@ import (
 )
 
 type pathHandlers struct {
-	cfg         *config.Config
-	pathUseCase path.UseCase
-	logger      logger.Logger
+	cfg           *config.Config
+	pathUseCase   path.UseCase
+	schoolUseCase school.UseCase
+	logger        logger.Logger
 }
 
-func NewPathHandlers(cfg *config.Config, pathUseCase path.UseCase, logger logger.Logger) path.Handlers {
-	return &pathHandlers{cfg: cfg, pathUseCase: pathUseCase, logger: logger}
+func NewPathHandlers(cfg *config.Config, pathUseCase path.UseCase, schoolUseCase school.UseCase, logger logger.Logger) path.Handlers {
+	return &pathHandlers{cfg: cfg, pathUseCase: pathUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -44,6 +46,13 @@ func (u *pathHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.PathCreate
 
 		pathCreate, err := request.ValidateJSON(body, ctx)
@@ -54,9 +63,9 @@ func (u *pathHandlers) Create() gin.HandlerFunc {
 		}
 
 		path := &models.Path{
-			Name:        pathCreate.Name,
-			Description: pathCreate.Description,
-			SchoolId:    pathCreate.SchoolId,
+			ShortName: pathCreate.ShortName,
+			LongName:  pathCreate.LongName,
+			SchoolId:  school.ID,
 		}
 		pathDb, err := u.pathUseCase.Create(user, path)
 
@@ -81,7 +90,21 @@ func (u *pathHandlers) Create() gin.HandlerFunc {
 //	@Router			/paths [get]
 func (u *pathHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		paths, err := u.pathUseCase.GetAll()
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		paths, err := u.pathUseCase.GetAllBySchoolId(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -159,6 +182,13 @@ func (u *pathHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.PathUpdate
 
 		pathUpdate, err := request.ValidateJSON(body, ctx)
@@ -168,12 +198,25 @@ func (u *pathHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		path := &models.Path{
-			Name:        pathUpdate.Name,
-			Description: pathUpdate.Description,
-			SchoolId:    pathUpdate.SchoolId,
+		pathDb, err := u.pathUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
 		}
-		pathDb, err := u.pathUseCase.Update(user, uint(idInt), path)
+
+		if pathDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to update path not on your school")
+			return
+		}
+
+		path := &models.Path{
+			ShortName: pathUpdate.ShortName,
+			LongName:  pathUpdate.LongName,
+			SchoolId:  pathDb.SchoolId,
+		}
+		updatedPath, err := u.pathUseCase.Update(uint(idInt), path)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -181,7 +224,7 @@ func (u *pathHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, pathDb)
+		ctx.JSON(http.StatusOK, updatedPath)
 	}
 }
 
@@ -209,13 +252,33 @@ func (u *pathHandlers) Delete() gin.HandlerFunc {
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		pathDb, err := u.pathUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if pathDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to update path not on your school")
+			return
+		}
+
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
 			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
-		err = u.pathUseCase.Delete(user, uint(idInt))
+		err = u.pathUseCase.Delete(uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())

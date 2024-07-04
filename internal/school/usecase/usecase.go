@@ -46,18 +46,18 @@ func (u *schoolUseCase) Create(user *models.User, school *models.SchoolCreate) (
 }
 
 func (u *schoolUseCase) RemoveUser(userId uint, userKind models.UserKind, school *models.School) error {
-  var users *[]models.User
-  var err error
-  if (userKind == models.STUDENT) {
-    users, err = u.schoolRepo.GetSchoolStudents(school.ID)
-  } else if (userKind == models.TEACHER) {
-    users, err = u.schoolRepo.GetSchoolTeachers(school.ID)
-  } else {
-    return gorm.ErrRecordNotFound
-  }
-  if err != nil {
-    return err
-  }
+	var users *[]models.User
+	var err error
+	if userKind == models.STUDENT {
+		users, err = u.schoolRepo.GetSchoolStudents(school.ID)
+	} else if userKind == models.TEACHER {
+		users, err = u.schoolRepo.GetSchoolTeachers(school.ID)
+	} else {
+		return gorm.ErrRecordNotFound
+	}
+	if err != nil {
+		return err
+	}
 
 	isInSchool := false
 
