@@ -165,6 +165,46 @@ func (u *classHandlers) GetById() gin.HandlerFunc {
 	}
 }
 
+// Get classless students
+//
+//	@Summary		Get school students without class
+//	@Description	Get school students without class
+//	@Tags			Class
+//	@Produce		json
+//	@Success		200	{object}	[]models.User
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/classes/students/empty [get]
+func (u *classHandlers) GetClassLessStudents() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		students, err := u.classUseCase.GetClassLessStudents(school.ID)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, students)
+	}
+}
+
 // Add
 //
 //	@Summary		Add student to class
@@ -180,12 +220,12 @@ func (u *classHandlers) GetById() gin.HandlerFunc {
 //	@Router			/classes/{id}/add [post]
 func (u *classHandlers) Add() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
-		// if user == nil || err != nil {
-		// 	ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-		// 	return
-		// }
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
 
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
@@ -215,6 +255,59 @@ func (u *classHandlers) Add() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, classDb)
+	}
+}
+
+// Remove
+//
+//	@Summary		Remove student form class
+//	@Description	Remove student from class
+//	@Tags			Class
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int					true	"id"
+//	@Param			class	body		models.ClassRemove	true	"Student infos"
+//	@Success		201		{object}	models.Class
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/classes/{id}/remove [delete]
+func (u *classHandlers) Remove() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		var body models.ClassRemove
+
+		classRemove, err := request.ValidateJSON(body, ctx)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		userRemoved, err := u.classUseCase.Remove(uint(idInt), &classRemove)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, userRemoved)
 	}
 }
 
@@ -291,7 +384,11 @@ func (u *classHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, updatedClass)
+		// retrieving again to preload all students if class had students
+		// because preloading does not work with update
+		updatedClassDb, err := u.classUseCase.GetById(updatedClass.ID)
+
+		ctx.JSON(http.StatusOK, updatedClassDb)
 	}
 }
 

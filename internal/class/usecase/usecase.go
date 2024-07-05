@@ -68,7 +68,7 @@ func (u *classUseCase) GetById(id uint) (*models.Class, error) {
 	return u.classRepo.GetById(id)
 }
 
-func (u *classUseCase) Add(id uint, addClass *models.ClassAdd) (*models.Class, error) {
+func (u *classUseCase) Add(id uint, addClass *models.ClassAdd) (*models.User, error) {
 	student, err := u.userRepo.GetById(*addClass.UserId)
 
 	if err != nil {
@@ -81,20 +81,31 @@ func (u *classUseCase) Add(id uint, addClass *models.ClassAdd) (*models.Class, e
 		return nil, err
 	}
 
-	contains := false
+	student.ClassRefer = &class.ID
 
-	for _, k := range class.Students {
-		if k.ID == student.ID {
-			contains = true
-			break
-		}
+	return u.userRepo.Update(student.ID, student)
+}
+
+func (u *classUseCase) Remove(id uint, removeClass *models.ClassRemove) (*models.User, error) {
+	student, err := u.userRepo.GetById(*removeClass.UserId)
+
+	if err != nil {
+		return nil, err
 	}
 
-	if contains {
-		class.Students = append(class.Students, *student)
+	_, err = u.GetById(id)
+
+	if err != nil {
+		return nil, err
 	}
 
-	return u.Update(id, class)
+	student.ClassRefer = nil
+
+	return u.userRepo.Update(student.ID, student)
+}
+
+func (u *classUseCase) GetClassLessStudents(schoolId uint) (*[]models.User, error) {
+	return u.classRepo.GetClassLessStudents(schoolId)
 }
 
 func (u *classUseCase) Update(id uint, updatedClass *models.Class) (*models.Class, error) {
@@ -144,6 +155,15 @@ func (u *classUseCase) Delete(user *models.User, id uint) error {
 
 	if err != nil {
 		return err
+	}
+
+	for _, student := range class.Students {
+		student.ClassRefer = nil
+
+		_, err := u.userRepo.Update(student.ID, &student)
+		if err != nil {
+			return err
+		}
 	}
 
 	return u.classRepo.Delete(id)

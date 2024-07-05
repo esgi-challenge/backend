@@ -437,6 +437,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/classes/students/empty": {
+            "get": {
+                "description": "Get school students without class",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Get school students without class",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/classes/{id}": {
             "get": {
                 "description": "Get class by id",
@@ -585,6 +620,55 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ClassAdd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/classes/{id}/remove": {
+            "delete": {
+                "description": "Remove student from class",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Remove student form class",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Student infos",
+                        "name": "class",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ClassRemove"
                         }
                     }
                 ],
@@ -2175,6 +2259,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pathId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.ClassRemove": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "userId": {
                     "type": "integer"
                 }
             }

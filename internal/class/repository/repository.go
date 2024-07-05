@@ -42,6 +42,16 @@ func (r *classRepo) GetAllBySchoolId(schoolId uint) (*[]models.Class, error) {
 	return &classes, nil
 }
 
+func (r *classRepo) GetClassLessStudents(schoolId uint) (*[]models.User, error) {
+	var students []models.User
+
+	if err := r.db.Where("school_id = ? AND user_kind = ? AND class_refer IS NULL", schoolId, models.STUDENT).Find(&students).Error; err != nil {
+		return nil, err
+	}
+
+	return &students, nil
+}
+
 func (r *classRepo) GetById(id uint) (*models.Class, error) {
 	var class models.Class
 

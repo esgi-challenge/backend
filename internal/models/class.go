@@ -18,6 +18,10 @@ type ClassAdd struct {
 	UserId *uint `json:"userId" binding:"required" `
 }
 
+type ClassRemove struct {
+	UserId *uint `json:"userId" binding:"required" `
+}
+
 type ClassUpdate struct {
 	Name   string `json:"name" binding:"required"`
 	PathId uint   `json:"pathId" binding:"required"`

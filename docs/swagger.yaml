@@ -131,6 +131,13 @@ definitions:
     - name
     - pathId
     type: object
+  github_com_esgi-challenge_backend_internal_models.ClassRemove:
+    properties:
+      userId:
+        type: integer
+    required:
+    - userId
+    type: object
   github_com_esgi-challenge_backend_internal_models.ClassUpdate:
     properties:
       name:
@@ -877,6 +884,63 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Add student to class
+      tags:
+      - Class
+  /classes/{id}/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove student from class
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Student infos
+        in: body
+        name: class
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ClassRemove'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Remove student form class
+      tags:
+      - Class
+  /classes/students/empty:
+    get:
+      description: Get school students without class
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get school students without class
       tags:
       - Class
   /courses:
