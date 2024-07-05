@@ -175,7 +175,7 @@
                 }
             }
         },
-        "/campuss": {
+        "/campus": {
             "get": {
                 "description": "Get all campus",
                 "produces": [
@@ -242,7 +242,7 @@
                 }
             }
         },
-        "/campuss/{id}": {
+        "/campus/{id}": {
             "get": {
                 "description": "Get campus by id",
                 "produces": [
@@ -2126,9 +2126,6 @@
         "github_com_esgi-challenge_backend_internal_models.Campus": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -2138,8 +2135,14 @@
                 "id": {
                     "type": "integer"
                 },
+                "latitude": {
+                    "type": "number"
+                },
                 "location": {
                     "type": "string"
+                },
+                "longitude": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -2156,21 +2159,20 @@
             "type": "object",
             "required": [
                 "location",
-                "name",
-                "schoolId"
+                "name"
             ],
             "properties": {
-                "code": {
-                    "type": "string"
+                "latitude": {
+                    "type": "number"
                 },
                 "location": {
                     "type": "string"
                 },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },
@@ -2178,21 +2180,20 @@
             "type": "object",
             "required": [
                 "location",
-                "name",
-                "schoolId"
+                "name"
             ],
             "properties": {
-                "code": {
-                    "type": "string"
+                "latitude": {
+                    "type": "number"
                 },
                 "location": {
                     "type": "string"
                 },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },

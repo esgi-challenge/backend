@@ -47,6 +47,10 @@ func (u *campusUseCase) GetById(id uint) (*models.Campus, error) {
 	return u.campusRepo.GetById(id)
 }
 
+func (u *campusUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Campus, error) {
+	return u.campusRepo.GetAllBySchoolId(schoolId)
+}
+
 func (u *campusUseCase) Update(user *models.User, id uint, updatedCampus *models.Campus) (*models.Campus, error) {
 	school, err := u.schoolRepo.GetById(updatedCampus.SchoolId)
 

@@ -10,17 +10,19 @@ import (
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/gin-gonic/gin"
 )
 
 type campusHandlers struct {
 	cfg           *config.Config
 	campusUseCase campus.UseCase
+  schoolUseCase school.UseCase
 	logger        logger.Logger
 }
 
-func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, logger logger.Logger) campus.Handlers {
-	return &campusHandlers{cfg: cfg, campusUseCase: campusUseCase, logger: logger}
+func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, schoolUseCase school.UseCase, logger logger.Logger) campus.Handlers {
+	return &campusHandlers{cfg: cfg, campusUseCase: campusUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -34,13 +36,20 @@ func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, logger 
 //	@Success		201		{object}	models.Campus
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/campuss [post]
+//	@Router			/campus [post]
 func (u *campusHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
@@ -55,9 +64,10 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 
 		campus := &models.Campus{
 			Name:     campusCreate.Name,
-			Code:     campusCreate.Code,
 			Location: campusCreate.Location,
-			SchoolId: campusCreate.SchoolId,
+			SchoolId: school.ID,
+      Latitude: campusCreate.Latitude,
+      Longitude: campusCreate.Longitude,
 		}
 
 		campusDb, err := u.campusUseCase.Create(user, campus)
@@ -80,10 +90,23 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 //	@Produce		json
 //	@Success		200	{object}	[]models.Campus
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/campuss [get]
+//	@Router			/campus [get]
 func (u *campusHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		campuss, err := u.campusUseCase.GetAll()
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+		campus, err := u.campusUseCase.GetAllBySchoolId(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -91,7 +114,7 @@ func (u *campusHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, campuss)
+		ctx.JSON(http.StatusOK, campus)
 	}
 }
 
@@ -106,7 +129,7 @@ func (u *campusHandlers) GetAll() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [get]
+//	@Router			/campus/{id} [get]
 func (u *campusHandlers) GetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Params.ByName("id")
@@ -142,13 +165,20 @@ func (u *campusHandlers) GetById() gin.HandlerFunc {
 //	@Success		201		{object}	models.Campus
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [put]
+//	@Router			/campus/{id} [put]
 func (u *campusHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
 			return
 		}
 
@@ -170,13 +200,27 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		campusDb, err := u.campusUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if campusDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to update campus not on your school")
+			return
+		}
+
 		campus := &models.Campus{
 			Name:     campusUpdate.Name,
-			Code:     campusUpdate.Code,
 			Location: campusUpdate.Location,
-			SchoolId: campusUpdate.SchoolId,
+      Latitude: campusUpdate.Latitude,
+      Longitude: campusUpdate.Longitude,
+			SchoolId: campusDb.SchoolId,
 		}
-		campusDb, err := u.campusUseCase.Update(user, uint(idInt), campus)
+		updatedCampus, err := u.campusUseCase.Update(user, uint(idInt), campus)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -184,7 +228,7 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, campusDb)
+		ctx.JSON(http.StatusOK, updatedCampus)
 	}
 }
 
@@ -199,7 +243,7 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 //	@Failure		400	{object}	errorHandler.HttpErr
 //	@Failure		404	{object}	errorHandler.HttpErr
 //	@Failure		400	{object}	errorHandler.HttpErr
-//	@Router			/campuss/{id} [delete]
+//	@Router			/campus/{id} [delete]
 func (u *campusHandlers) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
@@ -211,6 +255,26 @@ func (u *campusHandlers) Delete() gin.HandlerFunc {
 
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		campusDb, err := u.campusUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if campusDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to delete campus not on your school")
+			return
+		}
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())

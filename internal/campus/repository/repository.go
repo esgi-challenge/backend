@@ -32,6 +32,16 @@ func (r *campusRepo) GetAll() (*[]models.Campus, error) {
 	return &campuss, nil
 }
 
+func (r *campusRepo) GetAllBySchoolId(schoolId uint) (*[]models.Campus, error) {
+	var campus []models.Campus
+
+	if err := r.db.Where("school_id = ?", schoolId).Find(&campus).Error; err != nil {
+		return nil, err
+	}
+
+	return &campus, nil
+}
+
 func (r *campusRepo) GetById(id uint) (*models.Campus, error) {
 	var campus models.Campus
 

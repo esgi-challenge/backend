@@ -45,16 +45,18 @@ definitions:
     type: object
   github_com_esgi-challenge_backend_internal_models.Campus:
     properties:
-      code:
-        type: string
       createdAt:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: integer
+      latitude:
+        type: number
       location:
         type: string
+      longitude:
+        type: number
       name:
         type: string
       schoolId:
@@ -64,33 +66,31 @@ definitions:
     type: object
   github_com_esgi-challenge_backend_internal_models.CampusCreate:
     properties:
-      code:
-        type: string
+      latitude:
+        type: number
       location:
         type: string
+      longitude:
+        type: number
       name:
         type: string
-      schoolId:
-        type: integer
     required:
     - location
     - name
-    - schoolId
     type: object
   github_com_esgi-challenge_backend_internal_models.CampusUpdate:
     properties:
-      code:
-        type: string
+      latitude:
+        type: number
       location:
         type: string
+      longitude:
+        type: number
       name:
         type: string
-      schoolId:
-        type: integer
     required:
     - location
     - name
-    - schoolId
     type: object
   github_com_esgi-challenge_backend_internal_models.Class:
     properties:
@@ -599,7 +599,7 @@ paths:
       summary: Register to the api
       tags:
       - Auth
-  /campuss:
+  /campus:
     get:
       description: Get all campus
       produces:
@@ -644,7 +644,7 @@ paths:
       summary: Create new campus
       tags:
       - Campus
-  /campuss/{id}:
+  /campus/{id}:
     delete:
       description: Delete campus by id
       parameters:

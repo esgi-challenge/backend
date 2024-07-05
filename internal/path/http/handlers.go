@@ -268,7 +268,7 @@ func (u *pathHandlers) Delete() gin.HandlerFunc {
 
 		if pathDb.SchoolId != school.ID {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			u.logger.Infof("Request: Not allowed to update path not on your school")
+			u.logger.Infof("Request: Not allowed to delete path not on your school")
 			return
 		}
 

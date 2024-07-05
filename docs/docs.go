@@ -183,7 +183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/campuss": {
+        "/campus": {
             "get": {
                 "description": "Get all campus",
                 "produces": [
@@ -250,7 +250,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/campuss/{id}": {
+        "/campus/{id}": {
             "get": {
                 "description": "Get campus by id",
                 "produces": [
@@ -2134,9 +2134,6 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.Campus": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -2146,8 +2143,14 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "latitude": {
+                    "type": "number"
+                },
                 "location": {
                     "type": "string"
+                },
+                "longitude": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -2164,21 +2167,20 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "location",
-                "name",
-                "schoolId"
+                "name"
             ],
             "properties": {
-                "code": {
-                    "type": "string"
+                "latitude": {
+                    "type": "number"
                 },
                 "location": {
                     "type": "string"
                 },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },
@@ -2186,21 +2188,20 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "location",
-                "name",
-                "schoolId"
+                "name"
             ],
             "properties": {
-                "code": {
-                    "type": "string"
+                "latitude": {
+                    "type": "number"
                 },
                 "location": {
                     "type": "string"
                 },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 }
             }
         },
