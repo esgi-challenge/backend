@@ -10,4 +10,5 @@ type Handlers interface {
 	GetById() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc
+	GetLocationPrediction() gin.HandlerFunc
 }

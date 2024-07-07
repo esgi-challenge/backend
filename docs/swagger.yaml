@@ -278,6 +278,11 @@ definitions:
     - schoolId
     - title
     type: object
+  github_com_esgi-challenge_backend_internal_models.LocationInput:
+    properties:
+      input:
+        type: string
+    type: object
   github_com_esgi-challenge_backend_internal_models.Path:
     properties:
       createdAt:
@@ -724,6 +729,30 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Update campus
+      tags:
+      - Campus
+  /campus/gmap/location:
+    post:
+      consumes:
+      - application/json
+      description: get location suggestion
+      parameters:
+      - description: Location input
+        in: body
+        name: campus
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.LocationInput'
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get location suggestion
       tags:
       - Campus
   /classes:

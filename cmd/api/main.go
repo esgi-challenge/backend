@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/server"
 	"github.com/esgi-challenge/backend/pkg/database"
+	"github.com/esgi-challenge/backend/pkg/gmap"
 	"github.com/esgi-challenge/backend/pkg/logger"
 )
 
@@ -34,6 +35,11 @@ func main() {
 	logger.InitLogger()
 	log.Println("Logger: Initialized")
 
+	log.Println("Google Map: Init gmap manager...")
+	gmapApiManager := gmap.NewGmapApiManager()
+	gmapApiManager.InitGmapApiManager(config.GoogleMapApiKey)
+	log.Println("Goggle Map: Initialized")
+
 	logger.Info("Database: Init connection")
 	psqlDB, err := database.NewPostgresClient(config)
 	if err != nil {
@@ -41,7 +47,7 @@ func main() {
 	}
 	logger.Info("Database: Postgres connected")
 
-	s := server.NewServer(config, psqlDB, logger)
+	s := server.NewServer(config, psqlDB, logger, gmapApiManager)
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/esgi-challenge/backend/config"
+	"github.com/esgi-challenge/backend/pkg/gmap"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -19,18 +20,20 @@ const (
 )
 
 type Server struct {
-	router *gin.Engine
-	cfg    *config.Config
-	psqlDB *gorm.DB
-	logger logger.Logger
+	router         *gin.Engine
+	cfg            *config.Config
+	psqlDB         *gorm.DB
+	logger         logger.Logger
+	gmapApiManager *gmap.GmapApiManager
 }
 
-func NewServer(cfg *config.Config, psqlDB *gorm.DB, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, psqlDB *gorm.DB, logger logger.Logger, gmapApiManager *gmap.GmapApiManager) *Server {
 	return &Server{
-		router: gin.New(),
-		cfg:    cfg,
-		psqlDB: psqlDB,
-		logger: logger,
+		router:         gin.New(),
+		cfg:            cfg,
+		psqlDB:         psqlDB,
+		logger:         logger,
+		gmapApiManager: gmapApiManager,
 	}
 }
 

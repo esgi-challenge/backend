@@ -250,6 +250,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/campus/gmap/location": {
+            "post": {
+                "description": "get location suggestion",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campus"
+                ],
+                "summary": "Get location suggestion",
+                "parameters": [
+                    {
+                        "description": "Location input",
+                        "name": "campus",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.LocationInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/campus/{id}": {
             "get": {
                 "description": "Get campus by id",
@@ -2478,6 +2514,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.LocationInput": {
+            "type": "object",
+            "properties": {
+                "input": {
                     "type": "string"
                 }
             }

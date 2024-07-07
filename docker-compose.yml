@@ -20,6 +20,7 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_HOST: ${SMTP_HOST}
+      GMAP_API_KEY: ${GMAP_API_KEY}
 
   database:
     image: postgres:alpine

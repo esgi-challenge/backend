@@ -7,22 +7,64 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/campus"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
+	"github.com/esgi-challenge/backend/pkg/gmap"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
-	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/gin-gonic/gin"
 )
 
 type campusHandlers struct {
-	cfg           *config.Config
-	campusUseCase campus.UseCase
-  schoolUseCase school.UseCase
-	logger        logger.Logger
+	cfg            *config.Config
+	campusUseCase  campus.UseCase
+	schoolUseCase  school.UseCase
+	logger         logger.Logger
+	gmapApiManager *gmap.GmapApiManager
 }
 
-func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, schoolUseCase school.UseCase, logger logger.Logger) campus.Handlers {
-	return &campusHandlers{cfg: cfg, campusUseCase: campusUseCase, schoolUseCase: schoolUseCase, logger: logger}
+func NewCampusHandlers(cfg *config.Config, campusUseCase campus.UseCase, schoolUseCase school.UseCase, logger logger.Logger, gmapApiManager *gmap.GmapApiManager) campus.Handlers {
+	return &campusHandlers{cfg: cfg, campusUseCase: campusUseCase, schoolUseCase: schoolUseCase, logger: logger, gmapApiManager: gmapApiManager}
+}
+
+// Get location
+//
+//	@Summary		Get location suggestion
+//	@Description	get location suggestion
+//	@Tags			Campus
+//	@Accept			json
+//	@Produce		json
+//	@Param			campus	body		models.LocationInput true	"Location input"
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/campus/gmap/location [post]
+func (u *campusHandlers) GetLocationPrediction() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		var body models.LocationInput
+
+		input, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		locations, err := u.gmapApiManager.GetLocationAutocomplete(input.Input)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, locations)
+	}
 }
 
 // Create
@@ -63,11 +105,11 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 		}
 
 		campus := &models.Campus{
-			Name:     campusCreate.Name,
-			Location: campusCreate.Location,
-			SchoolId: school.ID,
-      Latitude: campusCreate.Latitude,
-      Longitude: campusCreate.Longitude,
+			Name:      campusCreate.Name,
+			Location:  campusCreate.Location,
+			SchoolId:  school.ID,
+			Latitude:  campusCreate.Latitude,
+			Longitude: campusCreate.Longitude,
 		}
 
 		campusDb, err := u.campusUseCase.Create(user, campus)
@@ -214,11 +256,11 @@ func (u *campusHandlers) Update() gin.HandlerFunc {
 		}
 
 		campus := &models.Campus{
-			Name:     campusUpdate.Name,
-			Location: campusUpdate.Location,
-      Latitude: campusUpdate.Latitude,
-      Longitude: campusUpdate.Longitude,
-			SchoolId: campusDb.SchoolId,
+			Name:      campusUpdate.Name,
+			Location:  campusUpdate.Location,
+			Latitude:  campusUpdate.Latitude,
+			Longitude: campusUpdate.Longitude,
+			SchoolId:  campusDb.SchoolId,
 		}
 		updatedCampus, err := u.campusUseCase.Update(user, uint(idInt), campus)
 
