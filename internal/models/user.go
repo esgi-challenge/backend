@@ -46,6 +46,17 @@ type SchoolUserUpdate struct {
 	Email     string `json:"email"`
 }
 
+type UpdateMe struct {
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Email     string `json:"email"`
+}
+
+type UpdatePasswordMe struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
 type SendResetMail struct {
 	Email string `json:"email" binding:"required"`
 }

@@ -435,6 +435,22 @@ definitions:
       lastname:
         type: string
     type: object
+  github_com_esgi-challenge_backend_internal_models.UpdateMe:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.UpdatePasswordMe:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    type: object
   github_com_esgi-challenge_backend_internal_models.User:
     properties:
       classRefer:
@@ -1820,6 +1836,62 @@ paths:
       summary: Update a student of the school
       tags:
       - School
+  /user/me:
+    put:
+      consumes:
+      - application/json
+      description: Update me
+      parameters:
+      - description: Me infos
+        in: body
+        name: path
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.UpdateMe'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update me
+      tags:
+      - Path
+  /user/me/password:
+    put:
+      consumes:
+      - application/json
+      description: Update me password
+      parameters:
+      - description: Me password
+        in: body
+        name: path
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.UpdatePasswordMe'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update me password
+      tags:
+      - Path
   /users:
     get:
       description: Get all users
@@ -1889,6 +1961,22 @@ paths:
       summary: Get school students
       tags:
       - School
+  /users/me:
+    get:
+      description: Get me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get me
+      tags:
+      - User
   /users/reset-link:
     post:
       description: Get all users

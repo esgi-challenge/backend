@@ -46,6 +46,168 @@ func (u *userHandlers) GetAll() gin.HandlerFunc {
 	}
 }
 
+// Read
+//
+//	@Summary		Get me
+//	@Description	Get me
+//	@Tags			User
+//	@Produce		json
+//	@Success		200	{object}	models.User
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/users/me [get]
+func (u *userHandlers) GetMe() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Info("Request: Unauthorized")
+			return
+		}
+
+		me, err := u.userUseCase.GetById(user.ID)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, me)
+	}
+}
+
+// Update password
+//
+//	@Summary		Update me password
+//	@Description	Update me password
+//	@Tags			Path
+//	@Accept			json
+//	@Produce		json
+//	@Param			path	body		models.UpdatePasswordMe	true	"Me password"
+//	@Success		201		{object}	models.User
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/user/me/password [put]
+func (u *userHandlers) UpdateMePassword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Info("Request: Unauthorized")
+			return
+		}
+
+		userDb, err := u.userUseCase.GetById(uint(user.ID))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		var body models.UpdatePasswordMe
+
+		mePasswordUpdate, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if !userDb.CheckPassword(mePasswordUpdate.OldPassword) {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Info("Request: Password don't match")
+			return
+		}
+
+		me := &models.User{
+			Firstname:  userDb.Firstname,
+			Lastname:   userDb.Lastname,
+			Email:      userDb.Email,
+			Password:   mePasswordUpdate.NewPassword,
+			UserKind:   userDb.UserKind,
+			SchoolId:   userDb.SchoolId,
+			ClassRefer: userDb.ClassRefer,
+		}
+
+		err = me.HashPassword()
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		updatedMe, err := u.userUseCase.Update(user.ID, me)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, updatedMe)
+	}
+}
+
+// Update
+//
+//	@Summary		Update me
+//	@Description	Update me
+//	@Tags			Path
+//	@Accept			json
+//	@Produce		json
+//	@Param			path	body		models.UpdateMe	true	"Me infos"
+//	@Success		201		{object}	models.User
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Router			/user/me [put]
+func (u *userHandlers) UpdateMe() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		userDb, err := u.userUseCase.GetById(uint(user.ID))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		var body models.UpdateMe
+
+		meUpdate, err := request.ValidateJSON(body, ctx)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		me := &models.User{
+			Firstname:  meUpdate.Firstname,
+			Lastname:   meUpdate.Lastname,
+			Email:      meUpdate.Email,
+			Password:   userDb.Password,
+			UserKind:   userDb.UserKind,
+			SchoolId:   userDb.SchoolId,
+			ClassRefer: userDb.ClassRefer,
+		}
+		updatedMe, err := u.userUseCase.Update(userDb.ID, me)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, updatedMe)
+	}
+}
+
 // Create
 //
 //	@Summary		Create user
