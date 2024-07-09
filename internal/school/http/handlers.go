@@ -398,7 +398,7 @@ func (u *schoolHandlers) GetById() gin.HandlerFunc {
 //	@Router			/users/{kind} [get]
 func (u *schoolHandlers) GetSchoolUsers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())

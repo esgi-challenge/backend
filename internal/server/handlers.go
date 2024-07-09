@@ -36,6 +36,9 @@ import (
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
 	wk "github.com/esgi-challenge/backend/internal/well-known"
+	chatHttp "github.com/esgi-challenge/backend/internal/chat/http"
+	chatRepo "github.com/esgi-challenge/backend/internal/chat/repository"
+	chatUseCase "github.com/esgi-challenge/backend/internal/chat/usecase"
 
 	scheduleHttp "github.com/esgi-challenge/backend/internal/schedule/http"
 	scheduleRepo "github.com/esgi-challenge/backend/internal/schedule/repository"
@@ -57,6 +60,7 @@ func (s *Server) SetupHandlers() error {
 	courseRepo := courseRepo.NewCourseRepository(s.psqlDB)
 	scheduleRepo := scheduleRepo.NewScheduleRepository(s.psqlDB)
 	informationsRepo := informationsRepo.NewInformationsRepository(s.psqlDB)
+	chatRepo := chatRepo.NewChatRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -69,6 +73,7 @@ func (s *Server) SetupHandlers() error {
 	courseUseCase := courseUseCase.NewCourseUseCase(s.cfg, courseRepo, pathRepo, schoolRepo, s.logger)
 	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, s.logger)
 	informationsUseCase := informationsUseCase.NewInformationsUseCase(s.cfg, informationsRepo, schoolRepo, s.logger)
+  chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -81,6 +86,7 @@ func (s *Server) SetupHandlers() error {
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
 	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
 	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
+  chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
 
 	// Middlewares
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
@@ -102,6 +108,7 @@ func (s *Server) SetupHandlers() error {
 	courseGroup := api.Group("/courses")
 	schedulesGroup := api.Group("/schedules")
 	informationsGroup := api.Group("/informations")
+	chatGroup := api.Group("/chats")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
@@ -113,6 +120,7 @@ func (s *Server) SetupHandlers() error {
 	courseHttp.SetupCourseRoutes(courseGroup, courseHandlers)
 	scheduleHttp.SetupScheduleRoutes(schedulesGroup, scheduleHandlers)
 	informationsHttp.SetupInformationsRoutes(informationsGroup, informationsHandlers)
+  chatHttp.SetupChatRoutes(chatGroup, chatHandlers)
 
 	wk.SetupPathRoutes(wellknown)
 

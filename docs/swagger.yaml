@@ -92,6 +92,36 @@ definitions:
     - location
     - name
     type: object
+  github_com_esgi-challenge_backend_internal_models.Channel:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      firstUser:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+      firstUserId:
+        type: integer
+      id:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Message'
+        type: array
+      secondUser:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+      secondUserId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.ChannelCreate:
+    properties:
+      firstUserId:
+        type: integer
+      secondUserId:
+        type: integer
+    type: object
   github_com_esgi-challenge_backend_internal_models.Class:
     properties:
       createdAt:
@@ -281,6 +311,23 @@ definitions:
   github_com_esgi-challenge_backend_internal_models.LocationInput:
     properties:
       input:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.Message:
+    properties:
+      channelId:
+        type: integer
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      senderId:
+        type: integer
+      updatedAt:
         type: string
     type: object
   github_com_esgi-challenge_backend_internal_models.Path:
@@ -771,6 +818,97 @@ paths:
       summary: Get location suggestion
       tags:
       - Campus
+  /chats/channel:
+    get:
+      description: Get all channels
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Channel'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all channels
+      tags:
+      - Chat
+    post:
+      consumes:
+      - application/json
+      description: create new channel
+      parameters:
+      - description: Channel infos
+        in: body
+        name: chat
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ChannelCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Channel'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new channel
+      tags:
+      - Chat
+  /chats/channel/{id}:
+    get:
+      description: Get channel by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Channel'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get channel by id
+      tags:
+      - Chat
+  /chats/students:
+    get:
+      description: Get all possible students chatter
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all possible students chatter
+      tags:
+      - Chat
   /classes:
     get:
       description: Get all class
