@@ -14,6 +14,14 @@ func NewChatRepository(db *gorm.DB) chat.Repository {
 	return &chatRepo{db: db}
 }
 
+func (r *chatRepo) SaveMessage(msg *models.Message) (*models.Message, error) {
+	if err := r.db.Create(msg).Error; err != nil {
+		return nil, err
+	}
+
+	return msg, nil
+}
+
 func (r *chatRepo) Create(channel *models.Channel) (*models.Channel, error) {
 	if err := r.db.Create(channel).Error; err != nil {
 		return nil, err

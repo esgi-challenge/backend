@@ -10,4 +10,5 @@ type Repository interface {
 	GetById(id uint) (*models.Course, error)
 	Update(id uint, course *models.Course) (*models.Course, error)
 	Delete(id uint) error
+	GetAllBySchoolId(schoolId uint) (*[]models.Course, error)
 }

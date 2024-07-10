@@ -57,11 +57,15 @@ func (u *courseUseCase) GetAll() (*[]models.Course, error) {
 	return u.courseRepo.GetAll()
 }
 
+func (u *courseUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Course, error) {
+	return u.courseRepo.GetAllBySchoolId(schoolId)
+}
+
 func (u *courseUseCase) GetById(id uint) (*models.Course, error) {
 	return u.courseRepo.GetById(id)
 }
 
-func (u *courseUseCase) Update(user *models.User, id uint, updatedCourse *models.Course) (*models.Course, error) {
+func (u *courseUseCase) Update(id uint, updatedCourse *models.Course) (*models.Course, error) {
 	// Temporary fix for known issue :
 	// https://github.com/go-gorm/gorm/issues/5724
 	//////////////////////////////////////
@@ -76,31 +80,6 @@ func (u *courseUseCase) Update(user *models.User, id uint, updatedCourse *models
 	return u.courseRepo.Update(id, updatedCourse)
 }
 
-func (u *courseUseCase) Delete(user *models.User, id uint) error {
-	course, err := u.GetById(id)
-
-	if err != nil {
-		return err
-	}
-
-	path, err := u.pathRepo.GetById(course.PathId)
-
-	if err != nil {
-		return err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return err
-	}
-
-	if school.UserID != user.ID {
-		return errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  "This course is not yours",
-		}
-	}
-
+func (u *courseUseCase) Delete(id uint) error {
 	return u.courseRepo.Delete(id)
 }

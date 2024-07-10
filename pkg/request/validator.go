@@ -71,3 +71,20 @@ func ValidateRole(secretKey string, ctx *gin.Context, role models.UserKind) (*mo
 
 	return user, nil
 }
+
+func ValidateRoleWithoutHeader(secretKey string, token string, role models.UserKind) (*models.User, error) {
+	user, err := jwt.DecryptToken(secretKey, token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user.UserKind < role {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusForbidden,
+			HttpError:  errorHandler.Forbidden.Error(),
+		}
+	}
+
+	return user, nil
+}
