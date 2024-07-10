@@ -51,6 +51,10 @@ import (
 	projectHttp "github.com/esgi-challenge/backend/internal/project/http"
 	projectRepo "github.com/esgi-challenge/backend/internal/project/repository"
 	projectUseCase "github.com/esgi-challenge/backend/internal/project/usecase"
+
+	documentHttp "github.com/esgi-challenge/backend/internal/document/http"
+	documentRepo "github.com/esgi-challenge/backend/internal/document/repository"
+	documentUseCase "github.com/esgi-challenge/backend/internal/document/usecase"
 )
 
 func (s *Server) SetupHandlers() error {
@@ -66,6 +70,7 @@ func (s *Server) SetupHandlers() error {
 	informationsRepo := informationsRepo.NewInformationsRepository(s.psqlDB)
 	chatRepo := chatRepo.NewChatRepository(s.psqlDB)
 	projectRepo := projectRepo.NewProjectRepository(s.psqlDB)
+	documentRepo := documentRepo.NewDocumentRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -79,7 +84,8 @@ func (s *Server) SetupHandlers() error {
 	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, s.logger)
 	informationsUseCase := informationsUseCase.NewInformationsUseCase(s.cfg, informationsRepo, schoolRepo, s.logger)
 	chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
-	projectsUseCase := projectUseCase.NewProjectUseCase(s.cfg, projectRepo, courseUseCase, classUseCase, s.logger)
+	documentUseCase := documentUseCase.NewDocumentUseCase(s.cfg, documentRepo, s.logger, *s.storage)
+	projectsUseCase := projectUseCase.NewProjectUseCase(s.cfg, projectRepo, courseUseCase, classUseCase, documentUseCase, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -94,6 +100,7 @@ func (s *Server) SetupHandlers() error {
 	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
 	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
 	projectHandlers := projectHttp.NewProjectHandlers(s.cfg, projectsUseCase, s.logger)
+	documentHandlers := documentHttp.NewDocumentHandlers(s.cfg, documentUseCase, s.logger)
 
 	// Middlewares
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
@@ -117,6 +124,7 @@ func (s *Server) SetupHandlers() error {
 	informationsGroup := api.Group("/informations")
 	chatGroup := api.Group("/chats")
 	projectGroup := api.Group("/projects")
+	documentGroup := api.Group("/documents")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
@@ -130,6 +138,7 @@ func (s *Server) SetupHandlers() error {
 	informationsHttp.SetupInformationsRoutes(informationsGroup, informationsHandlers)
 	chatHttp.SetupChatRoutes(chatGroup, chatHandlers)
 	projectHttp.SetupProjectRoutes(projectGroup, projectHandlers)
+	documentHttp.SetupDocumentRoutes(documentGroup, documentHandlers)
 
 	wk.SetupPathRoutes(wellknown)
 

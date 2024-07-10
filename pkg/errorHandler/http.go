@@ -95,3 +95,11 @@ func ForbiddenErrorResponse() (int, interface{}) {
 	}
 	return ParseError(err).Status(), ParseError(err)
 }
+
+func InternalServerErrorResponse() (int, interface{}) {
+	err := HttpError{
+		HttpStatus: http.StatusInternalServerError,
+		HttpError:  InternalServerError.Error(),
+	}
+	return ParseError(err).Status(), ParseError(err)
+}

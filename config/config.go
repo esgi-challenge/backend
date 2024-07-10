@@ -18,6 +18,9 @@ type Config struct {
 
 	Postgres PostgresConfig
 	Smtp     SMTPConfig
+
+	Bucket    string `env:"BUCKET"`
+	ProjectId string `env:"PROJECT_ID"`
 }
 
 type PostgresConfig struct {
@@ -81,6 +84,8 @@ func LoadConfig(filePath string, env string) (*Config, error) {
 		AdminPassword:   os.Getenv("ADMIN_PASSWORD"),
 		JwtSecret:       os.Getenv("JWT_SECRET"),
 		GoogleMapApiKey: os.Getenv("GMAP_API_KEY"),
+		Bucket:          os.Getenv("BUCKET"),
+		ProjectId:       os.Getenv("PROJECT_ID"),
 		Postgres: PostgresConfig{
 			Host:     os.Getenv("PG_HOST"),
 			Port:     os.Getenv("PG_PORT"),

@@ -9,6 +9,7 @@ import (
 	"github.com/esgi-challenge/backend/pkg/database"
 	"github.com/esgi-challenge/backend/pkg/gmap"
 	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/esgi-challenge/backend/pkg/storage"
 )
 
 // @title			Backend
@@ -46,8 +47,9 @@ func main() {
 		logger.Fatalf("Database: %s", err)
 	}
 	logger.Info("Database: Postgres connected")
+	gcs := storage.NewStorage(config, psqlDB, logger)
 
-	s := server.NewServer(config, psqlDB, logger, gmapApiManager)
+	s := server.NewServer(config, psqlDB, logger, gmapApiManager, gcs)
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}

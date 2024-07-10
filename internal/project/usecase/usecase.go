@@ -6,6 +6,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/class"
 	"github.com/esgi-challenge/backend/internal/course"
+	"github.com/esgi-challenge/backend/internal/document"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/project"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
@@ -13,25 +14,33 @@ import (
 )
 
 type projectUseCase struct {
-	projectRepo   project.Repository
-	courseUseCase course.UseCase
-	classUseCase  class.UseCase
-	cfg           *config.Config
-	logger        logger.Logger
+	projectRepo     project.Repository
+	courseUseCase   course.UseCase
+	classUseCase    class.UseCase
+	documentUseCase document.UseCase
+	cfg             *config.Config
+	logger          logger.Logger
 }
 
-func NewProjectUseCase(cfg *config.Config, projectRepo project.Repository, courseUseCase course.UseCase, classUseCase class.UseCase, logger logger.Logger) project.UseCase {
+func NewProjectUseCase(cfg *config.Config, projectRepo project.Repository, courseUseCase course.UseCase, classUseCase class.UseCase, documentUseCase document.UseCase, logger logger.Logger) project.UseCase {
 	return &projectUseCase{
-		cfg:           cfg,
-		projectRepo:   projectRepo,
-		courseUseCase: courseUseCase,
-		classUseCase:  classUseCase,
-		logger:        logger,
+		cfg:             cfg,
+		projectRepo:     projectRepo,
+		courseUseCase:   courseUseCase,
+		classUseCase:    classUseCase,
+		documentUseCase: documentUseCase,
+		logger:          logger,
 	}
 }
 
 func (u *projectUseCase) Create(user *models.User, project *models.Project) (*models.Project, error) {
 	_, err := u.courseUseCase.GetById(project.CourseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = u.documentUseCase.GetById(user, project.DocumentId)
 
 	if err != nil {
 		return nil, err

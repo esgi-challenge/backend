@@ -11,6 +11,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/pkg/gmap"
 	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/esgi-challenge/backend/pkg/storage"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -25,15 +26,17 @@ type Server struct {
 	psqlDB         *gorm.DB
 	logger         logger.Logger
 	gmapApiManager *gmap.GmapApiManager
+	storage        *storage.Storage
 }
 
-func NewServer(cfg *config.Config, psqlDB *gorm.DB, logger logger.Logger, gmapApiManager *gmap.GmapApiManager) *Server {
+func NewServer(cfg *config.Config, psqlDB *gorm.DB, logger logger.Logger, gmapApiManager *gmap.GmapApiManager, storage *storage.Storage) *Server {
 	return &Server{
 		router:         gin.New(),
 		cfg:            cfg,
 		psqlDB:         psqlDB,
 		logger:         logger,
 		gmapApiManager: gmapApiManager,
+		storage:        storage,
 	}
 }
 
