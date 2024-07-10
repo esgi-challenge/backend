@@ -14,13 +14,13 @@ import (
 )
 
 type chatHandlers struct {
-	cfg            *config.Config
+	cfg         *config.Config
 	chatUseCase chat.UseCase
-	logger         logger.Logger
+	logger      logger.Logger
 }
 
 func NewChatHandlers(cfg *config.Config, chatUseCase chat.UseCase, logger logger.Logger) chat.Handlers {
-  return &chatHandlers{cfg: cfg, chatUseCase: chatUseCase, logger: logger}
+	return &chatHandlers{cfg: cfg, chatUseCase: chatUseCase, logger: logger}
 }
 
 // Create
@@ -54,8 +54,8 @@ func (u *chatHandlers) Create() gin.HandlerFunc {
 		}
 
 		channel := &models.Channel{
-			FirstUserId:       channelCreate.FirstUserId,
-			SecondUserId:       channelCreate.SecondUserId,
+			FirstUserId:  channelCreate.FirstUserId,
+			SecondUserId: channelCreate.SecondUserId,
 		}
 		channelDb, err := u.chatUseCase.Create(channel)
 
@@ -200,4 +200,3 @@ func (u *chatHandlers) GetById() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, channel)
 	}
 }
-

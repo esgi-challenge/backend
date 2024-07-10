@@ -8,6 +8,6 @@ type Handlers interface {
 	Create() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
 	GetById() gin.HandlerFunc
-  GetAllStudentChatter() gin.HandlerFunc
-  GetAllTeacherChatter() gin.HandlerFunc
+	GetAllStudentChatter() gin.HandlerFunc
+	GetAllTeacherChatter() gin.HandlerFunc
 }

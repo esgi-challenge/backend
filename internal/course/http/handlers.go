@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/course"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -16,11 +17,12 @@ import (
 type courseHandlers struct {
 	cfg           *config.Config
 	courseUseCase course.UseCase
+	schoolUseCase school.UseCase
 	logger        logger.Logger
 }
 
-func NewCourseHandlers(cfg *config.Config, courseUseCase course.UseCase, logger logger.Logger) course.Handlers {
-	return &courseHandlers{cfg: cfg, courseUseCase: courseUseCase, logger: logger}
+func NewCourseHandlers(cfg *config.Config, courseUseCase course.UseCase, schoolUseCase school.UseCase, logger logger.Logger) course.Handlers {
+	return &courseHandlers{cfg: cfg, courseUseCase: courseUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -44,6 +46,13 @@ func (u *courseHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.CourseCreate
 
 		courseCreate, err := request.ValidateJSON(body, ctx)
@@ -58,7 +67,9 @@ func (u *courseHandlers) Create() gin.HandlerFunc {
 			Description: courseCreate.Description,
 			PathId:      *courseCreate.PathId,
 			TeacherId:   *courseCreate.TeacherId,
+			SchoolId:    school.ID,
 		}
+
 		courseDb, err := u.courseUseCase.Create(user, course)
 
 		if err != nil {
@@ -67,7 +78,15 @@ func (u *courseHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, courseDb)
+		// Retrieving to get the preload
+		courseWithPreload, err := u.courseUseCase.GetById(courseDb.ID)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, courseWithPreload)
 	}
 }
 
@@ -82,7 +101,21 @@ func (u *courseHandlers) Create() gin.HandlerFunc {
 //	@Router			/courses [get]
 func (u *courseHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		courses, err := u.courseUseCase.GetAll()
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		courses, err := u.courseUseCase.GetAllBySchoolId(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -160,6 +193,13 @@ func (u *courseHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.CourseUpdate
 
 		courseUpdate, err := request.ValidateJSON(body, ctx)
@@ -169,12 +209,27 @@ func (u *courseHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		courseDb, err := u.courseUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if courseDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to update course not on your school")
+			return
+		}
+
 		course := &models.Course{
+			Name:        courseDb.Name,
 			Description: courseUpdate.Description,
 			PathId:      *courseUpdate.PathId,
 			TeacherId:   *courseUpdate.TeacherId,
+			SchoolId:    courseDb.SchoolId,
 		}
-		courseDb, err := u.courseUseCase.Update(user, uint(idInt), course)
+		courseDb, err = u.courseUseCase.Update(uint(idInt), course)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -182,7 +237,15 @@ func (u *courseHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, courseDb)
+		// Retrieving to get the preload
+		courseWithPreload, err := u.courseUseCase.GetById(courseDb.ID)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, courseWithPreload)
 	}
 }
 
@@ -216,7 +279,27 @@ func (u *courseHandlers) Delete() gin.HandlerFunc {
 			return
 		}
 
-		err = u.courseUseCase.Delete(user, uint(idInt))
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		courseDb, err := u.courseUseCase.GetById(uint(idInt))
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		if courseDb.SchoolId != school.ID {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Infof("Request: Not allowed to delete course not on your school")
+			return
+		}
+
+		err = u.courseUseCase.Delete(uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())

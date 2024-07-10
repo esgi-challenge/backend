@@ -32,10 +32,20 @@ func (r *courseRepo) GetAll() (*[]models.Course, error) {
 	return &courses, nil
 }
 
+func (r *courseRepo) GetAllBySchoolId(schoolId uint) (*[]models.Course, error) {
+	var courses []models.Course
+
+	if err := r.db.Model(&models.Course{}).Preload("Teacher").Preload("Path").Where("school_id = ?", schoolId).Find(&courses).Error; err != nil {
+		return nil, err
+	}
+
+	return &courses, nil
+}
+
 func (r *courseRepo) GetById(id uint) (*models.Course, error) {
 	var course models.Course
 
-	if err := r.db.First(&course, id).Error; err != nil {
+	if err := r.db.Model(&models.Course{}).Preload("Teacher").Preload("Path").First(&course, id).Error; err != nil {
 		return nil, err
 	}
 

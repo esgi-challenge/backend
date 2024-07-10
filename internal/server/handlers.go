@@ -55,6 +55,8 @@ import (
 	documentHttp "github.com/esgi-challenge/backend/internal/document/http"
 	documentRepo "github.com/esgi-challenge/backend/internal/document/repository"
 	documentUseCase "github.com/esgi-challenge/backend/internal/document/usecase"
+
+	"github.com/esgi-challenge/backend/internal/websocket"
 )
 
 func (s *Server) SetupHandlers() error {
@@ -95,7 +97,7 @@ func (s *Server) SetupHandlers() error {
 	campusHandlers := campusHttp.NewCampusHandlers(s.cfg, campusUseCase, schoolUseCase, s.logger, s.gmapApiManager)
 	pathHandlers := pathHttp.NewPathHandlers(s.cfg, pathUseCase, schoolUseCase, s.logger)
 	classHandlers := classHttp.NewClassHandlers(s.cfg, classUseCase, schoolUseCase, s.logger)
-	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
+	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, schoolUseCase, s.logger)
 	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
 	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
 	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
@@ -125,6 +127,14 @@ func (s *Server) SetupHandlers() error {
 	chatGroup := api.Group("/chats")
 	projectGroup := api.Group("/projects")
 	documentGroup := api.Group("/documents")
+
+	websocketHandlers := &websocket.WebSocketHandler{
+		Cfg:         s.cfg,
+		ChatUseCase: chatUseCase,
+		Logger:      s.logger,
+	}
+	websocketGroup := api.Group("/ws/chat")
+	websocketGroup.GET("/:channelId", websocketHandlers.ChatHandler)
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)

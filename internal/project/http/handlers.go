@@ -206,10 +206,10 @@ func (u *projectHandlers) JoinProject() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Param			project	body		models.ProjectStudentCreate	true	"Join infos"
-//	@Success		200	{object}	nil
-//	@Failure		400	{object}	errorHandler.HttpErr
-//	@Failure		404	{object}	errorHandler.HttpErr
-//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Success		200		{object}	nil
+//	@Failure		400		{object}	errorHandler.HttpErr
+//	@Failure		404		{object}	errorHandler.HttpErr
+//	@Failure		400		{object}	errorHandler.HttpErr
 //	@Router			/projects/{id}/quit [post]
 func (u *projectHandlers) QuitProject() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -249,9 +249,9 @@ func (u *projectHandlers) QuitProject() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"id"
-//	@Success		201		{object}	models.Project
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201	{object}	models.Project
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
 //	@Router			/projects/{id} [put]
 func (u *projectHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
