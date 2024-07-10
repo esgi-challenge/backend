@@ -22,24 +22,32 @@ func (r *scheduleRepo) Create(schedule *models.Schedule) (*models.Schedule, erro
 	return schedule, nil
 }
 
-func (r *scheduleRepo) GetAll() (*[]models.Schedule, error) {
+func (r *scheduleRepo) Sign(scheduleSignature *models.ScheduleSignature) (*models.ScheduleSignature, error) {
+	if err := r.db.Create(scheduleSignature).Error; err != nil {
+		return nil, err
+	}
+
+	return scheduleSignature, nil
+}
+
+func (r *scheduleRepo) GetAll(userId uint) (*[]models.Schedule, error) {
 	var schedules []models.Schedule
 
-	if err := r.db.Find(&schedules).Error; err != nil {
+	if err := r.db.Raw(getAllByUser, userId).Scan(&schedules).Error; err != nil {
 		return nil, err
 	}
 
 	return &schedules, nil
 }
 
-func (r *scheduleRepo) GetById(id uint) (*models.Schedule, error) {
-	var schedule models.Schedule
+func (r *scheduleRepo) GetById(userId, id uint) (*models.Schedule, error) {
+	var schedules models.Schedule
 
-	if err := r.db.First(&schedule, id).Error; err != nil {
+	if err := r.db.Raw(getAllByUserUnique, userId, id).Scan(&schedules).Error; err != nil {
 		return nil, err
 	}
 
-	return &schedule, nil
+	return &schedules, nil
 }
 
 func (r *scheduleRepo) Update(id uint, schedule *models.Schedule) (*models.Schedule, error) {

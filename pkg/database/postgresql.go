@@ -40,6 +40,7 @@ func migrateDatabase(db *gorm.DB) error {
 		&models.Path{},
 		&models.Course{},
 		&models.Schedule{},
+		&models.ScheduleSignature{},
 		&models.Informations{},
 		&models.Channel{},
 		&models.Message{},

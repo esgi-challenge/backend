@@ -8,6 +8,8 @@ type Handlers interface {
 	Create() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
 	GetById() gin.HandlerFunc
+	GetSignatureCode() gin.HandlerFunc
+	Sign() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/google/uuid"
 )
 
 type scheduleUseCase struct {
@@ -33,8 +34,8 @@ func NewScheduleUseCase(cfg *config.Config, scheduleRepo schedule.Repository, co
 	}
 }
 
-func (u *scheduleUseCase) Create(user *models.User, schedule *models.Schedule) (*models.Schedule, error) {
-	course, err := u.courseRepo.GetById(schedule.CourseId)
+func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCreate) (*models.Schedule, error) {
+	course, err := u.courseRepo.GetById(*schedule.CourseId)
 
 	if err != nil {
 		return nil, err
@@ -59,15 +60,63 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.Schedule) (
 		}
 	}
 
-	return u.scheduleRepo.Create(schedule)
+	return u.scheduleRepo.Create(&models.Schedule{
+		Time:          *schedule.Time,
+		Duration:      *schedule.Duration,
+		SignatureCode: uuid.NewString(),
+		CourseId:      *schedule.CourseId,
+		CampusId:      *schedule.CampusId,
+		ClassId:       *schedule.ClassId,
+	})
+}
+
+func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {
+	var kind models.SignatureKind
+
+	if user.UserKind != 0 {
+		kind = models.SIGNATURE_ADMINISTRATOR
+	} else {
+		kind = models.SIGNATURE_STUDENT
+	}
+
+	schedule, err := u.GetById(user, scheduleId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if schedule.SignatureCode != signature.SignatureCode {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusForbidden,
+			HttpError:  "The signature code is not correct",
+		}
+	}
+
+	return u.scheduleRepo.Sign(&models.ScheduleSignature{
+		Student:  *user,
+		Schedule: *schedule,
+		Kind:     kind,
+	})
+}
+
+func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (*models.ScheduleSignatureCode, error) {
+	schedule, err := u.GetById(user, scheduleId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ScheduleSignatureCode{
+		SignatureCode: schedule.SignatureCode,
+	}, nil
 }
 
 func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.Schedule, error) {
-	return u.scheduleRepo.GetAll()
+	return u.scheduleRepo.GetAll(user.ID)
 }
 
 func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.Schedule, error) {
-	return u.scheduleRepo.GetById(id)
+	return u.scheduleRepo.GetById(user.ID, id)
 }
 
 func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *models.Schedule) (*models.Schedule, error) {

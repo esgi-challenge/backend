@@ -5,7 +5,7 @@ type Course struct {
 	Name        string `json:"name" gorm:"column:name"`
 	Description string `json:"description" gorm:"column:description"`
 	SchoolId    uint   `json:"schoolId" gorm:"column:school_id"`
-	TeacherId   uint   `json:"teacherId" gorm:"column:teacherId"`
+	TeacherId   uint   `json:"teacherId" gorm:"column:teacher_id"`
 	PathId      uint   `json:"pathId" gorm:"column:pathId"`
 	Teacher     User   `json:"teacher" gorm:"foreignKey:TeacherId;references:ID"`
 	Path        Path   `json:"path" gorm:"foreignKey:PathId;references:ID"`
