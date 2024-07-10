@@ -130,6 +130,13 @@ func (u *pathHandlers) GetAll() gin.HandlerFunc {
 //	@Router			/paths/{id} [get]
 func (u *pathHandlers) GetById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
 		id := ctx.Params.ByName("id")
 		idInt, err := strconv.Atoi(id)
 
