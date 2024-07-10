@@ -34,6 +34,11 @@ services:
       - POSTGRES_DB=challenge
     volumes:
       - postgres-data2:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8888:8080
 
 volumes:
   postgres-data2:

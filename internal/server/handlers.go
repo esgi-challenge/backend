@@ -17,6 +17,9 @@ import (
 	campusHttp "github.com/esgi-challenge/backend/internal/campus/http"
 	campusRepo "github.com/esgi-challenge/backend/internal/campus/repository"
 	campusUseCase "github.com/esgi-challenge/backend/internal/campus/usecase"
+	chatHttp "github.com/esgi-challenge/backend/internal/chat/http"
+	chatRepo "github.com/esgi-challenge/backend/internal/chat/repository"
+	chatUseCase "github.com/esgi-challenge/backend/internal/chat/usecase"
 	classHttp "github.com/esgi-challenge/backend/internal/class/http"
 	classRepo "github.com/esgi-challenge/backend/internal/class/repository"
 	classUseCase "github.com/esgi-challenge/backend/internal/class/usecase"
@@ -36,9 +39,6 @@ import (
 	userRepo "github.com/esgi-challenge/backend/internal/user/repository"
 	userUseCase "github.com/esgi-challenge/backend/internal/user/usecase"
 	wk "github.com/esgi-challenge/backend/internal/well-known"
-	chatHttp "github.com/esgi-challenge/backend/internal/chat/http"
-	chatRepo "github.com/esgi-challenge/backend/internal/chat/repository"
-	chatUseCase "github.com/esgi-challenge/backend/internal/chat/usecase"
 
 	scheduleHttp "github.com/esgi-challenge/backend/internal/schedule/http"
 	scheduleRepo "github.com/esgi-challenge/backend/internal/schedule/repository"
@@ -47,6 +47,10 @@ import (
 	informationsHttp "github.com/esgi-challenge/backend/internal/informations/http"
 	informationsRepo "github.com/esgi-challenge/backend/internal/informations/repository"
 	informationsUseCase "github.com/esgi-challenge/backend/internal/informations/usecase"
+
+	projectHttp "github.com/esgi-challenge/backend/internal/project/http"
+	projectRepo "github.com/esgi-challenge/backend/internal/project/repository"
+	projectUseCase "github.com/esgi-challenge/backend/internal/project/usecase"
 )
 
 func (s *Server) SetupHandlers() error {
@@ -61,6 +65,7 @@ func (s *Server) SetupHandlers() error {
 	scheduleRepo := scheduleRepo.NewScheduleRepository(s.psqlDB)
 	informationsRepo := informationsRepo.NewInformationsRepository(s.psqlDB)
 	chatRepo := chatRepo.NewChatRepository(s.psqlDB)
+	projectRepo := projectRepo.NewProjectRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -73,7 +78,8 @@ func (s *Server) SetupHandlers() error {
 	courseUseCase := courseUseCase.NewCourseUseCase(s.cfg, courseRepo, pathRepo, schoolRepo, s.logger)
 	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, s.logger)
 	informationsUseCase := informationsUseCase.NewInformationsUseCase(s.cfg, informationsRepo, schoolRepo, s.logger)
-  chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
+	chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
+	projectsUseCase := projectUseCase.NewProjectUseCase(s.cfg, projectRepo, courseUseCase, classUseCase, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -86,7 +92,8 @@ func (s *Server) SetupHandlers() error {
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, s.logger)
 	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
 	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
-  chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
+	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
+	projectHandlers := projectHttp.NewProjectHandlers(s.cfg, projectsUseCase, s.logger)
 
 	// Middlewares
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
@@ -109,6 +116,7 @@ func (s *Server) SetupHandlers() error {
 	schedulesGroup := api.Group("/schedules")
 	informationsGroup := api.Group("/informations")
 	chatGroup := api.Group("/chats")
+	projectGroup := api.Group("/projects")
 
 	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
@@ -120,7 +128,8 @@ func (s *Server) SetupHandlers() error {
 	courseHttp.SetupCourseRoutes(courseGroup, courseHandlers)
 	scheduleHttp.SetupScheduleRoutes(schedulesGroup, scheduleHandlers)
 	informationsHttp.SetupInformationsRoutes(informationsGroup, informationsHandlers)
-  chatHttp.SetupChatRoutes(chatGroup, chatHandlers)
+	chatHttp.SetupChatRoutes(chatGroup, chatHandlers)
+	projectHttp.SetupProjectRoutes(projectGroup, projectHandlers)
 
 	wk.SetupPathRoutes(wellknown)
 

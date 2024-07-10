@@ -14,8 +14,9 @@ import (
 type pathUseCase struct {
 	pathRepo   path.Repository
 	schoolRepo school.Repository
-	cfg        *config.Config
-	logger     logger.Logger
+
+	cfg    *config.Config
+	logger logger.Logger
 }
 
 func NewPathUseCase(cfg *config.Config, pathRepo path.Repository, schoolRepo school.Repository, logger logger.Logger) path.UseCase {
