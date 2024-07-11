@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/chat"
@@ -24,6 +25,17 @@ type WebSocketHandler struct {
 	Cfg         *config.Config
 	ChatUseCase chat.UseCase
 	Logger      logger.Logger
+	clients     map[int]map[*websocket.Conn]bool
+	mu          sync.Mutex
+}
+
+func NewWebSocketHandler(cfg *config.Config, chatUseCase chat.UseCase, logger logger.Logger) *WebSocketHandler {
+	return &WebSocketHandler{
+		Cfg:         cfg,
+		ChatUseCase: chatUseCase,
+		Logger:      logger,
+		clients:     make(map[int]map[*websocket.Conn]bool),
+	}
 }
 
 func (h *WebSocketHandler) ChatHandler(ctx *gin.Context) {
@@ -40,6 +52,24 @@ func (h *WebSocketHandler) ChatHandler(ctx *gin.Context) {
 		return
 	}
 
+	h.mu.Lock()
+	// Ensure the main clients map is initialized
+	if h.clients == nil {
+		h.clients = make(map[int]map[*websocket.Conn]bool)
+		h.Logger.Info("Initialized the clients map")
+	}
+
+	// Register the client
+	if _, ok := h.clients[channelID]; !ok {
+		h.clients[channelID] = make(map[*websocket.Conn]bool)
+		h.Logger.Infof("Initialized the clients map for channelID %d", channelID)
+	}
+	h.clients[channelID][conn] = true
+	h.mu.Unlock()
+
+	h.Logger.Infof("Client connected to channelID %d", channelID)
+
+	// Handle incoming messages
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
@@ -110,9 +140,29 @@ func (h *WebSocketHandler) ChatHandler(ctx *gin.Context) {
 			continue
 		}
 
-		if err := conn.WriteMessage(websocket.TextMessage, responseMsg); err != nil {
+		h.broadcastMessage(channelID, responseMsg)
+	}
+
+	// Unregister the client
+	h.mu.Lock()
+	delete(h.clients[channelID], conn)
+	// Remove the channel if no clients are left
+	if len(h.clients[channelID]) == 0 {
+		delete(h.clients, channelID)
+		h.Logger.Infof("Removed the clients map for channelID %d", channelID)
+	}
+	h.mu.Unlock()
+	h.Logger.Infof("Client disconnected from channelID %d", channelID)
+}
+
+func (h *WebSocketHandler) broadcastMessage(channelID int, message []byte) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	for client := range h.clients[channelID] {
+		if err := client.WriteMessage(websocket.TextMessage, message); err != nil {
 			h.Logger.Errorf("Error writing message: %+v", err)
-			break
+			client.Close()
+			delete(h.clients[channelID], client)
 		}
 	}
 }
