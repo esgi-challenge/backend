@@ -74,4 +74,6 @@ jobs:
             SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
             SMTP_HOST=${{ secrets.SMTP_HOST }}
             GMAP_API_KEY=${{ secrets.GMAP_API_KEY }}
+            PROJECT_ID=${{ secrets.PROJECT_ID }}
+            BUCKET=${{ secrets.BUCKET }}
             GIN_MODE=release
