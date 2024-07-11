@@ -37,9 +37,9 @@ func NewDocumentHandlers(cfg *config.Config, documentUseCase document.UseCase, l
 //	@Accept			json
 //	@Produce		json
 //	@Param			document	body		models.DocumentCreate	true	"Document infos"
-//	@Success		201		{object}	models.Document
-//	@Failure		400		{object}	errorHandler.HttpErr
-//	@Failure		500		{object}	errorHandler.HttpErr
+//	@Success		201			{object}	models.Document
+//	@Failure		400			{object}	errorHandler.HttpErr
+//	@Failure		500			{object}	errorHandler.HttpErr
 //	@Router			/documents [post]
 func (u *documentHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

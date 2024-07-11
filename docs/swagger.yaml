@@ -235,6 +235,28 @@ definitions:
     - pathId
     - teacherId
     type: object
+  github_com_esgi-challenge_backend_internal_models.Document:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: integer
+      id:
+        type: integer
+      path:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.DocumentCreate:
+    properties:
+      byte:
+        items:
+          type: integer
+        type: array
+    type: object
   github_com_esgi-challenge_backend_internal_models.Example:
     properties:
       createdAt:
@@ -455,10 +477,12 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
+      duration:
+        type: integer
       id:
         type: integer
       time:
-        type: string
+        type: integer
       updatedAt:
         type: string
     type: object
@@ -470,12 +494,15 @@ definitions:
         type: integer
       courseId:
         type: integer
+      duration:
+        type: integer
       time:
-        type: string
+        type: integer
     required:
     - campusId
     - classId
     - courseId
+    - duration
     - time
     type: object
   github_com_esgi-challenge_backend_internal_models.ScheduleUpdate:
@@ -486,12 +513,15 @@ definitions:
         type: integer
       courseId:
         type: integer
+      duration:
+        type: integer
       time:
-        type: string
+        type: integer
     required:
     - campusId
     - classId
     - courseId
+    - duration
     - time
     type: object
   github_com_esgi-challenge_backend_internal_models.School:
@@ -592,11 +622,7 @@ definitions:
         type: string
       id:
         type: integer
-      invitationCode:
-        type: string
       lastname:
-        type: string
-      passwordResetCode:
         type: string
       schoolId:
         type: integer
@@ -1349,6 +1375,84 @@ paths:
       summary: Update course
       tags:
       - Course
+  /documents:
+    post:
+      consumes:
+      - application/json
+      description: create new document
+      parameters:
+      - description: Document infos
+        in: body
+        name: document
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.DocumentCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Document'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new document
+      tags:
+      - Document
+  /documents/{id}:
+    delete:
+      description: Delete document by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete document by id
+      tags:
+      - Document
+    get:
+      description: Get document by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Document'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get document by id
+      tags:
+      - Document
   /examples:
     get:
       description: Get all example
@@ -1489,7 +1593,7 @@ paths:
               type: string
             type: object
       summary: Check API health
-  /informationss:
+  /informations:
     get:
       description: Get all informations
       produces:
@@ -1507,6 +1611,7 @@ paths:
       summary: Get all informations
       tags:
       - Informations
+  /informationss:
     post:
       consumes:
       - application/json
@@ -2043,6 +2148,62 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Update schedule
+      tags:
+      - Schedule
+  /schedules/{id}/code:
+    get:
+      description: Get schedule by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Schedule'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get schedule by id
+      tags:
+      - Schedule
+  /schedules/{id}/sign:
+    post:
+      consumes:
+      - application/json
+      description: Check Sign for schedule
+      parameters:
+      - description: Schedule infos
+        in: body
+        name: schedule
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.ScheduleCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Schedule'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Check Sign for schedule
       tags:
       - Schedule
   /schools:

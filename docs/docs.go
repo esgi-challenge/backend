@@ -1075,6 +1075,121 @@ const docTemplate = `{
                 }
             }
         },
+        "/documents": {
+            "post": {
+                "description": "create new document",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Document"
+                ],
+                "summary": "Create new document",
+                "parameters": [
+                    {
+                        "description": "Document infos",
+                        "name": "document",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.DocumentCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Document"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/documents/{id}": {
+            "get": {
+                "description": "Get document by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Document"
+                ],
+                "summary": "Get document by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Document"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete document by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Document"
+                ],
+                "summary": "Delete document by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/examples": {
             "get": {
                 "description": "Get all example",
@@ -1282,7 +1397,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/informationss": {
+        "/informations": {
             "get": {
                 "description": "Get all informations",
                 "produces": [
@@ -1307,7 +1422,9 @@ const docTemplate = `{
                         "schema": {}
                     }
                 }
-            },
+            }
+        },
+        "/informationss": {
             "post": {
                 "description": "create new informations",
                 "consumes": [
@@ -2097,6 +2214,89 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/schedules/{id}/code": {
+            "get": {
+                "description": "Get schedule by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get schedule by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/schedules/{id}/sign": {
+            "post": {
+                "description": "Check Sign for schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Check Sign for schedule",
+                "parameters": [
+                    {
+                        "description": "Schedule infos",
+                        "name": "schedule",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ScheduleCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {}
                     }
                 }
@@ -2985,6 +3185,40 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_esgi-challenge_backend_internal_models.Document": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.DocumentCreate": {
+            "type": "object",
+            "properties": {
+                "byte": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "github_com_esgi-challenge_backend_internal_models.Example": {
             "type": "object",
             "properties": {
@@ -3314,11 +3548,14 @@ const docTemplate = `{
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
+                "duration": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "time": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -3331,6 +3568,7 @@ const docTemplate = `{
                 "campusId",
                 "classId",
                 "courseId",
+                "duration",
                 "time"
             ],
             "properties": {
@@ -3343,8 +3581,11 @@ const docTemplate = `{
                 "courseId": {
                     "type": "integer"
                 },
+                "duration": {
+                    "type": "integer"
+                },
                 "time": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -3354,6 +3595,7 @@ const docTemplate = `{
                 "campusId",
                 "classId",
                 "courseId",
+                "duration",
                 "time"
             ],
             "properties": {
@@ -3366,8 +3608,11 @@ const docTemplate = `{
                 "courseId": {
                     "type": "integer"
                 },
+                "duration": {
+                    "type": "integer"
+                },
                 "time": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -3516,13 +3761,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "invitationCode": {
-                    "type": "string"
-                },
                 "lastname": {
-                    "type": "string"
-                },
-                "passwordResetCode": {
                     "type": "string"
                 },
                 "schoolId": {
