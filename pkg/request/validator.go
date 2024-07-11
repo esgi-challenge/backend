@@ -62,7 +62,7 @@ func ValidateRole(secretKey string, ctx *gin.Context, role models.UserKind) (*mo
 		return nil, err
 	}
 
-	if user.UserKind < role {
+	if *user.UserKind < role {
 		return nil, errorHandler.HttpError{
 			HttpStatus: http.StatusForbidden,
 			HttpError:  errorHandler.Forbidden.Error(),
@@ -79,7 +79,7 @@ func ValidateRoleWithoutHeader(secretKey string, token string, role models.UserK
 		return nil, err
 	}
 
-	if user.UserKind < role {
+	if *user.UserKind < role {
 		return nil, errorHandler.HttpError{
 			HttpStatus: http.StatusForbidden,
 			HttpError:  errorHandler.Forbidden.Error(),

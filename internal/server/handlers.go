@@ -83,7 +83,7 @@ func (s *Server) SetupHandlers() error {
 	pathUseCase := pathUseCase.NewPathUseCase(s.cfg, pathRepo, schoolRepo, s.logger)
 	classUseCase := classUseCase.NewClassUseCase(s.cfg, classRepo, pathRepo, schoolRepo, userRepo, s.logger)
 	courseUseCase := courseUseCase.NewCourseUseCase(s.cfg, courseRepo, pathRepo, schoolRepo, s.logger)
-	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, s.logger)
+	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, campusRepo, s.logger)
 	informationsUseCase := informationsUseCase.NewInformationsUseCase(s.cfg, informationsRepo, schoolRepo, s.logger)
 	chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
 	documentUseCase := documentUseCase.NewDocumentUseCase(s.cfg, documentRepo, s.logger, *s.storage)
@@ -158,6 +158,8 @@ func (s *Server) SetupHandlers() error {
 	s.logger.Info("Checking if admin existing...")
 	_, err := userRepo.GetByEmail(s.cfg.AdminEmail)
 
+	var userkind models.UserKind = models.SUPERADMIN
+
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		s.logger.Infof("There is no admin user, creating one...")
 		admin := &models.User{
@@ -165,7 +167,7 @@ func (s *Server) SetupHandlers() error {
 			Lastname:  "admin",
 			Email:     s.cfg.AdminEmail,
 			Password:  s.cfg.AdminPassword,
-			UserKind:  models.SUPERADMIN,
+			UserKind:  &userkind,
 		}
 		err := admin.HashPassword()
 		if err != nil {

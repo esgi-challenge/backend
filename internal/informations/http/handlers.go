@@ -79,7 +79,7 @@ func (u *informationsHandlers) Create() gin.HandlerFunc {
 //	@Produce		json
 //	@Success		200	{object}	[]models.Informations
 //	@Failure		500	{object}	errorHandler.HttpErr
-//	@Router			/informationss [get]
+//	@Router			/informations [get]
 func (u *informationsHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)

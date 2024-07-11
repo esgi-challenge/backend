@@ -13,4 +13,5 @@ func SetupScheduleRoutes(scheduleGroup *gin.RouterGroup, h schedule.Handlers) {
 	scheduleGroup.DELETE("/:id", h.Delete())
 	scheduleGroup.PUT("/:id", h.Update())
 	scheduleGroup.POST("/:id/sign", h.Sign())
+	scheduleGroup.GET("/:id/sign", h.CheckSign())
 }

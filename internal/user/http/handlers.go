@@ -236,7 +236,7 @@ func (u *userHandlers) Create() gin.HandlerFunc {
 			Lastname:  userCreate.Lastname,
 			Email:     userCreate.Email,
 			Password:  userCreate.Password,
-			UserKind:  userCreate.UserKind,
+			UserKind:  &userCreate.UserKind,
 			SchoolId:  userCreate.SchoolId,
 		}
 		err = user.HashPassword()

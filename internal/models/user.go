@@ -13,17 +13,16 @@ const (
 
 type User struct {
 	GormModel
-	Firstname         string   `json:"firstname" gorm:"column:firstname"`
-	Lastname          string   `json:"lastname" gorm:"column:lastname"`
-	Email             string   `json:"email" gorm:"column:email;unique;not null"`
-	Password          string   `json:"-" gorm:"column:password"`
-	InvitationCode    string   `json:"invitationCode" gorm:"column:invitation_code"`
-	PasswordResetCode string   `json:"passwordResetCode" gorm:"column:password_reset_code"`
-	UserKind          UserKind `json:"userKind" gorm:"column:user_kind"`
-	SchoolId          *uint    `json:"schoolId" gorm:"column:school_id"`
-	ClassRefer        *uint    `json:"classRefer" gorm:"column:class_refer"`
+	Firstname         string    `json:"firstname" gorm:"column:firstname"`
+	Lastname          string    `json:"lastname" gorm:"column:lastname"`
+	Email             string    `json:"email" gorm:"column:email;unique;not null"`
+	Password          string    `json:"-" gorm:"column:password"`
+	InvitationCode    string    `json:"-" gorm:"column:invitation_code"`
+	PasswordResetCode string    `json:"-" gorm:"column:password_reset_code"`
+	UserKind          *UserKind `json:"userKind" gorm:"column:user_kind"`
+	SchoolId          *uint     `json:"schoolId" gorm:"column:school_id"`
+	ClassRefer        *uint     `json:"classRefer" gorm:"column:class_refer"`
 }
-
 type UserCreate struct {
 	Firstname string   `json:"firstname"`
 	Lastname  string   `json:"lastname"`

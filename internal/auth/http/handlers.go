@@ -85,12 +85,14 @@ func (u *authHandlers) Register() gin.HandlerFunc {
 			return
 		}
 
+		var userKind models.UserKind = models.ADMINISTRATOR
+
 		user := &models.User{
 			Firstname: authRegister.Firstname,
 			Lastname:  authRegister.Lastname,
 			Email:     authRegister.Email,
 			Password:  authRegister.Password,
-			UserKind:  models.ADMINISTRATOR,
+			UserKind:  &userKind,
 		}
 		err = user.HashPassword()
 		if err != nil {

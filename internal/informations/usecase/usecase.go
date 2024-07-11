@@ -45,7 +45,7 @@ func (u *informationsUseCase) Create(user *models.User, informations *models.Inf
 }
 
 func (u *informationsUseCase) GetAll(user *models.User) (*[]models.Informations, error) {
-	if user.UserKind == models.STUDENT {
+	if *user.UserKind == models.STUDENT {
 		return u.informationsRepo.GetBySchoolId(*user.SchoolId)
 	}
 
@@ -53,7 +53,7 @@ func (u *informationsUseCase) GetAll(user *models.User) (*[]models.Informations,
 }
 
 func (u *informationsUseCase) GetById(user *models.User, id uint) (*models.Informations, error) {
-	if user.UserKind == models.STUDENT {
+	if *user.UserKind == models.STUDENT {
 		return u.informationsRepo.GetBySchoolIdAndId(*user.SchoolId, id)
 	}
 

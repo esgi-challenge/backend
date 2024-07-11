@@ -11,7 +11,7 @@ const (
 type Schedule struct {
 	GormModel
 	Time          uint   `json:"time" gorm:"column:time"`
-	Duration      uint   `json:"duration" gorm:"column:time"`
+	Duration      uint   `json:"duration" gorm:"column:duration"`
 	CourseId      uint   `json:"courseId" gorm:"column:course"`
 	CampusId      uint   `json:"campusId" gorm:"column:campus"`
 	ClassId       uint   `json:"classId" gorm:"column:class"`
@@ -49,4 +49,10 @@ type ScheduleUpdate struct {
 	CourseId *uint `json:"courseId" binding:"required" `
 	CampusId *uint `json:"campusId" binding:"required"`
 	ClassId  *uint `json:"classId" binding:"required"`
+}
+
+type ScheduleGet struct {
+	Schedule Schedule `json:"schedule" binding:"required"`
+	Course   Course   `json:"course" binding:"required"`
+	Campus   Campus   `json:"campus" binding:"required"`
 }

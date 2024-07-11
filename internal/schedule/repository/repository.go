@@ -30,6 +30,16 @@ func (r *scheduleRepo) Sign(scheduleSignature *models.ScheduleSignature) (*model
 	return scheduleSignature, nil
 }
 
+func (r *scheduleRepo) GetSign(userId uint, scheduleId uint) (*models.ScheduleSignature, error) {
+	var signature models.ScheduleSignature
+
+	if err := r.db.Where("student_id = ?", userId).Where("schedule_id = ?", scheduleId).First(&signature).Error; err != nil {
+		return nil, err
+	}
+
+	return &signature, nil
+}
+
 func (r *scheduleRepo) GetAll(userId uint) (*[]models.Schedule, error) {
 	var schedules []models.Schedule
 

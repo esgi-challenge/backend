@@ -116,6 +116,48 @@ func (u *scheduleHandlers) Sign() gin.HandlerFunc {
 	}
 }
 
+// Check Sign
+//
+//	@Summary		Check Sign for schedule
+//	@Description	Check Sign for schedule
+//	@Tags			Schedule
+//	@Accept			json
+//	@Produce		json
+//	@Param			schedule	body		models.ScheduleCreate	true	"Schedule infos"
+//	@Success		201			{object}	models.Schedule
+//	@Failure		400			{object}	errorHandler.HttpErr
+//	@Failure		500			{object}	errorHandler.HttpErr
+//	@Router			/schedules/{id}/sign [post]
+func (u *scheduleHandlers) CheckSign() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		scheduleDb, err := u.scheduleUseCase.CheckSign(user, uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, scheduleDb)
+	}
+}
+
 // Read
 //
 //	@Summary		Get all schedule

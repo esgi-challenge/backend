@@ -106,7 +106,7 @@ func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInv
 		Firstname:      schoolInvite.Firstname,
 		InvitationCode: uuid.NewString(),
 		SchoolId:       &school.ID,
-		UserKind:       userKind,
+		UserKind:       &userKind,
 	})
 }
 

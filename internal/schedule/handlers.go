@@ -10,6 +10,7 @@ type Handlers interface {
 	GetById() gin.HandlerFunc
 	GetSignatureCode() gin.HandlerFunc
 	Sign() gin.HandlerFunc
+	CheckSign() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc
 }

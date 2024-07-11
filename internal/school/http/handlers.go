@@ -208,7 +208,7 @@ func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 			Email:     studentCreate.Email,
 			Password:  studentCreate.Password,
 			SchoolId:  &school.ID,
-			UserKind:  userKind,
+			UserKind:  &userKind,
 		}
 		err = userCreate.HashPassword()
 		if err != nil {
@@ -317,14 +317,14 @@ func (u *schoolHandlers) GetByUser() gin.HandlerFunc {
 
 		var school *models.School
 
-		if user.UserKind == models.ADMINISTRATOR {
+		if *user.UserKind == models.ADMINISTRATOR {
 			school, err = u.schoolUseCase.GetByUser(user)
 			if err != nil {
 				ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 				u.logger.Warnf("Request: %v", err.Error())
 				return
 			}
-		} else if user.UserKind == models.STUDENT {
+		} else if *user.UserKind == models.STUDENT {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			//implement getting school for student
 		} else {

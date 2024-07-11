@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/esgi-challenge/backend/config"
+	"github.com/esgi-challenge/backend/internal/campus"
 	"github.com/esgi-challenge/backend/internal/course"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/path"
@@ -19,16 +20,18 @@ type scheduleUseCase struct {
 	courseRepo   course.Repository
 	schoolRepo   school.Repository
 	pathRepo     path.Repository
+	campusRepo   campus.Repository
 	cfg          *config.Config
 	logger       logger.Logger
 }
 
-func NewScheduleUseCase(cfg *config.Config, scheduleRepo schedule.Repository, courseRepo course.Repository, pathRepo path.Repository, schoolRepo school.Repository, logger logger.Logger) schedule.UseCase {
+func NewScheduleUseCase(cfg *config.Config, scheduleRepo schedule.Repository, courseRepo course.Repository, pathRepo path.Repository, schoolRepo school.Repository, campusRepo campus.Repository, logger logger.Logger) schedule.UseCase {
 	return &scheduleUseCase{
 		cfg:          cfg,
 		scheduleRepo: scheduleRepo,
 		courseRepo:   courseRepo,
 		schoolRepo:   schoolRepo,
+		campusRepo:   campusRepo,
 		pathRepo:     pathRepo,
 		logger:       logger,
 	}
@@ -73,13 +76,13 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {
 	var kind models.SignatureKind
 
-	if user.UserKind != 0 {
+	if *user.UserKind != 0 {
 		kind = models.SIGNATURE_ADMINISTRATOR
 	} else {
 		kind = models.SIGNATURE_STUDENT
 	}
 
-	schedule, err := u.GetById(user, scheduleId)
+	schedule, err := u.scheduleRepo.GetById(user.ID, scheduleId)
 
 	if err != nil {
 		return nil, err
@@ -99,8 +102,12 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 	})
 }
 
+func (u *scheduleUseCase) CheckSign(user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {
+	return u.scheduleRepo.GetSign(user.ID, scheduleId)
+}
+
 func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (*models.ScheduleSignatureCode, error) {
-	schedule, err := u.GetById(user, scheduleId)
+	schedule, err := u.scheduleRepo.GetById(user.ID, scheduleId)
 
 	if err != nil {
 		return nil, err
@@ -111,12 +118,67 @@ func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (
 	}, nil
 }
 
-func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.Schedule, error) {
-	return u.scheduleRepo.GetAll(user.ID)
+func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, error) {
+	schedules, err := u.scheduleRepo.GetAll(user.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var finalSchedules []models.ScheduleGet
+
+	for _, schedule := range *schedules {
+		if err != nil {
+			return nil, err
+		}
+
+		course, err := u.courseRepo.GetById(schedule.CourseId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		campus, err := u.campusRepo.GetById(schedule.CampusId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		finalSchedules = append(finalSchedules, models.ScheduleGet{
+			Schedule: schedule,
+			Campus:   *campus,
+			Course:   *course,
+		})
+
+	}
+
+	return &finalSchedules, nil
 }
 
-func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.Schedule, error) {
-	return u.scheduleRepo.GetById(user.ID, id)
+func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleGet, error) {
+	schedule, err := u.scheduleRepo.GetById(user.ID, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	course, err := u.courseRepo.GetById(schedule.CourseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	campus, err := u.campusRepo.GetById(schedule.CampusId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ScheduleGet{
+		Schedule: *schedule,
+		Campus:   *campus,
+		Course:   *course,
+	}, nil
 }
 
 func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *models.Schedule) (*models.Schedule, error) {
@@ -128,9 +190,9 @@ func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *mo
 		return nil, err
 	}
 
-	updatedSchedule.CreatedAt = dbSchedule.CreatedAt
+	updatedSchedule.CreatedAt = dbSchedule.Schedule.CreatedAt
 	///////////////////////////////////////
-	course, err := u.courseRepo.GetById(dbSchedule.CourseId)
+	course, err := u.courseRepo.GetById(dbSchedule.Course.ID)
 
 	if err != nil {
 		return nil, err
@@ -193,7 +255,7 @@ func (u *scheduleUseCase) Delete(user *models.User, id uint) error {
 		return err
 	}
 
-	course, err := u.courseRepo.GetById(schedule.CourseId)
+	course, err := u.courseRepo.GetById(schedule.Course.ID)
 
 	if err != nil {
 		return err
