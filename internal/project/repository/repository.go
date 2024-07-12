@@ -25,7 +25,7 @@ func (r *projectRepo) Create(project *models.Project) (*models.Project, error) {
 func (r *projectRepo) GetAll(user *models.User) (*[]models.Project, error) {
 	var projects []models.Project
 
-	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Joins("left join classes on classes.id = projects.class_id").Joins("left join schools on classes.school_id = schools.id").Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&projects).Error; err != nil {
+	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Joins("left join classes on classes.id = projects.class_id").Preload("Course.Teacher").Joins("left join schools on classes.school_id = schools.id").Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&projects).Error; err != nil {
 		return nil, err
 	}
 
@@ -67,7 +67,7 @@ func (r *projectRepo) JoinProject(project *models.ProjectStudent) (*models.Proje
 func (r *projectRepo) GetById(user *models.User, id uint) (*models.Project, error) {
 	var project models.Project
 
-	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Joins("left join classes on classes.id = projects.class_id").Joins("left join schools on classes.school_id = schools.id").Where("projects.id = ?", id).Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&project).Error; err != nil {
+	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Joins("left join classes on classes.id = projects.class_id").Preload("Course.Teacher").Joins("left join schools on classes.school_id = schools.id").Where("projects.id = ?", id).Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&project).Error; err != nil {
 		return nil, err
 	}
 
