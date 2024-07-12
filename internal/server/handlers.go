@@ -98,7 +98,7 @@ func (s *Server) SetupHandlers() error {
 	pathHandlers := pathHttp.NewPathHandlers(s.cfg, pathUseCase, schoolUseCase, s.logger)
 	classHandlers := classHttp.NewClassHandlers(s.cfg, classUseCase, schoolUseCase, s.logger)
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, schoolUseCase, s.logger)
-	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, s.logger)
+	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, schoolUseCase, s.logger)
 	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
 	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
 	projectHandlers := projectHttp.NewProjectHandlers(s.cfg, projectsUseCase, s.logger)

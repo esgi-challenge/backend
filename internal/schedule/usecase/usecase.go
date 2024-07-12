@@ -71,6 +71,7 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		CourseId:      *schedule.CourseId,
 		CampusId:      *schedule.CampusId,
 		ClassId:       *schedule.ClassId,
+    SchoolId: school.ID,
 	})
 }
 
@@ -143,41 +144,12 @@ func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (
 	}, nil
 }
 
-func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, error) {
-	schedules, err := u.scheduleRepo.GetAll(user.ID)
+func (u *scheduleUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error) {
+	return u.scheduleRepo.GetAllBySchoolId(schoolId)
+}
 
-	if err != nil {
-		return nil, err
-	}
-
-	var finalSchedules []models.ScheduleGet
-
-	for _, schedule := range *schedules {
-		if err != nil {
-			return nil, err
-		}
-
-		course, err := u.courseRepo.GetById(schedule.CourseId)
-
-		if err != nil {
-			return nil, err
-		}
-
-		campus, err := u.campusRepo.GetById(schedule.CampusId)
-
-		if err != nil {
-			return nil, err
-		}
-
-		finalSchedules = append(finalSchedules, models.ScheduleGet{
-			Schedule: schedule,
-			Campus:   *campus,
-			Course:   *course,
-		})
-
-	}
-
-	return &finalSchedules, nil
+func (u *scheduleUseCase) GetPreloadById(scheduleId uint) (*models.Schedule, error) {
+	return u.scheduleRepo.GetPreloadById(scheduleId)
 }
 
 func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleGet, error) {
