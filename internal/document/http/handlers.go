@@ -43,6 +43,8 @@ func NewDocumentHandlers(cfg *config.Config, documentUseCase document.UseCase, l
 //	@Router			/documents [post]
 func (u *documentHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var courseIdUint *uint
+
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
 
 		if user == nil || err != nil {
@@ -57,6 +59,21 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		courseIdStr := ctx.Request.FormValue("courseId")
+
+		if courseIdStr != "" {
+			courseId, err := strconv.ParseUint(courseIdStr, 10, 32)
+
+			if err != nil && err != io.EOF {
+				ctx.AbortWithStatusJSON(errorHandler.InternalServerErrorResponse())
+				u.logger.Infof("Request: %v", err.Error())
+				return
+			}
+			tmp := uint(courseId)
+
+			courseIdUint = &tmp
+		}
+
 		bs := make([]byte, header.Size)
 		_, err = bufio.NewReader(file).Read(bs)
 
@@ -67,7 +84,8 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 		}
 
 		documentDb, err := u.documentUseCase.Create(user, &models.DocumentCreate{
-			Byte: bs,
+			Byte:     bs,
+			CourseId: courseIdUint,
 		})
 
 		if err != nil {

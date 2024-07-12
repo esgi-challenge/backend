@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/esgi-challenge/backend/config"
+	"github.com/esgi-challenge/backend/internal/course"
 	"github.com/esgi-challenge/backend/internal/document"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
@@ -14,15 +15,17 @@ import (
 
 type documentUseCase struct {
 	documentRepo document.Repository
+	courseRepo   course.Repository
 	cfg          *config.Config
 	storage      storage.Storage
 	logger       logger.Logger
 }
 
-func NewDocumentUseCase(cfg *config.Config, documentRepo document.Repository, logger logger.Logger, storage storage.Storage) document.UseCase {
+func NewDocumentUseCase(cfg *config.Config, documentRepo document.Repository, courseRepo course.Repository, logger logger.Logger, storage storage.Storage) document.UseCase {
 	return &documentUseCase{
 		cfg:          cfg,
 		documentRepo: documentRepo,
+		courseRepo:   courseRepo,
 		logger:       logger,
 		storage:      storage,
 	}
@@ -33,6 +36,22 @@ func (u *documentUseCase) Create(user *models.User, document *models.DocumentCre
 
 	if err != nil {
 		return nil, err
+	}
+
+	var course *models.Course
+
+	if document.CourseId != nil {
+		course, err = u.courseRepo.GetById(*document.CourseId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return u.documentRepo.Create(&models.Document{
+			Path:   filename,
+			UserId: user.ID,
+			Course: *course,
+		})
 	}
 
 	return u.documentRepo.Create(&models.Document{

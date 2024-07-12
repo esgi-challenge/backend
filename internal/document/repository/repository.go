@@ -25,7 +25,7 @@ func (r *documentRepo) Create(document *models.Document) (*models.Document, erro
 func (r *documentRepo) GetAll() (*[]models.Document, error) {
 	var documents []models.Document
 
-	if err := r.db.Find(&documents).Error; err != nil {
+	if err := r.db.Preload("Course").Find(&documents).Error; err != nil {
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (r *documentRepo) GetAll() (*[]models.Document, error) {
 func (r *documentRepo) GetById(id uint) (*models.Document, error) {
 	var document models.Document
 
-	if err := r.db.First(&document, id).Error; err != nil {
+	if err := r.db.Preload("Course").First(&document, id).Error; err != nil {
 		return nil, err
 	}
 
