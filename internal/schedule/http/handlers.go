@@ -93,7 +93,7 @@ func (u *scheduleHandlers) GetUnattended() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, scheduleDb)
+		ctx.JSON(http.StatusOK, scheduleDb)
 	}
 }
 

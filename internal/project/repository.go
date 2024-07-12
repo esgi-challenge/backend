@@ -6,8 +6,8 @@ import (
 
 type Repository interface {
 	Create(project *models.Project) (*models.Project, error)
-	GetAll(userId uint) (*[]models.Project, error)
-	GetById(userId uint, id uint) (*models.Project, error)
+	GetAll(user *models.User) (*[]models.Project, error)
+	GetById(user *models.User, id uint) (*models.Project, error)
 	JoinProject(project *models.ProjectStudent) (*models.ProjectStudent, error)
 	GetJoined(projectId uint, userId uint) (*[]models.ProjectStudent, error)
 	DeleteJoined(projectId uint, userId uint) error

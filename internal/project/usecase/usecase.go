@@ -95,11 +95,11 @@ func (u *projectUseCase) QuitProject(user *models.User, id uint) error {
 }
 
 func (u *projectUseCase) GetAll(user *models.User) (*[]models.Project, error) {
-	return u.projectRepo.GetAll(user.ID)
+	return u.projectRepo.GetAll(user)
 }
 
 func (u *projectUseCase) GetById(user *models.User, id uint) (*models.Project, error) {
-	return u.projectRepo.GetById(user.ID, id)
+	return u.projectRepo.GetById(user, id)
 }
 
 func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *models.Project) (*models.Project, error) {
