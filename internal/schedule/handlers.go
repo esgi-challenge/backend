@@ -7,6 +7,7 @@ import (
 type Handlers interface {
 	Create() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
+	GetUnattended() gin.HandlerFunc
 	GetById() gin.HandlerFunc
 	GetSignatureCode() gin.HandlerFunc
 	Sign() gin.HandlerFunc

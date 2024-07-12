@@ -7,6 +7,7 @@ import (
 type UseCase interface {
 	Create(user *models.User, schedule *models.ScheduleCreate) (*models.Schedule, error)
 	GetAll(user *models.User) (*[]models.ScheduleGet, error)
+	GetUnattended(user *models.User) ([]models.ScheduleGet, error)
 	GetById(user *models.User, id uint) (*models.ScheduleGet, error)
 	Sign(signature *models.ScheduleSignatureCreate, user *models.User, id uint) (*models.ScheduleSignature, error)
 	CheckSign(user *models.User, id uint) (*models.ScheduleSignature, error)

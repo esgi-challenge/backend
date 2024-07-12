@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/campus"
@@ -100,6 +101,30 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 		Schedule: *schedule,
 		Kind:     kind,
 	})
+}
+
+func (u *scheduleUseCase) GetUnattended(user *models.User) ([]models.ScheduleGet, error) {
+	now := time.Now()
+	timestamp := uint(now.Unix())
+	var unattendedSchedules []models.ScheduleGet
+	schedules, err := u.GetAll(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, schedule := range *schedules {
+		if schedule.Schedule.Time+(schedule.Schedule.Duration*60) < timestamp {
+			_, err := u.CheckSign(user, schedule.Schedule.ID)
+
+			if err != nil {
+				unattendedSchedules = append(unattendedSchedules, schedule)
+			}
+
+		}
+	}
+
+	return unattendedSchedules, nil
 }
 
 func (u *scheduleUseCase) CheckSign(user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {

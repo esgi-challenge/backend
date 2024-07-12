@@ -8,6 +8,7 @@ import (
 func SetupScheduleRoutes(scheduleGroup *gin.RouterGroup, h schedule.Handlers) {
 	scheduleGroup.POST("", h.Create())
 	scheduleGroup.GET("", h.GetAll())
+	scheduleGroup.GET("/unattended", h.GetUnattended())
 	scheduleGroup.GET("/:id", h.GetById())
 	scheduleGroup.GET("/:id/code", h.GetSignatureCode())
 	scheduleGroup.DELETE("/:id", h.Delete())

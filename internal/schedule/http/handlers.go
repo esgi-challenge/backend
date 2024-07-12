@@ -65,6 +65,38 @@ func (u *scheduleHandlers) Create() gin.HandlerFunc {
 	}
 }
 
+// Unattended
+//
+//	@Summary		Get UnAttended Schedules
+//	@Description	Get UnAttended Schedules
+//	@Tags			Schedule
+//	@Accept			json
+//	@Produce		json
+//	@Success		201			{object}	models.Schedule
+//	@Failure		400			{object}	errorHandler.HttpErr
+//	@Failure		500			{object}	errorHandler.HttpErr
+//	@Router			/schedules/ [get]
+func (u *scheduleHandlers) GetUnattended() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		scheduleDb, err := u.scheduleUseCase.GetUnattended(user)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, scheduleDb)
+	}
+}
+
 // Sign
 //
 //	@Summary		Sign for schedule
