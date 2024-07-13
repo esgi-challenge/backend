@@ -71,6 +71,7 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		CourseId:      *schedule.CourseId,
 		CampusId:      *schedule.CampusId,
 		ClassId:       *schedule.ClassId,
+    SchoolId: school.ID,
 	})
 }
 
@@ -143,41 +144,12 @@ func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (
 	}, nil
 }
 
-func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, error) {
-	schedules, err := u.scheduleRepo.GetAll(user.ID)
+func (u *scheduleUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error) {
+	return u.scheduleRepo.GetAllBySchoolId(schoolId)
+}
 
-	if err != nil {
-		return nil, err
-	}
-
-	var finalSchedules []models.ScheduleGet
-
-	for _, schedule := range *schedules {
-		if err != nil {
-			return nil, err
-		}
-
-		course, err := u.courseRepo.GetById(schedule.CourseId)
-
-		if err != nil {
-			return nil, err
-		}
-
-		campus, err := u.campusRepo.GetById(schedule.CampusId)
-
-		if err != nil {
-			return nil, err
-		}
-
-		finalSchedules = append(finalSchedules, models.ScheduleGet{
-			Schedule: schedule,
-			Campus:   *campus,
-			Course:   *course,
-		})
-
-	}
-
-	return &finalSchedules, nil
+func (u *scheduleUseCase) GetPreloadById(scheduleId uint) (*models.Schedule, error) {
+	return u.scheduleRepo.GetPreloadById(scheduleId)
 }
 
 func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleGet, error) {
@@ -187,22 +159,15 @@ func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleG
 		return nil, err
 	}
 
-	course, err := u.courseRepo.GetById(schedule.CourseId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	campus, err := u.campusRepo.GetById(schedule.CampusId)
-
+  scheduleWithPreload, err := u.GetPreloadById(schedule.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.ScheduleGet{
 		Schedule: *schedule,
-		Campus:   *campus,
-		Course:   *course,
+		Campus:   scheduleWithPreload.Campus,
+		Course:   scheduleWithPreload.Course,
 	}, nil
 }
 
@@ -217,44 +182,7 @@ func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *mo
 
 	updatedSchedule.CreatedAt = dbSchedule.Schedule.CreatedAt
 	///////////////////////////////////////
-	course, err := u.courseRepo.GetById(dbSchedule.Course.ID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path, err := u.pathRepo.GetById(course.PathId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if school.UserID != user.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  "This course is not yours",
-		}
-	}
-
-	course, err = u.courseRepo.GetById(updatedSchedule.CourseId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path, err = u.pathRepo.GetById(course.PathId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	school, err = u.schoolRepo.GetById(path.SchoolId)
+	school, err := u.schoolRepo.GetById(updatedSchedule.SchoolId)
 
 	if err != nil {
 		return nil, err
@@ -274,35 +202,10 @@ func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *mo
 func (u *scheduleUseCase) Delete(user *models.User, id uint) error {
 	// Check not needed but added to handle a not found error because gorm do not return
 	// error if delete on a row that does not exist
-	schedule, err := u.GetById(user, id)
+	_, err := u.GetById(user, id)
 
 	if err != nil {
 		return err
-	}
-
-	course, err := u.courseRepo.GetById(schedule.Course.ID)
-
-	if err != nil {
-		return err
-	}
-
-	path, err := u.pathRepo.GetById(course.PathId)
-
-	if err != nil {
-		return err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return err
-	}
-
-	if school.UserID != user.ID {
-		return errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  "This course is not yours",
-		}
 	}
 
 	return u.scheduleRepo.Delete(id)

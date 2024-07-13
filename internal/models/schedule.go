@@ -15,7 +15,11 @@ type Schedule struct {
 	CourseId      uint   `json:"courseId" gorm:"column:course"`
 	CampusId      uint   `json:"campusId" gorm:"column:campus"`
 	ClassId       uint   `json:"classId" gorm:"column:class"`
+	SchoolId       uint   `json:"schoolId" gorm:"column:school_id"`
 	SignatureCode string `json:"-" gorm:"column:code"`
+  Course Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
+  Campus Campus `json:"campus" gorm:"foreignKey:CampusId;references:ID"`
+  Class Class `json:"class" gorm:"foreignKey:ClassId;references:ID"`
 }
 
 type ScheduleSignature struct {
@@ -38,7 +42,7 @@ type ScheduleSignatureCode struct {
 type ScheduleCreate struct {
 	Time     *uint `json:"time" binding:"required"`
 	Duration *uint `json:"duration" binding:"required"`
-	CourseId *uint `json:"courseId" binding:"required" `
+	CourseId *uint `json:"courseId" binding:"required"`
 	CampusId *uint `json:"campusId" binding:"required"`
 	ClassId  *uint `json:"classId" binding:"required"`
 }

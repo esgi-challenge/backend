@@ -7,6 +7,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/schedule"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -16,11 +17,12 @@ import (
 type scheduleHandlers struct {
 	cfg             *config.Config
 	scheduleUseCase schedule.UseCase
+	schoolUseCase school.UseCase
 	logger          logger.Logger
 }
 
-func NewScheduleHandlers(cfg *config.Config, scheduleUseCase schedule.UseCase, logger logger.Logger) schedule.Handlers {
-	return &scheduleHandlers{cfg: cfg, scheduleUseCase: scheduleUseCase, logger: logger}
+func NewScheduleHandlers(cfg *config.Config, scheduleUseCase schedule.UseCase, schoolUseCase school.UseCase, logger logger.Logger) schedule.Handlers {
+	return &scheduleHandlers{cfg: cfg, scheduleUseCase: scheduleUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -61,7 +63,14 @@ func (u *scheduleHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, scheduleDb)
+    preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, preloadedSchedule)
 	}
 }
 
@@ -208,7 +217,14 @@ func (u *scheduleHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		schedules, err := u.scheduleUseCase.GetAll(user)
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		schedules, err := u.scheduleUseCase.GetAllBySchoolId(school.ID)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -335,6 +351,13 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.ScheduleUpdate
 
 		scheduleUpdate, err := request.ValidateJSON(body, ctx)
@@ -350,6 +373,7 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 			CourseId: *scheduleUpdate.CourseId,
 			ClassId:  *scheduleUpdate.ClassId,
 			CampusId: *scheduleUpdate.CampusId,
+      SchoolId: school.ID,
 		}
 		scheduleDb, err := u.scheduleUseCase.Update(user, uint(idInt), schedule)
 
@@ -359,7 +383,14 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, scheduleDb)
+    preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, preloadedSchedule)
 	}
 }
 
