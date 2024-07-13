@@ -64,6 +64,16 @@ func (r *projectRepo) JoinProject(project *models.ProjectStudent) (*models.Proje
 	return project, nil
 }
 
+func (r *projectRepo) GetGroups(user *models.User, id uint) (*[]models.ProjectStudent, error) {
+	var project *[]models.ProjectStudent
+
+	if err := r.db.Model(&models.ProjectStudent{}).Joins("Student").Preload("Project").Where("project_id = ?", id).Find(&project).Error; err != nil {
+		return nil, err
+	}
+
+	return project, nil
+}
+
 func (r *projectRepo) GetById(user *models.User, id uint) (*models.Project, error) {
 	var project models.Project
 

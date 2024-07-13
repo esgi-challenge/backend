@@ -32,11 +32,18 @@ type ProjectUpdate struct {
 
 type ProjectStudent struct {
 	GormModel
-	Group     uint `json:"group" gorm:"column:group"`
-	ProjectId uint `json:"projectId" gorm:"column:project_id"`
-	StudentId uint `json:"studentId" gorm:"column:student_id"`
+	Group     uint    `json:"group" gorm:"column:group"`
+	ProjectId uint    `json:"projectId" gorm:"column:project_id"`
+	Project   Project `json:"project" gorm:"foreignKey:ProjectId;references:ID"`
+	StudentId uint    `json:"studentId" gorm:"column:student_id"`
+	Student   User    `json:"student" gorm:"foreignKey:StudentId;references:ID"`
 }
 
 type ProjectStudentCreate struct {
 	Group *uint `json:"group" binding:"required"`
+}
+
+type ProjectGroup struct {
+	GroupId uint   `json:"group" binding:"required"`
+	Users   []User `json:"members" binding:"required"`
 }

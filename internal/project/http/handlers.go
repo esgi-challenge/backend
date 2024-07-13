@@ -144,6 +144,48 @@ func (u *projectHandlers) GetById() gin.HandlerFunc {
 	}
 }
 
+// Get Groups
+//
+//	@Summary		Get project's groups
+//	@Description	Get project's groups
+//	@Tags			Project
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Success		200	{object}	[]models.ProjectGroup
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/projects/{id}/groups [get]
+func (u *projectHandlers) GetGroups() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		project, err := u.projectUseCase.GetGroups(user, uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, project)
+	}
+}
+
 // Join
 //
 //	@Summary		Join project

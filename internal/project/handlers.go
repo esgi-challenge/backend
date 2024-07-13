@@ -8,6 +8,7 @@ type Handlers interface {
 	Create() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
 	GetById() gin.HandlerFunc
+	GetGroups() gin.HandlerFunc
 	JoinProject() gin.HandlerFunc
 	QuitProject() gin.HandlerFunc
 	Update() gin.HandlerFunc

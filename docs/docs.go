@@ -1951,6 +1951,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/projects/{id}/groups": {
+            "get": {
+                "description": "Get project's groups",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get project's groups",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ProjectGroup"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/projects/{id}/join": {
             "post": {
                 "description": "Join project",
@@ -2081,6 +2125,37 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/schedules/": {
+            "get": {
+                "description": "Get UnAttended Schedules",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get UnAttended Schedules",
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -3188,6 +3263,9 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.Document": {
             "type": "object",
             "properties": {
+                "course": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Course"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -3216,6 +3294,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "courseId": {
+                    "type": "integer"
                 }
             }
         },
@@ -3428,8 +3509,14 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.Project": {
             "type": "object",
             "properties": {
+                "class": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                },
                 "classId": {
                     "type": "integer"
+                },
+                "course": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Course"
                 },
                 "courseId": {
                     "type": "integer"
@@ -3493,6 +3580,24 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_esgi-challenge_backend_internal_models.ProjectGroup": {
+            "type": "object",
+            "required": [
+                "group",
+                "members"
+            ],
+            "properties": {
+                "group": {
+                    "type": "integer"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                    }
+                }
+            }
+        },
         "github_com_esgi-challenge_backend_internal_models.ProjectStudent": {
             "type": "object",
             "properties": {
@@ -3508,8 +3613,14 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "project": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Project"
+                },
                 "projectId": {
                     "type": "integer"
+                },
+                "student": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
                 },
                 "studentId": {
                     "type": "integer"

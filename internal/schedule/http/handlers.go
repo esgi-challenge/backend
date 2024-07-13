@@ -72,9 +72,9 @@ func (u *scheduleHandlers) Create() gin.HandlerFunc {
 //	@Tags			Schedule
 //	@Accept			json
 //	@Produce		json
-//	@Success		201			{object}	models.Schedule
-//	@Failure		400			{object}	errorHandler.HttpErr
-//	@Failure		500			{object}	errorHandler.HttpErr
+//	@Success		201	{object}	models.Schedule
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
 //	@Router			/schedules/ [get]
 func (u *scheduleHandlers) GetUnattended() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

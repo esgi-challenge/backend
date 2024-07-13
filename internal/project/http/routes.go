@@ -13,4 +13,5 @@ func SetupProjectRoutes(projectGroup *gin.RouterGroup, h project.Handlers) {
 	projectGroup.PUT("/:id", h.Update())
 	projectGroup.POST("/:id/join", h.JoinProject())
 	projectGroup.DELETE("/:id/quit", h.QuitProject())
+	projectGroup.GET("/:id/groups", h.GetGroups())
 }

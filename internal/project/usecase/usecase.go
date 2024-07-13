@@ -102,6 +102,50 @@ func (u *projectUseCase) GetById(user *models.User, id uint) (*models.Project, e
 	return u.projectRepo.GetById(user, id)
 }
 
+func (u *projectUseCase) GetGroups(user *models.User, id uint) (*[]models.ProjectGroup, error) {
+	maxGroup := uint(1)
+	groups := []models.ProjectGroup{}
+
+	students, err := u.projectRepo.GetGroups(user, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, student := range *students {
+		if student.Group >= maxGroup {
+			maxGroup = student.Group + 1
+		}
+
+		var existingGroup *models.ProjectGroup
+
+		for _, group := range groups {
+			if group.GroupId == student.Group {
+				existingGroup = &group
+			}
+		}
+
+		if existingGroup == nil {
+			groups = append(groups, models.ProjectGroup{
+				GroupId: student.Group,
+				Users: []models.User{
+					student.Student,
+				},
+			})
+		} else {
+			existingGroup.Users = append(existingGroup.Users, student.Student)
+		}
+
+	}
+
+	groups = append(groups, models.ProjectGroup{
+		GroupId: maxGroup,
+		Users:   []models.User{},
+	})
+
+	return &groups, nil
+}
+
 func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *models.Project) (*models.Project, error) {
 	_, err := u.courseUseCase.GetById(updatedProject.CourseId)
 
