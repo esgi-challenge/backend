@@ -7,10 +7,10 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/schedule"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
-	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/gin-gonic/gin"
 )
 

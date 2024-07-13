@@ -134,25 +134,6 @@ func (u *classUseCase) Delete(user *models.User, id uint) error {
 		return err
 	}
 
-	path, err := u.pathRepo.GetById(class.PathId)
-
-	if err != nil {
-		return err
-	}
-
-	school, err := u.schoolRepo.GetById(path.SchoolId)
-
-	if err != nil {
-		return err
-	}
-
-	if school.UserID != user.ID {
-		return errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
-			HttpError:  errorHandler.Forbidden.Error(),
-		}
-	}
-
 	if err != nil {
 		return err
 	}
