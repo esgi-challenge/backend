@@ -10,17 +10,19 @@ import (
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/gin-gonic/gin"
 )
 
 type informationsHandlers struct {
 	cfg                 *config.Config
 	informationsUseCase informations.UseCase
+	schoolUseCase school.UseCase
 	logger              logger.Logger
 }
 
-func NewInformationsHandlers(cfg *config.Config, informationsUseCase informations.UseCase, logger logger.Logger) informations.Handlers {
-	return &informationsHandlers{cfg: cfg, informationsUseCase: informationsUseCase, logger: logger}
+func NewInformationsHandlers(cfg *config.Config, informationsUseCase informations.UseCase, schoolUseCase school.UseCase, logger logger.Logger) informations.Handlers {
+	return &informationsHandlers{cfg: cfg, informationsUseCase: informationsUseCase, schoolUseCase: schoolUseCase, logger: logger}
 }
 
 // Create
@@ -44,6 +46,13 @@ func (u *informationsHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		school, err := u.schoolUseCase.GetByUser(user)
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
 		var body models.InformationsCreate
 
 		informationsCreate, err := request.ValidateJSON(body, ctx)
@@ -56,7 +65,7 @@ func (u *informationsHandlers) Create() gin.HandlerFunc {
 		informations := &models.Informations{
 			Title:       informationsCreate.Title,
 			Description: informationsCreate.Description,
-			SchoolId:    informationsCreate.SchoolId,
+			SchoolId:    school.ID,
 		}
 
 		informationsDb, err := u.informationsUseCase.Create(user, informations)
@@ -73,8 +82,8 @@ func (u *informationsHandlers) Create() gin.HandlerFunc {
 
 // Read
 //
-//	@Summary		Get all informations
-//	@Description	Get all informations
+//	@Summary		Get all informations from schoolId
+//	@Description	Get all informations from schoolId
 //	@Tags			Informations
 //	@Produce		json
 //	@Success		200	{object}	[]models.Informations
@@ -89,7 +98,7 @@ func (u *informationsHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		informationss, err := u.informationsUseCase.GetAll(user)
+		informations, err := u.informationsUseCase.GetAll(user)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
@@ -97,7 +106,7 @@ func (u *informationsHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, informationss)
+		ctx.JSON(http.StatusOK, informations)
 	}
 }
 

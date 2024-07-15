@@ -99,7 +99,7 @@ func (s *Server) SetupHandlers() error {
 	classHandlers := classHttp.NewClassHandlers(s.cfg, classUseCase, schoolUseCase, s.logger)
 	courseHandlers := courseHttp.NewCourseHandlers(s.cfg, courseUseCase, schoolUseCase, s.logger)
 	scheduleHandlers := scheduleHttp.NewScheduleHandlers(s.cfg, scheduleUseCase, schoolUseCase, s.logger)
-	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, s.logger)
+	informationsHandlers := informationsHttp.NewInformationsHandlers(s.cfg, informationsUseCase, schoolUseCase, s.logger)
 	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
 	projectHandlers := projectHttp.NewProjectHandlers(s.cfg, projectsUseCase, s.logger)
 	documentHandlers := documentHttp.NewDocumentHandlers(s.cfg, documentUseCase, s.logger)

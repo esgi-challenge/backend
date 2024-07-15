@@ -10,11 +10,4 @@ type Informations struct {
 type InformationsCreate struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`
-	SchoolId    uint   `json:"schoolId" binding:"required"`
-}
-
-type InformationsUpdate struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	SchoolId    uint   `json:"schoolId" binding:"required"`
 }
