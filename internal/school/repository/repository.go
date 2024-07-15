@@ -25,7 +25,7 @@ func (r *schoolRepo) Create(school *models.School) (*models.School, error) {
 func (r *schoolRepo) GetByUser(user *models.User) (*models.School, error) {
 	var school models.School
 
-	if err := r.db.First(&school, "user_id = ?", user.ID).Error; err != nil {
+	if err := r.db.First(&school, "user_id = ? OR id = ?", user.ID, user.SchoolId).Error; err != nil {
 		return nil, err
 	}
 

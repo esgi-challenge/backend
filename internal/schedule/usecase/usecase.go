@@ -71,7 +71,7 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		CourseId:      *schedule.CourseId,
 		CampusId:      *schedule.CampusId,
 		ClassId:       *schedule.ClassId,
-    SchoolId: school.ID,
+		SchoolId:      school.ID,
 	})
 }
 
@@ -114,7 +114,7 @@ func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, erro
 	var finalSchedules []models.ScheduleGet
 
 	for _, schedule := range *schedules {
-    schedulePreload, err := u.GetPreloadById(schedule.ID)
+		schedulePreload, err := u.GetPreloadById(schedule.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -179,13 +179,13 @@ func (u *scheduleUseCase) GetPreloadById(scheduleId uint) (*models.Schedule, err
 }
 
 func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleGet, error) {
-	schedule, err := u.scheduleRepo.GetById(user.ID, id)
+	schedule, err := u.scheduleRepo.GetById(*user.ClassRefer, id)
 
 	if err != nil {
 		return nil, err
 	}
 
-  scheduleWithPreload, err := u.GetPreloadById(schedule.ID)
+	scheduleWithPreload, err := u.GetPreloadById(schedule.ID)
 	if err != nil {
 		return nil, err
 	}

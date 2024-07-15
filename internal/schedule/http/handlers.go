@@ -17,7 +17,7 @@ import (
 type scheduleHandlers struct {
 	cfg             *config.Config
 	scheduleUseCase schedule.UseCase
-	schoolUseCase school.UseCase
+	schoolUseCase   school.UseCase
 	logger          logger.Logger
 }
 
@@ -63,7 +63,7 @@ func (u *scheduleHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
-    preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
+		preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())
@@ -373,7 +373,7 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 			CourseId: *scheduleUpdate.CourseId,
 			ClassId:  *scheduleUpdate.ClassId,
 			CampusId: *scheduleUpdate.CampusId,
-      SchoolId: school.ID,
+			SchoolId: school.ID,
 		}
 		scheduleDb, err := u.scheduleUseCase.Update(user, uint(idInt), schedule)
 
@@ -383,7 +383,7 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 			return
 		}
 
-    preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
+		preloadedSchedule, err := u.scheduleUseCase.GetPreloadById(scheduleDb.ID)
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
 			u.logger.Infof("Request: %v", err.Error())

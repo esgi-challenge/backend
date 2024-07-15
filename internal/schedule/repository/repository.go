@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/schedule"
 	"gorm.io/gorm"
@@ -70,14 +72,16 @@ func (r *scheduleRepo) GetPreloadById(scheduleId uint) (*models.Schedule, error)
 	return &schedule, nil
 }
 
-func (r *scheduleRepo) GetById(userId, id uint) (*models.Schedule, error) {
-	var schedules models.Schedule
+func (r *scheduleRepo) GetById(classRefer, id uint) (*models.Schedule, error) {
+	var schedule models.Schedule
 
-	if err := r.db.Raw(getAllByUserUnique, userId, id).Scan(&schedules).Error; err != nil {
+	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Course.Teacher").Preload("Campus").Preload("Class").Joins("left join classes on classes.id = class").Where("classes.id = ?", classRefer).First(&schedule, id).Error; err != nil {
 		return nil, err
 	}
 
-	return &schedules, nil
+	fmt.Println(schedule)
+
+	return &schedule, nil
 }
 
 func (r *scheduleRepo) Update(id uint, schedule *models.Schedule) (*models.Schedule, error) {
