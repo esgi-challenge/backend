@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/esgi-challenge/backend/config"
@@ -58,6 +59,8 @@ func (u *projectUseCase) Create(user *models.User, project *models.Project) (*mo
 func (u *projectUseCase) JoinProject(user *models.User, join *models.ProjectStudentCreate, id uint) (*models.ProjectStudent, error) {
 	project, err := u.GetById(user, id)
 
+	fmt.Println(project)
+
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +77,8 @@ func (u *projectUseCase) JoinProject(user *models.User, join *models.ProjectStud
 			HttpError:  "You already joined a group",
 		}
 	}
+
+	fmt.Println(*join.Group)
 
 	return u.projectRepo.JoinProject(&models.ProjectStudent{
 		Group:     *join.Group,

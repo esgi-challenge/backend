@@ -21,6 +21,7 @@ type User struct {
 	PasswordResetCode string    `json:"-" gorm:"column:password_reset_code"`
 	UserKind          *UserKind `json:"userKind" gorm:"column:user_kind"`
 	SchoolId          *uint     `json:"schoolId" gorm:"column:school_id"`
+	Class             Class     `json:"class" gorm:"foreignKey:ClassRefer;references:ID"`
 	ClassRefer        *uint     `json:"classRefer" gorm:"column:class_refer"`
 }
 type UserCreate struct {
