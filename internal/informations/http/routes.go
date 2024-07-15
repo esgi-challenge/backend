@@ -10,5 +10,4 @@ func SetupInformationsRoutes(informationsGroup *gin.RouterGroup, h informations.
 	informationsGroup.GET("", h.GetAll())
 	informationsGroup.GET("/:id", h.GetById())
 	informationsGroup.DELETE("/:id", h.Delete())
-	informationsGroup.PUT("/:id", h.Update())
 }

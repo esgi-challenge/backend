@@ -62,14 +62,6 @@ func (r *informationsRepo) GetById(id uint) (*models.Informations, error) {
 	return &informations, nil
 }
 
-func (r *informationsRepo) Update(id uint, informations *models.Informations) (*models.Informations, error) {
-	if err := r.db.Save(informations).Error; err != nil {
-		return nil, err
-	}
-
-	return informations, nil
-}
-
 func (r *informationsRepo) Delete(id uint) error {
 	if err := r.db.Debug().Delete(&models.Informations{}, id).Error; err != nil {
 		return err

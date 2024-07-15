@@ -7,5 +7,6 @@ import (
 type Handlers interface {
 	Create() gin.HandlerFunc
 	GetById() gin.HandlerFunc
+  GetAllByUserId() gin.HandlerFunc
 	Delete() gin.HandlerFunc
 }

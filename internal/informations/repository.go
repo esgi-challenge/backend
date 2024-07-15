@@ -10,6 +10,5 @@ type Repository interface {
 	GetById(id uint) (*models.Informations, error)
 	GetBySchoolId(schoolId uint) (*[]models.Informations, error)
 	GetBySchoolIdAndId(schoolId uint, informationId uint) (*models.Informations, error)
-	Update(id uint, informations *models.Informations) (*models.Informations, error)
 	Delete(id uint) error
 }

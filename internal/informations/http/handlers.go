@@ -143,63 +143,6 @@ func (u *informationsHandlers) GetById() gin.HandlerFunc {
 	}
 }
 
-// Update
-//
-//	@Summary		Update informations
-//	@Description	Update informations
-//	@Tags			Informations
-//	@Accept			json
-//	@Produce		json
-//	@Param			id				path		int							true	"id"
-//	@Param			informations	body		models.InformationsUpdate	true	"Informations infos"
-//	@Success		201				{object}	models.Informations
-//	@Failure		400				{object}	errorHandler.HttpErr
-//	@Failure		500				{object}	errorHandler.HttpErr
-//	@Router			/informationss/{id} [put]
-func (u *informationsHandlers) Update() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
-
-		if user == nil || err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
-			return
-		}
-
-		id := ctx.Params.ByName("id")
-		idInt, err := strconv.Atoi(id)
-
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
-		var body models.InformationsUpdate
-
-		informationsUpdate, err := request.ValidateJSON(body, ctx)
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
-		informations := &models.Informations{
-			Title:       informationsUpdate.Title,
-			Description: informationsUpdate.Description,
-			SchoolId:    informationsUpdate.SchoolId,
-		}
-		informationsDb, err := u.informationsUseCase.Update(user, uint(idInt), informations)
-
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
-		ctx.JSON(http.StatusOK, informationsDb)
-	}
-}
-
 // Delete
 //
 //	@Summary		Delete informations by id

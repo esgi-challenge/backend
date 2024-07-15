@@ -48,6 +48,7 @@ func (u *documentUseCase) Create(user *models.User, document *models.DocumentCre
 		}
 
 		return u.documentRepo.Create(&models.Document{
+      Name: document.Name,
 			Path:   filename,
 			UserId: user.ID,
 			Course: *course,
@@ -55,9 +56,14 @@ func (u *documentUseCase) Create(user *models.User, document *models.DocumentCre
 	}
 
 	return u.documentRepo.Create(&models.Document{
+    Name: document.Name,
 		Path:   filename,
 		UserId: user.ID,
 	})
+}
+
+func (u *documentUseCase) GetAllByUserId(userId uint) (*[]models.Document, error) {
+	return u.documentRepo.GetAllByUserId(userId)
 }
 
 func (u *documentUseCase) GetById(user *models.User, id uint) (*models.Document, error) {

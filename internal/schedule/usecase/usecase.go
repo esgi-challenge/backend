@@ -104,6 +104,32 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 	})
 }
 
+func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, error) {
+	schedules, err := u.scheduleRepo.GetAll(user.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var finalSchedules []models.ScheduleGet
+
+	for _, schedule := range *schedules {
+    schedulePreload, err := u.GetPreloadById(schedule.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		finalSchedules = append(finalSchedules, models.ScheduleGet{
+			Schedule: schedule,
+			Campus:   schedulePreload.Campus,
+			Course:   schedulePreload.Course,
+		})
+
+	}
+
+	return &finalSchedules, nil
+}
+
 func (u *scheduleUseCase) GetUnattended(user *models.User) ([]models.ScheduleGet, error) {
 	now := time.Now()
 	timestamp := uint(now.Unix())

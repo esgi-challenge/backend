@@ -42,12 +42,14 @@ func (r *documentRepo) GetById(id uint) (*models.Document, error) {
 	return &document, nil
 }
 
-func (r *documentRepo) Update(id uint, document *models.Document) (*models.Document, error) {
-	if err := r.db.Save(document).Error; err != nil {
+func (r *documentRepo) GetAllByUserId(userId uint) (*[]models.Document, error) {
+	var documents []models.Document
+
+	if err := r.db.Preload("Course").Where("user_id = ?", userId).Find(&documents).Error; err != nil {
 		return nil, err
 	}
 
-	return document, nil
+	return &documents, nil
 }
 
 func (r *documentRepo) Delete(id uint) error {

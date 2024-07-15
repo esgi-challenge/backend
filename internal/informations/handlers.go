@@ -8,6 +8,5 @@ type Handlers interface {
 	Create() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
 	GetById() gin.HandlerFunc
-	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc
 }

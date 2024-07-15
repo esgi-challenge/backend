@@ -52,6 +52,8 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 			return
 		}
 
+		name := ctx.Request.FormValue("name")
+
 		file, header, err := ctx.Request.FormFile("file")
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.BodyParamsErrorResponse())
@@ -84,6 +86,7 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 		}
 
 		documentDb, err := u.documentUseCase.Create(user, &models.DocumentCreate{
+      Name: name,
 			Byte:     bs,
 			CourseId: courseIdUint,
 		})
@@ -95,6 +98,38 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusCreated, documentDb)
+	}
+}
+
+// Read All
+//
+//	@Summary		Get all documents
+//	@Description	Get all documents
+//	@Tags			Document
+//	@Produce		json
+//	@Success		200	{object}	[]models.Document
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/documents [get]
+func (u *documentHandlers) GetAllByUserId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		document, err := u.documentUseCase.GetAllByUserId(uint(user.ID))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, document)
 	}
 }
 

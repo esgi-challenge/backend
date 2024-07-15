@@ -50,6 +50,16 @@ func (r *scheduleRepo) GetAllBySchoolId(schoolId uint) (*[]models.Schedule, erro
 	return &schedules, nil
 }
 
+func (r *scheduleRepo) GetAll(userId uint) (*[]models.Schedule, error) {
+	var schedules []models.Schedule
+
+	if err := r.db.Raw(getAllByUser, userId).Scan(&schedules).Error; err != nil {
+		return nil, err
+	}
+
+	return &schedules, nil
+}
+
 func (r *scheduleRepo) GetPreloadById(scheduleId uint) (*models.Schedule, error) {
 	var schedule models.Schedule
 

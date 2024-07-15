@@ -90,21 +90,28 @@ func (u *pathHandlers) Create() gin.HandlerFunc {
 //	@Router			/paths [get]
 func (u *pathHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
 			return
 		}
 
-		school, err := u.schoolUseCase.GetByUser(user)
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
+    var schoolId uint
 
-		paths, err := u.pathUseCase.GetAllBySchoolId(school.ID)
+    if *user.UserKind == models.ADMINISTRATOR {
+      school, err := u.schoolUseCase.GetByUser(user)
+      if err != nil {
+        ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+        u.logger.Infof("Request: %v", err.Error())
+        return
+      }
+      schoolId = school.ID
+    } else {
+      schoolId = *user.SchoolId
+    }
+
+		paths, err := u.pathUseCase.GetAllBySchoolId(schoolId)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
