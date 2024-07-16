@@ -91,7 +91,7 @@ func (s *Server) SetupHandlers() error {
 	scheduleUseCase := scheduleUseCase.NewScheduleUseCase(s.cfg, scheduleRepo, courseRepo, pathRepo, schoolRepo, campusRepo, userRepo, s.logger)
 	informationsUseCase := informationsUseCase.NewInformationsUseCase(s.cfg, informationsRepo, schoolRepo, s.logger)
 	chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
-	documentUseCase := documentUseCase.NewDocumentUseCase(s.cfg, documentRepo, courseRepo, s.logger, *s.storage)
+	documentUseCase := documentUseCase.NewDocumentUseCase(s.cfg, documentRepo, courseRepo, schoolRepo, s.logger, *s.storage)
 	projectsUseCase := projectUseCase.NewProjectUseCase(s.cfg, projectRepo, courseUseCase, classUseCase, documentUseCase, s.logger)
 	noteUseCase := noteUseCase.NewNoteUseCase(s.cfg, noteRepo, s.logger)
 

@@ -133,6 +133,38 @@ func (u *documentHandlers) GetAllByUserId() gin.HandlerFunc {
 	}
 }
 
+// Read All
+//
+//	@Summary		Get all documents
+//	@Description	Get all documents
+//	@Tags			Document
+//	@Produce		json
+//	@Success		200	{object}	[]models.Document
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/documents [get]
+func (u *documentHandlers) GetAll() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		documents, err := u.documentUseCase.GetAll(user)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, documents)
+	}
+}
+
 // Read
 //
 //	@Summary		Get document by id

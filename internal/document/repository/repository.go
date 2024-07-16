@@ -42,6 +42,16 @@ func (r *documentRepo) GetById(id uint) (*models.Document, error) {
 	return &document, nil
 }
 
+func (r *documentRepo) GetAllBySchoolId(schoolId uint) (*[]models.Document, error) {
+	var documents []models.Document
+
+	if err := r.db.Preload("Course").Where("school_id = ?", schoolId).Find(&documents).Error; err != nil {
+		return nil, err
+	}
+
+	return &documents, nil
+}
+
 func (r *documentRepo) GetAllByUserId(userId uint) (*[]models.Document, error) {
 	var documents []models.Document
 

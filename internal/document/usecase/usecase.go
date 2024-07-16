@@ -8,6 +8,7 @@ import (
 	"github.com/esgi-challenge/backend/internal/course"
 	"github.com/esgi-challenge/backend/internal/document"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/storage"
@@ -16,16 +17,18 @@ import (
 type documentUseCase struct {
 	documentRepo document.Repository
 	courseRepo   course.Repository
+	schoolRepo   school.Repository
 	cfg          *config.Config
 	storage      storage.Storage
 	logger       logger.Logger
 }
 
-func NewDocumentUseCase(cfg *config.Config, documentRepo document.Repository, courseRepo course.Repository, logger logger.Logger, storage storage.Storage) document.UseCase {
+func NewDocumentUseCase(cfg *config.Config, documentRepo document.Repository, courseRepo course.Repository, schoolRepo school.Repository, logger logger.Logger, storage storage.Storage) document.UseCase {
 	return &documentUseCase{
 		cfg:          cfg,
 		documentRepo: documentRepo,
 		courseRepo:   courseRepo,
+		schoolRepo:   schoolRepo,
 		logger:       logger,
 		storage:      storage,
 	}
@@ -33,6 +36,12 @@ func NewDocumentUseCase(cfg *config.Config, documentRepo document.Repository, co
 
 func (u *documentUseCase) Create(user *models.User, document *models.DocumentCreate) (*models.Document, error) {
 	filename, err := u.storage.UploadFile(context.Background(), document.Byte)
+
+	if err != nil {
+		return nil, err
+	}
+
+	school, err := u.schoolRepo.GetByUser(user)
 
 	if err != nil {
 		return nil, err
@@ -48,18 +57,30 @@ func (u *documentUseCase) Create(user *models.User, document *models.DocumentCre
 		}
 
 		return u.documentRepo.Create(&models.Document{
-			Name:   document.Name,
-			Path:   filename,
-			UserId: user.ID,
-			Course: *course,
+			Name:     document.Name,
+			Path:     filename,
+			UserId:   user.ID,
+			Course:   *course,
+			SchoolId: school.ID,
 		})
 	}
 
 	return u.documentRepo.Create(&models.Document{
-		Name:   document.Name,
-		Path:   filename,
-		UserId: user.ID,
+		Name:     document.Name,
+		Path:     filename,
+		UserId:   user.ID,
+		SchoolId: school.ID,
 	})
+}
+
+func (u *documentUseCase) GetAll(user *models.User) (*[]models.Document, error) {
+	school, err := u.schoolRepo.GetByUser(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return u.documentRepo.GetAllBySchoolId(school.ID)
 }
 
 func (u *documentUseCase) GetAllByUserId(userId uint) (*[]models.Document, error) {
