@@ -10,7 +10,7 @@ type Project struct {
   TeacherId uint `json:"teacherId" gorm:"column:teacher_id"`
 	Course        Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
 	Class         Class  `json:"class" gorm:"foreignKey:ClassId;references:ID"`
-	GroupCapacity uint   `json:"groupCapacity" gorm:"column:group_capacity"`
+	Document         Class  `json:"document" gorm:"foreignKey:DocumentId;references:ID"`
 }
 
 type ProjectCreate struct {
@@ -19,7 +19,6 @@ type ProjectCreate struct {
 	CourseId      *uint  `json:"courseId" binding:"required"`
 	ClassId       *uint  `json:"classId" binding:"required"`
 	DocumentId    *uint  `json:"documentId" binding:"required"`
-	GroupCapacity *uint  `json:"groupCapacity" binding:"required"`
 }
 
 type ProjectUpdate struct {
@@ -28,7 +27,6 @@ type ProjectUpdate struct {
 	CourseId      *uint  `json:"courseId" binding:"required"`
 	ClassId       *uint  `json:"classId" binding:"required"`
 	DocumentId    *uint  `json:"documentId" binding:"required"`
-	GroupCapacity *uint  `json:"groupCapacity" binding:"required"`
 }
 
 type ProjectStudent struct {

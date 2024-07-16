@@ -53,7 +53,13 @@ func (u *projectUseCase) Create(user *models.User, project *models.Project) (*mo
 		return nil, err
 	}
 
-	return u.projectRepo.Create(project)
+  project, err = u.projectRepo.Create(project)
+  if err != nil {
+    return nil, err
+  }
+
+  //Retrieve preload
+  return u.projectRepo.GetPreloadById(project.ID)
 }
 
 func (u *projectUseCase) JoinProject(user *models.User, join *models.ProjectStudentCreate, id uint) (*models.ProjectStudent, error) {
@@ -180,7 +186,12 @@ func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *mode
 	///////////////////////////////////////
 
 	updatedProject.ID = id
-	return u.projectRepo.Update(id, updatedProject)
+  project, err := u.projectRepo.Update(id, updatedProject)
+  if err != nil {
+    return nil, err
+  }
+
+  return u.projectRepo.GetPreloadById(project.ID)
 }
 
 func (u *projectUseCase) Delete(user *models.User, id uint) error {

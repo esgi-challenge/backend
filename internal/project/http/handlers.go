@@ -357,7 +357,7 @@ func (u *projectHandlers) Update() gin.HandlerFunc {
 //	@Router			/projects/{id} [delete]
 func (u *projectHandlers) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())

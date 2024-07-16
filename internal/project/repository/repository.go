@@ -22,10 +22,20 @@ func (r *projectRepo) Create(project *models.Project) (*models.Project, error) {
 	return project, nil
 }
 
+func (r *projectRepo) GetPreloadById(id uint) (*models.Project, error) {
+	var project models.Project
+
+	if err := r.db.Model(&models.Project{}).Preload("Class").Preload("Course").Preload("Document").Where("id = ?", id).Find(&project).Error; err != nil {
+		return nil, err
+	}
+
+	return &project, nil
+}
+
 func (r *projectRepo) GetAllByTeacher(user *models.User) (*[]models.Project, error) {
 	var projects []models.Project
 
-	if err := r.db.Model(&models.Project{}).Preload("Class").Where("teacher_id = ?", user.ID).Find(&projects).Error; err != nil {
+	if err := r.db.Model(&models.Project{}).Preload("Class").Preload("Course").Preload("Document").Where("teacher_id = ?", user.ID).Find(&projects).Error; err != nil {
 		return nil, err
 	}
 
