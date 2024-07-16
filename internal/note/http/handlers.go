@@ -108,7 +108,7 @@ func (u *noteHandlers) GetAll() gin.HandlerFunc {
 //	@Tags			Note
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"id"
+//	@Param			id		path		int					true	"id"
 //	@Param			note	body		models.NoteUpdate	true	"Note infos"
 //	@Success		201		{object}	models.Note
 //	@Failure		400		{object}	errorHandler.HttpErr

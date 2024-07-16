@@ -243,14 +243,16 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        type: integer
       id:
         type: integer
+      name:
+        type: string
       path:
         type: string
       updatedAt:
         type: string
+      userId:
+        type: integer
     type: object
   github_com_esgi-challenge_backend_internal_models.DocumentCreate:
     properties:
@@ -260,6 +262,8 @@ definitions:
         type: array
       courseId:
         type: integer
+      name:
+        type: string
     type: object
   github_com_esgi-challenge_backend_internal_models.Example:
     properties:
@@ -321,26 +325,10 @@ definitions:
     properties:
       description:
         type: string
-      schoolId:
-        type: integer
       title:
         type: string
     required:
     - description
-    - schoolId
-    - title
-    type: object
-  github_com_esgi-challenge_backend_internal_models.InformationsUpdate:
-    properties:
-      description:
-        type: string
-      schoolId:
-        type: integer
-      title:
-        type: string
-    required:
-    - description
-    - schoolId
     - title
     type: object
   github_com_esgi-challenge_backend_internal_models.LocationInput:
@@ -364,6 +352,57 @@ definitions:
         type: integer
       updatedAt:
         type: string
+    type: object
+  github_com_esgi-challenge_backend_internal_models.Note:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      project:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Project'
+      projectId:
+        type: integer
+      student:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+      studentId:
+        type: integer
+      teacher:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+      teacherId:
+        type: integer
+      updatedAt:
+        type: string
+      value:
+        type: integer
+    type: object
+  github_com_esgi-challenge_backend_internal_models.NoteCreate:
+    properties:
+      projectId:
+        type: integer
+      studentId:
+        type: integer
+      value:
+        type: integer
+    required:
+    - projectId
+    - studentId
+    - value
+    type: object
+  github_com_esgi-challenge_backend_internal_models.NoteUpdate:
+    properties:
+      projectId:
+        type: integer
+      studentId:
+        type: integer
+      value:
+        type: integer
+    required:
+    - projectId
+    - studentId
+    - value
     type: object
   github_com_esgi-challenge_backend_internal_models.Path:
     properties:
@@ -412,13 +451,15 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
+      document:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
       documentId:
         type: integer
       endDate:
         type: string
-      groupCapacity:
-        type: integer
       id:
+        type: integer
+      teacherId:
         type: integer
       title:
         type: string
@@ -435,8 +476,6 @@ definitions:
         type: integer
       endDate:
         type: string
-      groupCapacity:
-        type: integer
       title:
         maxLength: 64
         minLength: 2
@@ -446,7 +485,6 @@ definitions:
     - courseId
     - documentId
     - endDate
-    - groupCapacity
     - title
     type: object
   github_com_esgi-challenge_backend_internal_models.ProjectGroup:
@@ -491,10 +529,16 @@ definitions:
     type: object
   github_com_esgi-challenge_backend_internal_models.Schedule:
     properties:
+      campus:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Campus'
       campusId:
         type: integer
+      class:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
       classId:
         type: integer
+      course:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Course'
       courseId:
         type: integer
       createdAt:
@@ -504,6 +548,10 @@ definitions:
       duration:
         type: integer
       id:
+        type: integer
+      qrCodeEnabled:
+        type: boolean
+      schoolId:
         type: integer
       time:
         type: integer
@@ -520,6 +568,8 @@ definitions:
         type: integer
       duration:
         type: integer
+      qrCodeEnabled:
+        type: boolean
       time:
         type: integer
     required:
@@ -527,6 +577,7 @@ definitions:
     - classId
     - courseId
     - duration
+    - qrCodeEnabled
     - time
     type: object
   github_com_esgi-challenge_backend_internal_models.ScheduleUpdate:
@@ -539,6 +590,8 @@ definitions:
         type: integer
       duration:
         type: integer
+      qrCodeEnabled:
+        type: boolean
       time:
         type: integer
     required:
@@ -546,6 +599,7 @@ definitions:
     - classId
     - courseId
     - duration
+    - qrCodeEnabled
     - time
     type: object
   github_com_esgi-challenge_backend_internal_models.School:
@@ -634,6 +688,8 @@ definitions:
     type: object
   github_com_esgi-challenge_backend_internal_models.User:
     properties:
+      class:
+        $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
       classRefer:
         type: integer
       createdAt:
@@ -1248,6 +1304,28 @@ paths:
       summary: Remove student form class
       tags:
       - Class
+  /classes/student:
+    get:
+      description: Get class of student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Class'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get class of user
+      tags:
+      - Class
   /classes/students/empty:
     get:
       description: Get school students without class
@@ -1400,6 +1478,29 @@ paths:
       tags:
       - Course
   /documents:
+    get:
+      description: Get all documents
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Document'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all documents
+      tags:
+      - Document
     post:
       consumes:
       - application/json
@@ -1619,7 +1720,7 @@ paths:
       summary: Check API health
   /informations:
     get:
-      description: Get all informations
+      description: Get all informations from schoolId
       produces:
       - application/json
       responses:
@@ -1632,7 +1733,7 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Get all informations
+      summary: Get all informations from schoolId
       tags:
       - Informations
   /informationss:
@@ -1713,38 +1814,106 @@ paths:
       summary: Get informations by id
       tags:
       - Informations
-    put:
+  /notes:
+    get:
+      description: Get all note
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Note'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all note
+      tags:
+      - Note
+    post:
       consumes:
       - application/json
-      description: Update informations
+      description: create new note
       parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Informations infos
+      - description: Note infos
         in: body
-        name: informations
+        name: note
         required: true
         schema:
-          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.InformationsUpdate'
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.NoteCreate'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Informations'
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Note'
         "400":
           description: Bad Request
           schema: {}
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Update informations
+      summary: Create new note
       tags:
-      - Informations
+      - Note
+  /notes/{id}:
+    delete:
+      description: Delete note by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete note by id
+      tags:
+      - Note
+    put:
+      consumes:
+      - application/json
+      description: Update note
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Note infos
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.NoteUpdate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.Note'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update note
+      tags:
+      - Note
   /paths:
     get:
       description: Get all path
@@ -2279,6 +2448,36 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Check Sign for schedule
+      tags:
+      - Schedule
+  /schedules/{id}/students:
+    get:
+      description: Get schedule's students by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_esgi-challenge_backend_internal_models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get schedule's students by id
       tags:
       - Schedule
   /schools:

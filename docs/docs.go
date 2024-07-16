@@ -635,6 +635,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/classes/student": {
+            "get": {
+                "description": "Get class of student",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Get class of user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/classes/students/empty": {
             "get": {
                 "description": "Get school students without class",
@@ -1076,6 +1108,39 @@ const docTemplate = `{
             }
         },
         "/documents": {
+            "get": {
+                "description": "Get all documents",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Document"
+                ],
+                "summary": "Get all documents",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Document"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
             "post": {
                 "description": "create new document",
                 "consumes": [
@@ -1399,14 +1464,14 @@ const docTemplate = `{
         },
         "/informations": {
             "get": {
-                "description": "Get all informations",
+                "description": "Get all informations from schoolId",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Informations"
                 ],
-                "summary": "Get all informations",
+                "summary": "Get all informations from schoolId",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1506,8 +1571,67 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Update informations",
+            "delete": {
+                "description": "Delete informations by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Informations"
+                ],
+                "summary": "Delete informations by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/notes": {
+            "get": {
+                "description": "Get all note",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Get all note",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Note"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "create new note",
                 "consumes": [
                     "application/json"
                 ],
@@ -1515,9 +1639,51 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Informations"
+                    "Note"
                 ],
-                "summary": "Update informations",
+                "summary": "Create new note",
+                "parameters": [
+                    {
+                        "description": "Note infos",
+                        "name": "note",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.NoteCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Note"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/notes/{id}": {
+            "put": {
+                "description": "Update note",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Update note",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1527,12 +1693,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Informations infos",
-                        "name": "informations",
+                        "description": "Note infos",
+                        "name": "note",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.InformationsUpdate"
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.NoteUpdate"
                         }
                     }
                 ],
@@ -1540,7 +1706,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Informations"
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Note"
                         }
                     },
                     "400": {
@@ -1554,14 +1720,14 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete informations by id",
+                "description": "Delete note by id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Informations"
+                    "Note"
                 ],
-                "summary": "Delete informations by id",
+                "summary": "Delete note by id",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2368,6 +2534,50 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/schedules/{id}/students": {
+            "get": {
+                "description": "Get schedule's students by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get schedule's students by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {}
                     },
                     "500": {
@@ -3272,17 +3482,20 @@ const docTemplate = `{
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
-                "description": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "path": {
                     "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -3297,6 +3510,9 @@ const docTemplate = `{
                 },
                 "courseId": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -3387,34 +3603,11 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "description",
-                "schoolId",
                 "title"
             ],
             "properties": {
                 "description": {
                     "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_esgi-challenge_backend_internal_models.InformationsUpdate": {
-            "type": "object",
-            "required": [
-                "description",
-                "schoolId",
-                "title"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "schoolId": {
-                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -3452,6 +3645,82 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.Note": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "project": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Project"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "student": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                },
+                "studentId": {
+                    "type": "integer"
+                },
+                "teacher": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.User"
+                },
+                "teacherId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.NoteCreate": {
+            "type": "object",
+            "required": [
+                "projectId",
+                "studentId",
+                "value"
+            ],
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "studentId": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_esgi-challenge_backend_internal_models.NoteUpdate": {
+            "type": "object",
+            "required": [
+                "projectId",
+                "studentId",
+                "value"
+            ],
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "studentId": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "integer"
                 }
             }
         },
@@ -3527,16 +3796,19 @@ const docTemplate = `{
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
+                "document": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                },
                 "documentId": {
                     "type": "integer"
                 },
                 "endDate": {
                     "type": "string"
                 },
-                "groupCapacity": {
+                "id": {
                     "type": "integer"
                 },
-                "id": {
+                "teacherId": {
                     "type": "integer"
                 },
                 "title": {
@@ -3554,7 +3826,6 @@ const docTemplate = `{
                 "courseId",
                 "documentId",
                 "endDate",
-                "groupCapacity",
                 "title"
             ],
             "properties": {
@@ -3569,9 +3840,6 @@ const docTemplate = `{
                 },
                 "endDate": {
                     "type": "string"
-                },
-                "groupCapacity": {
-                    "type": "integer"
                 },
                 "title": {
                     "type": "string",
@@ -3644,11 +3912,20 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.Schedule": {
             "type": "object",
             "properties": {
+                "campus": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Campus"
+                },
                 "campusId": {
                     "type": "integer"
                 },
+                "class": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                },
                 "classId": {
                     "type": "integer"
+                },
+                "course": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Course"
                 },
                 "courseId": {
                     "type": "integer"
@@ -3663,6 +3940,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "qrCodeEnabled": {
+                    "type": "boolean"
+                },
+                "schoolId": {
                     "type": "integer"
                 },
                 "time": {
@@ -3680,6 +3963,7 @@ const docTemplate = `{
                 "classId",
                 "courseId",
                 "duration",
+                "qrCodeEnabled",
                 "time"
             ],
             "properties": {
@@ -3694,6 +3978,9 @@ const docTemplate = `{
                 },
                 "duration": {
                     "type": "integer"
+                },
+                "qrCodeEnabled": {
+                    "type": "boolean"
                 },
                 "time": {
                     "type": "integer"
@@ -3707,6 +3994,7 @@ const docTemplate = `{
                 "classId",
                 "courseId",
                 "duration",
+                "qrCodeEnabled",
                 "time"
             ],
             "properties": {
@@ -3721,6 +4009,9 @@ const docTemplate = `{
                 },
                 "duration": {
                     "type": "integer"
+                },
+                "qrCodeEnabled": {
+                    "type": "boolean"
                 },
                 "time": {
                     "type": "integer"
@@ -3854,6 +4145,9 @@ const docTemplate = `{
         "github_com_esgi-challenge_backend_internal_models.User": {
             "type": "object",
             "properties": {
+                "class": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                },
                 "classRefer": {
                     "type": "integer"
                 },
