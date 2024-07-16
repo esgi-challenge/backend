@@ -11,7 +11,7 @@ func SetupClassRoutes(classGroup *gin.RouterGroup, h class.Handlers) {
 	classGroup.POST("", h.Create())
 	classGroup.GET("", h.GetAll())
 	classGroup.GET("/:id", h.GetById())
-	classGroup.GET("/students", h.GetByStudent())
+	classGroup.GET("/student", h.GetByStudent())
 	classGroup.GET("/students/empty", h.GetClassLessStudents())
 	classGroup.DELETE("/:id", h.Delete())
 	classGroup.PUT("/:id", h.Update())
