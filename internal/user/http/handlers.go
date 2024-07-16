@@ -187,14 +187,29 @@ func (u *userHandlers) UpdateMe() gin.HandlerFunc {
 			return
 		}
 
+		var firstname, lastname string
+
+		if meUpdate.Firstname != "" {
+			firstname = meUpdate.Firstname
+		} else {
+			firstname = userDb.Firstname
+		}
+
+		if meUpdate.Lastname != "" {
+			lastname = meUpdate.Lastname
+		} else {
+			lastname = userDb.Lastname
+		}
+
 		me := &models.User{
-			Firstname:  meUpdate.Firstname,
-			Lastname:   meUpdate.Lastname,
+			Firstname:  firstname,
+			Lastname:   lastname,
 			Email:      meUpdate.Email,
 			Password:   userDb.Password,
 			UserKind:   userDb.UserKind,
 			SchoolId:   userDb.SchoolId,
 			ClassRefer: userDb.ClassRefer,
+			Phone:      meUpdate.Phone,
 		}
 		updatedMe, err := u.userUseCase.Update(userDb.ID, me)
 

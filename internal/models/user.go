@@ -23,6 +23,7 @@ type User struct {
 	SchoolId          *uint     `json:"schoolId" gorm:"column:school_id"`
 	Class             Class     `json:"class" gorm:"foreignKey:ClassRefer;references:ID"`
 	ClassRefer        *uint     `json:"classRefer" gorm:"column:class_refer"`
+	Phone             string    `json:"phone" gorm:"column:phone"`
 }
 type UserCreate struct {
 	Firstname string   `json:"firstname"`
@@ -50,6 +51,7 @@ type UpdateMe struct {
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`
+	Phone     string `json:"phone"`
 }
 
 type UpdatePasswordMe struct {
