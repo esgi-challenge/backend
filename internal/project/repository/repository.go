@@ -22,6 +22,16 @@ func (r *projectRepo) Create(project *models.Project) (*models.Project, error) {
 	return project, nil
 }
 
+func (r *projectRepo) GetAllByTeacher(user *models.User) (*[]models.Project, error) {
+	var projects []models.Project
+
+	if err := r.db.Model(&models.Project{}).Preload("Class").Where("teacher_id = ?", user.ID).Find(&projects).Error; err != nil {
+		return nil, err
+	}
+
+	return &projects, nil
+}
+
 func (r *projectRepo) GetAll(user *models.User) (*[]models.Project, error) {
 	var projects []models.Project
 

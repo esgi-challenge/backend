@@ -100,7 +100,11 @@ func (u *projectUseCase) QuitProject(user *models.User, id uint) error {
 }
 
 func (u *projectUseCase) GetAll(user *models.User) (*[]models.Project, error) {
-	return u.projectRepo.GetAll(user)
+  if (*user.UserKind == models.TEACHER) {
+    return u.projectRepo.GetAllByTeacher(user)
+  } else {
+	  return u.projectRepo.GetAll(user)
+  }
 }
 
 func (u *projectUseCase) GetById(user *models.User, id uint) (*models.Project, error) {

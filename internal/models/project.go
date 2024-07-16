@@ -7,6 +7,7 @@ type Project struct {
 	CourseId      uint   `json:"courseId" gorm:"column:course_id"`
 	ClassId       uint   `json:"classId" gorm:"column:class_id"`
 	DocumentId    uint   `json:"documentId" gorm:"column:document_id"`
+  TeacherId uint `json:"teacherId" gorm:"column:teacher_id"`
 	Course        Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
 	Class         Class  `json:"class" gorm:"foreignKey:ClassId;references:ID"`
 	GroupCapacity uint   `json:"groupCapacity" gorm:"column:group_capacity"`

@@ -37,7 +37,7 @@ func NewProjectHandlers(cfg *config.Config, projectUseCase project.UseCase, logg
 //	@Router			/projects [post]
 func (u *projectHandlers) Create() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
@@ -54,6 +54,7 @@ func (u *projectHandlers) Create() gin.HandlerFunc {
 		}
 
 		project := &models.Project{
+      TeacherId: user.ID,
 			Title:      projectCreate.Title,
 			CourseId:   *projectCreate.CourseId,
 			ClassId:    *projectCreate.ClassId,
@@ -297,7 +298,7 @@ func (u *projectHandlers) QuitProject() gin.HandlerFunc {
 //	@Router			/projects/{id} [put]
 func (u *projectHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
@@ -323,6 +324,7 @@ func (u *projectHandlers) Update() gin.HandlerFunc {
 		}
 
 		project := &models.Project{
+      TeacherId: user.ID,
 			Title:      projectUpdate.Title,
 			CourseId:   *projectUpdate.CourseId,
 			ClassId:    *projectUpdate.ClassId,
