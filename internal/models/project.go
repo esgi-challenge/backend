@@ -2,15 +2,15 @@ package models
 
 type Project struct {
 	GormModel
-	Title      string `json:"title" gorm:"column:title"`
-	EndDate    string `json:"endDate" gorm:"column:end_date"`
-	CourseId   uint   `json:"courseId" gorm:"column:course_id"`
-	ClassId    uint   `json:"classId" gorm:"column:class_id"`
-	DocumentId uint   `json:"documentId" gorm:"column:document_id"`
-	TeacherId  uint   `json:"teacherId" gorm:"column:teacher_id"`
-	Course     Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
-	Class      Class  `json:"class" gorm:"foreignKey:ClassId;references:ID"`
-	Document   Class  `json:"document" gorm:"foreignKey:DocumentId;references:ID"`
+	Title      string   `json:"title" gorm:"column:title"`
+	EndDate    string   `json:"endDate" gorm:"column:end_date"`
+	CourseId   uint     `json:"courseId" gorm:"column:course_id"`
+	ClassId    uint     `json:"classId" gorm:"column:class_id"`
+	DocumentId uint     `json:"documentId" gorm:"column:document_id"`
+	TeacherId  uint     `json:"teacherId" gorm:"column:teacher_id"`
+	Course     Course   `json:"course" gorm:"foreignKey:CourseId;references:ID"`
+	Class      Class    `json:"class" gorm:"foreignKey:ClassId;references:ID"`
+	Document   Document `json:"document" gorm:"foreignKey:DocumentId;references:ID"`
 }
 
 type ProjectCreate struct {
