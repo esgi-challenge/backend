@@ -56,6 +56,10 @@ import (
 	documentRepo "github.com/esgi-challenge/backend/internal/document/repository"
 	documentUseCase "github.com/esgi-challenge/backend/internal/document/usecase"
 
+	noteHttp "github.com/esgi-challenge/backend/internal/note/http"
+	noteRepo "github.com/esgi-challenge/backend/internal/note/repository"
+	noteUseCase "github.com/esgi-challenge/backend/internal/note/usecase"
+
 	"github.com/esgi-challenge/backend/internal/websocket"
 )
 
@@ -73,6 +77,7 @@ func (s *Server) SetupHandlers() error {
 	chatRepo := chatRepo.NewChatRepository(s.psqlDB)
 	projectRepo := projectRepo.NewProjectRepository(s.psqlDB)
 	documentRepo := documentRepo.NewDocumentRepository(s.psqlDB)
+  noteRepo := noteRepo.NewNoteRepository(s.psqlDB)
 
 	// UseCase
 	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
@@ -88,6 +93,7 @@ func (s *Server) SetupHandlers() error {
 	chatUseCase := chatUseCase.NewChatUseCase(s.cfg, chatRepo, schoolRepo, s.logger)
 	documentUseCase := documentUseCase.NewDocumentUseCase(s.cfg, documentRepo, courseRepo, s.logger, *s.storage)
 	projectsUseCase := projectUseCase.NewProjectUseCase(s.cfg, projectRepo, courseUseCase, classUseCase, documentUseCase, s.logger)
+  noteUseCase := noteUseCase.NewNoteUseCase(s.cfg, noteRepo, s.logger)
 
 	// Handlers
 	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
@@ -103,6 +109,7 @@ func (s *Server) SetupHandlers() error {
 	chatHandlers := chatHttp.NewChatHandlers(s.cfg, chatUseCase, s.logger)
 	projectHandlers := projectHttp.NewProjectHandlers(s.cfg, projectsUseCase, s.logger)
 	documentHandlers := documentHttp.NewDocumentHandlers(s.cfg, documentUseCase, s.logger)
+  noteHandler := noteHttp.NewNoteHandlers(s.cfg, noteUseCase, s.logger)
 
 	// Middlewares
 	mw := middleware.InitMiddlewareManager(s.cfg, s.logger)
@@ -127,6 +134,7 @@ func (s *Server) SetupHandlers() error {
 	chatGroup := api.Group("/chats")
 	projectGroup := api.Group("/projects")
 	documentGroup := api.Group("/documents")
+  noteGroup := api.Group("/notes")
 
 	websocketHandlers := &websocket.WebSocketHandler{
 		Cfg:         s.cfg,
@@ -149,6 +157,7 @@ func (s *Server) SetupHandlers() error {
 	chatHttp.SetupChatRoutes(chatGroup, chatHandlers)
 	projectHttp.SetupProjectRoutes(projectGroup, projectHandlers)
 	documentHttp.SetupDocumentRoutes(documentGroup, documentHandlers)
+  noteHttp.SetupNoteRoutes(noteGroup, noteHandler)
 
 	wk.SetupPathRoutes(wellknown)
 
