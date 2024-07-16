@@ -86,7 +86,7 @@ func (u *documentHandlers) Create() gin.HandlerFunc {
 		}
 
 		documentDb, err := u.documentUseCase.Create(user, &models.DocumentCreate{
-      Name: name,
+			Name:     name,
 			Byte:     bs,
 			CourseId: courseIdUint,
 		})

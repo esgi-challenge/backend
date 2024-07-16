@@ -49,10 +49,10 @@ func (u *informationsUseCase) GetAll(user *models.User) (*[]models.Informations,
 		return u.informationsRepo.GetBySchoolId(*user.SchoolId)
 	}
 
-  school, err := u.schoolRepo.GetByUser(user)
-  if err != nil {
-    return nil, err
-  }
+	school, err := u.schoolRepo.GetByUser(user)
+	if err != nil {
+		return nil, err
+	}
 
 	return u.informationsRepo.GetBySchoolId(school.ID)
 }

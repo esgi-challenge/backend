@@ -54,7 +54,7 @@ func (u *projectHandlers) Create() gin.HandlerFunc {
 		}
 
 		project := &models.Project{
-      TeacherId: user.ID,
+			TeacherId:  user.ID,
 			Title:      projectCreate.Title,
 			CourseId:   *projectCreate.CourseId,
 			ClassId:    *projectCreate.ClassId,
@@ -324,7 +324,7 @@ func (u *projectHandlers) Update() gin.HandlerFunc {
 		}
 
 		project := &models.Project{
-      TeacherId: user.ID,
+			TeacherId:  user.ID,
 			Title:      projectUpdate.Title,
 			CourseId:   *projectUpdate.CourseId,
 			ClassId:    *projectUpdate.ClassId,

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/esgi-challenge/backend/internal/note/mock"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/note/mock"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"

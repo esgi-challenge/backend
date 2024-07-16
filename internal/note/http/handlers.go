@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/esgi-challenge/backend/config"
-	"github.com/esgi-challenge/backend/internal/note"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/note"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
@@ -14,13 +14,13 @@ import (
 )
 
 type noteHandlers struct {
-	cfg            *config.Config
+	cfg         *config.Config
 	noteUseCase note.UseCase
-	logger         logger.Logger
+	logger      logger.Logger
 }
 
 func NewNoteHandlers(cfg *config.Config, noteUseCase note.UseCase, logger logger.Logger) note.Handlers {
-  return &noteHandlers{cfg: cfg, noteUseCase: noteUseCase, logger: logger}
+	return &noteHandlers{cfg: cfg, noteUseCase: noteUseCase, logger: logger}
 }
 
 // Create
@@ -54,9 +54,9 @@ func (u *noteHandlers) Create() gin.HandlerFunc {
 		}
 
 		note := &models.Note{
-      Value: noteCreate.Value,
-      TeacherId: user.ID,
-			StudentId:  noteCreate.StudentId,
+			Value:     noteCreate.Value,
+			TeacherId: user.ID,
+			StudentId: noteCreate.StudentId,
 			ProjectId: noteCreate.ProjectId,
 		}
 		noteDb, err := u.noteUseCase.Create(note)
@@ -116,7 +116,7 @@ func (u *noteHandlers) GetAll() gin.HandlerFunc {
 //	@Router			/notes/{id} [put]
 func (u *noteHandlers) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-    user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
@@ -142,10 +142,10 @@ func (u *noteHandlers) Update() gin.HandlerFunc {
 		}
 
 		note := &models.Note{
-      Value: noteUpdate.Value,
-			ProjectId:       noteUpdate.ProjectId,
+			Value:     noteUpdate.Value,
+			ProjectId: noteUpdate.ProjectId,
 			StudentId: noteUpdate.StudentId,
-      TeacherId: user.ID,
+			TeacherId: user.ID,
 		}
 		noteDb, err := u.noteUseCase.Update(uint(idInt), note)
 

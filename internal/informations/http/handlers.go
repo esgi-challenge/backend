@@ -7,17 +7,17 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/informations"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/request"
-	"github.com/esgi-challenge/backend/internal/school"
 	"github.com/gin-gonic/gin"
 )
 
 type informationsHandlers struct {
 	cfg                 *config.Config
 	informationsUseCase informations.UseCase
-	schoolUseCase school.UseCase
+	schoolUseCase       school.UseCase
 	logger              logger.Logger
 }
 

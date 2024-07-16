@@ -108,19 +108,19 @@ func (u *courseHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-    var schoolId uint
+		var schoolId uint
 
-    if *user.UserKind == models.ADMINISTRATOR {
-      school, err := u.schoolUseCase.GetByUser(user)
-      if err != nil {
-        ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-        u.logger.Infof("Request: %v", err.Error())
-        return
-      }
-      schoolId = school.ID
-    } else {
-      schoolId = *user.SchoolId
-    }
+		if *user.UserKind == models.ADMINISTRATOR {
+			school, err := u.schoolUseCase.GetByUser(user)
+			if err != nil {
+				ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+				u.logger.Infof("Request: %v", err.Error())
+				return
+			}
+			schoolId = school.ID
+		} else {
+			schoolId = *user.SchoolId
+		}
 
 		courses, err := u.courseUseCase.GetAllBySchoolId(schoolId)
 

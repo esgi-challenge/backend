@@ -53,13 +53,13 @@ func (u *projectUseCase) Create(user *models.User, project *models.Project) (*mo
 		return nil, err
 	}
 
-  project, err = u.projectRepo.Create(project)
-  if err != nil {
-    return nil, err
-  }
+	project, err = u.projectRepo.Create(project)
+	if err != nil {
+		return nil, err
+	}
 
-  //Retrieve preload
-  return u.projectRepo.GetPreloadById(project.ID)
+	//Retrieve preload
+	return u.projectRepo.GetPreloadById(project.ID)
 }
 
 func (u *projectUseCase) JoinProject(user *models.User, join *models.ProjectStudentCreate, id uint) (*models.ProjectStudent, error) {
@@ -106,11 +106,11 @@ func (u *projectUseCase) QuitProject(user *models.User, id uint) error {
 }
 
 func (u *projectUseCase) GetAll(user *models.User) (*[]models.Project, error) {
-  if (*user.UserKind == models.TEACHER) {
-    return u.projectRepo.GetAllByTeacher(user)
-  } else {
-	  return u.projectRepo.GetAll(user)
-  }
+	if *user.UserKind == models.TEACHER {
+		return u.projectRepo.GetAllByTeacher(user)
+	} else {
+		return u.projectRepo.GetAll(user)
+	}
 }
 
 func (u *projectUseCase) GetById(user *models.User, id uint) (*models.Project, error) {
@@ -186,12 +186,12 @@ func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *mode
 	///////////////////////////////////////
 
 	updatedProject.ID = id
-  project, err := u.projectRepo.Update(id, updatedProject)
-  if err != nil {
-    return nil, err
-  }
+	project, err := u.projectRepo.Update(id, updatedProject)
+	if err != nil {
+		return nil, err
+	}
 
-  return u.projectRepo.GetPreloadById(project.ID)
+	return u.projectRepo.GetPreloadById(project.ID)
 }
 
 func (u *projectUseCase) Delete(user *models.User, id uint) error {

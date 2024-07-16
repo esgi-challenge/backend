@@ -7,7 +7,7 @@ import (
 
 func SetupDocumentRoutes(documentGroup *gin.RouterGroup, h document.Handlers) {
 	documentGroup.POST("", h.Create())
-  documentGroup.GET("", h.GetAllByUserId())
+	documentGroup.GET("", h.GetAllByUserId())
 	documentGroup.GET("/:id", h.GetById())
 	documentGroup.DELETE("/:id", h.Delete())
 }
