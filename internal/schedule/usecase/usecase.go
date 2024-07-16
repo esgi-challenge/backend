@@ -84,7 +84,7 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 		kind = models.SIGNATURE_STUDENT
 	}
 
-	schedule, err := u.scheduleRepo.GetById(user.ID, scheduleId)
+	schedule, err := u.scheduleRepo.GetById(user, scheduleId)
 
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (u *scheduleUseCase) CheckSign(user *models.User, scheduleId uint) (*models
 }
 
 func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (*models.ScheduleSignatureCode, error) {
-	schedule, err := u.scheduleRepo.GetById(user.ID, scheduleId)
+	schedule, err := u.scheduleRepo.GetById(user, scheduleId)
 
 	if err != nil {
 		return nil, err
@@ -179,7 +179,7 @@ func (u *scheduleUseCase) GetPreloadById(scheduleId uint) (*models.Schedule, err
 }
 
 func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleGet, error) {
-	schedule, err := u.scheduleRepo.GetById(*user.ClassRefer, id)
+	schedule, err := u.scheduleRepo.GetById(user, id)
 
 	if err != nil {
 		return nil, err

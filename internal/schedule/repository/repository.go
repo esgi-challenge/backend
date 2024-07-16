@@ -69,17 +69,23 @@ func (r *scheduleRepo) GetPreloadById(scheduleId uint) (*models.Schedule, error)
 		return nil, err
 	}
 
+	fmt.Println(schedule)
+
 	return &schedule, nil
 }
 
-func (r *scheduleRepo) GetById(classRefer, id uint) (*models.Schedule, error) {
+func (r *scheduleRepo) GetById(user *models.User, id uint) (*models.Schedule, error) {
 	var schedule models.Schedule
 
-	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Course.Teacher").Preload("Campus").Preload("Class").Joins("left join classes on classes.id = class").Where("classes.id = ?", classRefer).First(&schedule, id).Error; err != nil {
-		return nil, err
+	if int(*user.UserKind) == models.STUDENT {
+		if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Course.Teacher").Preload("Campus").Preload("Class").Joins("left join classes on classes.id = class").Where("classes.id = ?", *user.ClassRefer).First(&schedule, id).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Course.Teacher").Preload("Campus").Preload("Class").Joins("left join classes on classes.id = class").First(&schedule, id).Error; err != nil {
+			return nil, err
+		}
 	}
-
-	fmt.Println(schedule)
 
 	return &schedule, nil
 }

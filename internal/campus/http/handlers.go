@@ -135,7 +135,7 @@ func (u *campusHandlers) Create() gin.HandlerFunc {
 //	@Router			/campus [get]
 func (u *campusHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
 
 		if user == nil || err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
