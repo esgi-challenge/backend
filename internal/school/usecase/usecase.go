@@ -83,17 +83,10 @@ func (u *schoolUseCase) AddUser(user *models.User) (*models.User, error) {
 func (u *schoolUseCase) Invite(user *models.User, schoolInvite *models.SchoolInvite) (*models.User, error) {
 	var userKind models.UserKind = models.STUDENT
 
-	school, err := u.schoolRepo.GetById(schoolInvite.SchoolId)
+	school, err := u.schoolRepo.GetByUser(user)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if school.UserID != user.ID {
-		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusUnauthorized,
-			HttpError:  "Not allowed to perform action on this ressource",
-		}
 	}
 
 	if schoolInvite.Type == "TEACHER" {

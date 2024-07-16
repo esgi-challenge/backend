@@ -11,7 +11,6 @@ type SchoolCreate struct {
 }
 
 type SchoolInvite struct {
-	SchoolId  uint
 	Firstname string `json:"firstname" binding:"required" validate:"min=1,max=128"`
 	Lastname  string `json:"lastname" binding:"required" validate:"min=1,max=128"`
 	Email     string `json:"email" binding:"required" validate:"min=1,max=128"`

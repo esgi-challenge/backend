@@ -240,7 +240,7 @@ func (u *schoolHandlers) AddUser() gin.HandlerFunc {
 //	@Success		201		{object}	models.SchoolInvite
 //	@Failure		400		{object}	errorHandler.HttpErr
 //	@Failure		500		{object}	errorHandler.HttpErr
-//	@Router			/schools/{id}/invite [post]
+//	@Router			/schools/invite [post]
 func (u *schoolHandlers) Invite() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
@@ -259,20 +259,10 @@ func (u *schoolHandlers) Invite() gin.HandlerFunc {
 			return
 		}
 
-		id := ctx.Params.ByName("id")
-		idInt, err := strconv.Atoi(id)
-
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
 		school := &models.SchoolInvite{
 			Firstname: schoolInvite.Firstname,
 			Lastname:  schoolInvite.Lastname,
 			Email:     schoolInvite.Email,
-			SchoolId:  uint(idInt),
 			Type:      schoolInvite.Type,
 		}
 
