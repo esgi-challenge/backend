@@ -16,4 +16,5 @@ type UseCase interface {
 	GetSignatureCode(user *models.User, scheduleId uint) (*models.ScheduleSignatureCode, error)
 	Update(user *models.User, id uint, updatedSchedule *models.Schedule) (*models.Schedule, error)
 	Delete(user *models.User, id uint) error
+	GetStudentsSignature(user *models.User, scheduleId uint) (*models.ScheduleSignatureGet, error)
 }

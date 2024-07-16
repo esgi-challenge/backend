@@ -14,4 +14,5 @@ type Handlers interface {
 	CheckSign() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc
+	GetStudentsSignature() gin.HandlerFunc
 }

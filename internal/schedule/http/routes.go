@@ -15,4 +15,5 @@ func SetupScheduleRoutes(scheduleGroup *gin.RouterGroup, h schedule.Handlers) {
 	scheduleGroup.PUT("/:id", h.Update())
 	scheduleGroup.POST("/:id/sign", h.Sign())
 	scheduleGroup.GET("/:id/sign", h.CheckSign())
+	scheduleGroup.GET("/:id/students", h.GetStudentsSignature())
 }

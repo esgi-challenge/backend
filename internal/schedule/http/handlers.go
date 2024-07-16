@@ -320,6 +320,48 @@ func (u *scheduleHandlers) GetSignatureCode() gin.HandlerFunc {
 	}
 }
 
+// Read Students
+//
+//	@Summary		Get schedule's students by id
+//	@Description	Get schedule's students by id
+//	@Tags			Schedule
+//	@Produce		json
+//	@Param			id	path		int	true	"id"
+//	@Success		200	{object}	[]models.User
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/schedules/{id}/students [get]
+func (u *scheduleHandlers) GetStudentsSignature() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.TEACHER)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		id := ctx.Params.ByName("id")
+		idInt, err := strconv.Atoi(id)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		students, err := u.scheduleUseCase.GetStudentsSignature(user, uint(idInt))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, students)
+	}
+}
+
 // Update
 //
 //	@Summary		Update schedule
@@ -368,12 +410,13 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 		}
 
 		schedule := &models.Schedule{
-			Time:     *scheduleUpdate.Time,
-			Duration: *scheduleUpdate.Duration,
-			CourseId: *scheduleUpdate.CourseId,
-			ClassId:  *scheduleUpdate.ClassId,
-			CampusId: *scheduleUpdate.CampusId,
-			SchoolId: school.ID,
+			Time:          *scheduleUpdate.Time,
+			QrCodeEnabled: scheduleUpdate.QrCodeEnabled,
+			Duration:      *scheduleUpdate.Duration,
+			CourseId:      *scheduleUpdate.CourseId,
+			ClassId:       *scheduleUpdate.ClassId,
+			CampusId:      *scheduleUpdate.CampusId,
+			SchoolId:      school.ID,
 		}
 		scheduleDb, err := u.scheduleUseCase.Update(user, uint(idInt), schedule)
 

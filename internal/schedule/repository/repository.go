@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/schedule"
 	"gorm.io/gorm"
@@ -22,6 +20,26 @@ func (r *scheduleRepo) Create(schedule *models.Schedule) (*models.Schedule, erro
 	}
 
 	return schedule, nil
+}
+
+func (r *scheduleRepo) GetScheduleStudents(classId uint) (*[]models.User, error) {
+	var class models.Class
+
+	if err := r.db.Model(&models.Class{}).Preload("Students").First(&class, classId).Error; err != nil {
+		return nil, err
+	}
+
+	return &class.Students, nil
+}
+
+func (r *scheduleRepo) GetScheduleSignatures(scheduleId uint) (*[]models.ScheduleSignature, error) {
+	var signatures []models.ScheduleSignature
+
+	if err := r.db.Model(&models.ScheduleSignature{}).Preload("Student").Where("schedule_id = ?", scheduleId).Find(&signatures).Error; err != nil {
+		return nil, err
+	}
+
+	return &signatures, nil
 }
 
 func (r *scheduleRepo) Sign(scheduleSignature *models.ScheduleSignature) (*models.ScheduleSignature, error) {
@@ -65,11 +83,9 @@ func (r *scheduleRepo) GetAll(userId uint) (*[]models.Schedule, error) {
 func (r *scheduleRepo) GetPreloadById(scheduleId uint) (*models.Schedule, error) {
 	var schedule models.Schedule
 
-	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Campus").Preload("Class").First(&schedule, scheduleId).Error; err != nil {
+	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Campus").Preload("Class").Preload("Class.Students").First(&schedule, scheduleId).Error; err != nil {
 		return nil, err
 	}
-
-	fmt.Println(schedule)
 
 	return &schedule, nil
 }

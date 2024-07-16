@@ -14,4 +14,6 @@ type Repository interface {
 	GetById(user *models.User, id uint) (*models.Schedule, error)
 	Update(id uint, schedule *models.Schedule) (*models.Schedule, error)
 	Delete(id uint) error
+	GetScheduleStudents(classId uint) (*[]models.User, error)
+	GetScheduleSignatures(schedule uint) (*[]models.ScheduleSignature, error)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/esgi-challenge/backend/internal/path"
 	"github.com/esgi-challenge/backend/internal/schedule"
 	"github.com/esgi-challenge/backend/internal/school"
+	"github.com/esgi-challenge/backend/internal/user"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/google/uuid"
@@ -22,17 +23,19 @@ type scheduleUseCase struct {
 	schoolRepo   school.Repository
 	pathRepo     path.Repository
 	campusRepo   campus.Repository
+	userRepo     user.Repository
 	cfg          *config.Config
 	logger       logger.Logger
 }
 
-func NewScheduleUseCase(cfg *config.Config, scheduleRepo schedule.Repository, courseRepo course.Repository, pathRepo path.Repository, schoolRepo school.Repository, campusRepo campus.Repository, logger logger.Logger) schedule.UseCase {
+func NewScheduleUseCase(cfg *config.Config, scheduleRepo schedule.Repository, courseRepo course.Repository, pathRepo path.Repository, schoolRepo school.Repository, campusRepo campus.Repository, userRepo user.Repository, logger logger.Logger) schedule.UseCase {
 	return &scheduleUseCase{
 		cfg:          cfg,
 		scheduleRepo: scheduleRepo,
 		courseRepo:   courseRepo,
 		schoolRepo:   schoolRepo,
 		campusRepo:   campusRepo,
+		userRepo:     userRepo,
 		pathRepo:     pathRepo,
 		logger:       logger,
 	}
@@ -68,6 +71,7 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		Time:          *schedule.Time,
 		Duration:      *schedule.Duration,
 		SignatureCode: uuid.NewString(),
+		QrCodeEnabled: schedule.QrCodeEnabled,
 		CourseId:      *schedule.CourseId,
 		CampusId:      *schedule.CampusId,
 		ClassId:       *schedule.ClassId,
@@ -97,8 +101,19 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 		}
 	}
 
+	signingStudent := *user
+
+	if *user.UserKind != 0 {
+		student, err := u.userRepo.GetById(signature.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		signingStudent = *student
+	}
+
 	return u.scheduleRepo.Sign(&models.ScheduleSignature{
-		Student:  *user,
+		Student:  signingStudent,
 		Schedule: *schedule,
 		Kind:     kind,
 	})
@@ -156,6 +171,31 @@ func (u *scheduleUseCase) GetUnattended(user *models.User) ([]models.ScheduleGet
 
 func (u *scheduleUseCase) CheckSign(user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {
 	return u.scheduleRepo.GetSign(user.ID, scheduleId)
+}
+
+func (u *scheduleUseCase) GetStudentsSignature(user *models.User, scheduleId uint) (*models.ScheduleSignatureGet, error) {
+	schedule, err := u.scheduleRepo.GetById(user, scheduleId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	students, err := u.scheduleRepo.GetScheduleStudents(schedule.ClassId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	signatures, err := u.scheduleRepo.GetScheduleSignatures(schedule.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ScheduleSignatureGet{
+		Students:  *students,
+		Signature: *signatures,
+	}, nil
 }
 
 func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (*models.ScheduleSignatureCode, error) {

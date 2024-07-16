@@ -15,11 +15,12 @@ type Schedule struct {
 	CourseId      uint   `json:"courseId" gorm:"column:course"`
 	CampusId      uint   `json:"campusId" gorm:"column:campus"`
 	ClassId       uint   `json:"classId" gorm:"column:class"`
-	SchoolId       uint   `json:"schoolId" gorm:"column:school_id"`
+	SchoolId      uint   `json:"schoolId" gorm:"column:school_id"`
+	QrCodeEnabled bool   `json:"qrCodeEnabled" gorm:"column:qr_code_enabled"`
 	SignatureCode string `json:"-" gorm:"column:code"`
-  Course Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
-  Campus Campus `json:"campus" gorm:"foreignKey:CampusId;references:ID"`
-  Class Class `json:"class" gorm:"foreignKey:ClassId;references:ID"`
+	Course        Course `json:"course" gorm:"foreignKey:CourseId;references:ID"`
+	Campus        Campus `json:"campus" gorm:"foreignKey:CampusId;references:ID"`
+	Class         Class  `json:"class" gorm:"foreignKey:ClassId;references:ID"`
 }
 
 type ScheduleSignature struct {
@@ -33,6 +34,7 @@ type ScheduleSignature struct {
 
 type ScheduleSignatureCreate struct {
 	SignatureCode string `json:"code"`
+	UserId        uint   `json:"userId"`
 }
 
 type ScheduleSignatureCode struct {
@@ -40,23 +42,30 @@ type ScheduleSignatureCode struct {
 }
 
 type ScheduleCreate struct {
-	Time     *uint `json:"time" binding:"required"`
-	Duration *uint `json:"duration" binding:"required"`
-	CourseId *uint `json:"courseId" binding:"required"`
-	CampusId *uint `json:"campusId" binding:"required"`
-	ClassId  *uint `json:"classId" binding:"required"`
+	Time          *uint `json:"time" binding:"required"`
+	QrCodeEnabled bool  `json:"qrCodeEnabled" binding:"required"`
+	Duration      *uint `json:"duration" binding:"required"`
+	CourseId      *uint `json:"courseId" binding:"required"`
+	CampusId      *uint `json:"campusId" binding:"required"`
+	ClassId       *uint `json:"classId" binding:"required"`
 }
 
 type ScheduleUpdate struct {
-	Time     *uint `json:"time" binding:"required"`
-	Duration *uint `json:"duration" binding:"required"`
-	CourseId *uint `json:"courseId" binding:"required" `
-	CampusId *uint `json:"campusId" binding:"required"`
-	ClassId  *uint `json:"classId" binding:"required"`
+	Time          *uint `json:"time" binding:"required"`
+	QrCodeEnabled bool  `json:"qrCodeEnabled" binding:"required"`
+	Duration      *uint `json:"duration" binding:"required"`
+	CourseId      *uint `json:"courseId" binding:"required" `
+	CampusId      *uint `json:"campusId" binding:"required"`
+	ClassId       *uint `json:"classId" binding:"required"`
 }
 
 type ScheduleGet struct {
 	Schedule Schedule `json:"schedule" binding:"required"`
 	Course   Course   `json:"course" binding:"required"`
 	Campus   Campus   `json:"campus" binding:"required"`
+}
+
+type ScheduleSignatureGet struct {
+	Students  []User              `json:"students" binding:"required"`
+	Signature []ScheduleSignature `json:"signatures" binding:"required"`
 }
