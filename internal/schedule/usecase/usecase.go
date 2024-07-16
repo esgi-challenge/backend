@@ -96,7 +96,7 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 
 	if schedule.SignatureCode != signature.SignatureCode {
 		return nil, errorHandler.HttpError{
-			HttpStatus: http.StatusForbidden,
+			HttpStatus: http.StatusBadRequest,
 			HttpError:  "The signature code is not correct",
 		}
 	}
