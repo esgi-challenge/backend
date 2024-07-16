@@ -67,6 +67,13 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		}
 	}
 
+	if int64(*schedule.Time) < time.Now().Unix() {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusBadRequest,
+			HttpError:  "You cannot create a schedule in the past",
+		}
+	}
+
 	return u.scheduleRepo.Create(&models.Schedule{
 		Time:          *schedule.Time,
 		Duration:      *schedule.Duration,

@@ -65,8 +65,6 @@ func (u *projectUseCase) Create(user *models.User, project *models.Project) (*mo
 func (u *projectUseCase) JoinProject(user *models.User, join *models.ProjectStudentCreate, id uint) (*models.ProjectStudent, error) {
 	project, err := u.GetById(user, id)
 
-	fmt.Println(project)
-
 	if err != nil {
 		return nil, err
 	}
@@ -117,9 +115,9 @@ func (u *projectUseCase) GetById(user *models.User, id uint) (*models.Project, e
 	return u.projectRepo.GetById(user, id)
 }
 
-func (u *projectUseCase) GetGroups(user *models.User, id uint) (*[]models.ProjectGroup, error) {
+func (u *projectUseCase) GetGroups(user *models.User, id uint) ([]*models.ProjectGroup, error) {
 	maxGroup := uint(1)
-	groups := []models.ProjectGroup{}
+	var groups []*models.ProjectGroup
 
 	students, err := u.projectRepo.GetGroups(user, id)
 
@@ -136,29 +134,31 @@ func (u *projectUseCase) GetGroups(user *models.User, id uint) (*[]models.Projec
 
 		for _, group := range groups {
 			if group.GroupId == student.Group {
-				existingGroup = &group
+				existingGroup = group
 			}
 		}
 
 		if existingGroup == nil {
-			groups = append(groups, models.ProjectGroup{
+			existingGroup = &models.ProjectGroup{
 				GroupId: student.Group,
 				Users: []models.User{
 					student.Student,
 				},
-			})
+			}
+
+			groups = append(groups, existingGroup)
 		} else {
 			existingGroup.Users = append(existingGroup.Users, student.Student)
 		}
 
 	}
 
-	groups = append(groups, models.ProjectGroup{
+	groups = append(groups, &models.ProjectGroup{
 		GroupId: maxGroup,
 		Users:   []models.User{},
 	})
 
-	return &groups, nil
+	return groups, nil
 }
 
 func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *models.Project) (*models.Project, error) {
