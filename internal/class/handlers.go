@@ -9,6 +9,7 @@ type Handlers interface {
 	Add() gin.HandlerFunc
 	Remove() gin.HandlerFunc
 	GetAll() gin.HandlerFunc
+	GetByStudent() gin.HandlerFunc
 	GetById() gin.HandlerFunc
 	Update() gin.HandlerFunc
 	Delete() gin.HandlerFunc

@@ -118,6 +118,38 @@ func (u *classHandlers) GetAll() gin.HandlerFunc {
 
 // Read
 //
+//	@Summary		Get class of user
+//	@Description	Get class of student
+//	@Tags			Class
+//	@Produce		json
+//	@Success		200	{object}	models.Class
+//	@Failure		400	{object}	errorHandler.HttpErr
+//	@Failure		404	{object}	errorHandler.HttpErr
+//	@Failure		500	{object}	errorHandler.HttpErr
+//	@Router			/classes/student [get]
+func (u *classHandlers) GetByStudent() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.STUDENT)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			return
+		}
+
+		class, err := u.classUseCase.GetById(*user.ClassRefer)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+			u.logger.Infof("Request: %v", err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, class)
+	}
+}
+
+// Read
+//
 //	@Summary		Get class by id
 //	@Description	Get class by id
 //	@Tags			Class
