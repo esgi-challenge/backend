@@ -78,3 +78,24 @@ func (e *emailManager) SendResetEmail(to []string, resetCode string) error {
 
 	return nil
 }
+
+func (e *emailManager) SendUpdateEmail(to []string, email string) error {
+	t, err := template.ParseFiles("templates/emails/update-profile.html")
+
+	if err != nil {
+		return err
+	}
+
+	templateData := struct {
+		NewEmail string
+	}{
+		NewEmail: email,
+	}
+
+	err = e.sendEmail(to, "Votre nouvel email!", t, templateData)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

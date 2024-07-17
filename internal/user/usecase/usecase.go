@@ -4,6 +4,7 @@ import (
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/user"
+	"github.com/esgi-challenge/backend/pkg/email"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/google/uuid"
 )
@@ -59,6 +60,14 @@ func (u *userUseCase) Update(id uint, updatedUser *models.User) (*models.User, e
 	}
 	updatedUser.CreatedAt = dbUser.CreatedAt
 	///////////////////////////////////////
+
+	if dbUser.Email != updatedUser.Email {
+		emailM := email.InitEmailManager(u.cfg.Smtp.Username, u.cfg.Smtp.Password, u.cfg.Smtp.Host)
+		err = emailM.SendUpdateEmail([]string{dbUser.Email}, updatedUser.Email)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	updatedUser.ID = id
 	return u.userRepo.Update(id, updatedUser)
