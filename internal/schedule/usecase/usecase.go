@@ -74,6 +74,13 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		}
 	}
 
+	if *schedule.Duration <= 0 {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusBadRequest,
+			HttpError:  "You cannot create a negative schedule duration",
+		}
+	}
+
 	return u.scheduleRepo.Create(&models.Schedule{
 		Time:          *schedule.Time,
 		Duration:      *schedule.Duration,
@@ -245,6 +252,21 @@ func (u *scheduleUseCase) GetById(user *models.User, id uint) (*models.ScheduleG
 }
 
 func (u *scheduleUseCase) Update(user *models.User, id uint, updatedSchedule *models.Schedule) (*models.Schedule, error) {
+
+	if int64(updatedSchedule.Time) < time.Now().Unix() {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusBadRequest,
+			HttpError:  "You cannot create a schedule in the past",
+		}
+	}
+
+	if updatedSchedule.Duration <= 0 {
+		return nil, errorHandler.HttpError{
+			HttpStatus: http.StatusBadRequest,
+			HttpError:  "You cannot create a negative schedule duration",
+		}
+	}
+
 	// Temporary fix for known issue :
 	// https://github.com/go-gorm/gorm/issues/5724
 	//////////////////////////////////////
