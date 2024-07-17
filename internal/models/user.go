@@ -11,6 +11,10 @@ const (
 	SUPERADMIN    = 3
 )
 
+func NewUserKind(kind UserKind) *UserKind {
+	return &kind
+}
+
 type User struct {
 	GormModel
 	Firstname         string    `json:"firstname" gorm:"column:firstname"`
@@ -24,6 +28,7 @@ type User struct {
 	Class             Class     `json:"class" gorm:"foreignKey:ClassRefer;references:ID"`
 	ClassRefer        *uint     `json:"classRefer" gorm:"column:class_refer"`
 }
+
 type UserCreate struct {
 	Firstname string   `json:"firstname"`
 	Lastname  string   `json:"lastname"`

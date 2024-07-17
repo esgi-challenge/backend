@@ -34,6 +34,14 @@ func NewUserHandlers(userUseCase user.UseCase, cfg *config.Config, logger logger
 //	@Router			/users [get]
 func (u *userHandlers) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		user, err := request.ValidateRole(u.cfg.JwtSecret, ctx, models.ADMINISTRATOR)
+
+		if user == nil || err != nil {
+			ctx.AbortWithStatusJSON(errorHandler.UnauthorizedErrorResponse())
+			u.logger.Info("Request: Unauthorized")
+			return
+		}
+
 		users, err := u.userUseCase.GetAll()
 
 		if err != nil {

@@ -286,12 +286,6 @@ func (u *pathHandlers) Delete() gin.HandlerFunc {
 			return
 		}
 
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.UrlParamsErrorResponse())
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
 		err = u.pathUseCase.Delete(uint(idInt))
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
