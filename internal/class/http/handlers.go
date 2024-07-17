@@ -136,12 +136,17 @@ func (u *classHandlers) GetByStudent() gin.HandlerFunc {
 			return
 		}
 
-		class, err := u.classUseCase.GetById(*user.ClassRefer)
+		var class *models.Class
+		if user.ClassRefer != nil {
+			class, err = u.classUseCase.GetById(*user.ClassRefer)
 
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-			u.logger.Infof("Request: %v", err.Error())
-			return
+			if err != nil {
+				ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
+				u.logger.Infof("Request: %v", err.Error())
+				return
+			}
+		} else {
+			class = nil
 		}
 
 		ctx.JSON(http.StatusOK, class)
