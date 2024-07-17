@@ -159,10 +159,10 @@ func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, erro
 	return &finalSchedules, nil
 }
 
-func (u *scheduleUseCase) GetUnattended(user *models.User) ([]models.ScheduleGet, error) {
+func (u *scheduleUseCase) GetUnattended(user *models.User) (*[]models.ScheduleGet, error) {
 	now := time.Now()
 	timestamp := uint(now.Unix())
-	var unattendedSchedules []models.ScheduleGet
+	unattendedSchedules := []models.ScheduleGet{}
 	schedules, err := u.GetAll(user)
 
 	if err != nil {
@@ -180,7 +180,7 @@ func (u *scheduleUseCase) GetUnattended(user *models.User) ([]models.ScheduleGet
 		}
 	}
 
-	return unattendedSchedules, nil
+	return &unattendedSchedules, nil
 }
 
 func (u *scheduleUseCase) CheckSign(user *models.User, scheduleId uint) (*models.ScheduleSignature, error) {
