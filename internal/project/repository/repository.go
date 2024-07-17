@@ -45,7 +45,7 @@ func (r *projectRepo) GetAllByTeacher(user *models.User) (*[]models.Project, err
 func (r *projectRepo) GetAll(user *models.User) (*[]models.Project, error) {
 	var projects []models.Project
 
-	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Joins("left join classes on classes.id = projects.class_id").Preload("Course.Teacher").Joins("left join schools on classes.school_id = schools.id").Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&projects).Error; err != nil {
+	if err := r.db.Model(&models.Project{}).Joins("Course").Preload("Class").Preload("Document").Joins("left join classes on classes.id = projects.class_id").Preload("Course.Teacher").Joins("left join schools on classes.school_id = schools.id").Where("classes.id = ?", user.ClassRefer).Or("schools.user_id = ?", user.ID).Find(&projects).Error; err != nil {
 		return nil, err
 	}
 
