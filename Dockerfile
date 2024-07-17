@@ -14,6 +14,7 @@ HEALTHCHECK --interval=2m --timeout=3s --retries=3 CMD wget --no-verbose --tries
 
 WORKDIR /backend
 
+COPY templates templates
 COPY --from=builder /builder/backend ./
 
 EXPOSE 8080
