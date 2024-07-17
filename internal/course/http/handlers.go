@@ -230,7 +230,7 @@ func (u *courseHandlers) Update() gin.HandlerFunc {
 		}
 
 		course := &models.Course{
-			Name:        courseDb.Name,
+			Name:        courseUpdate.Name,
 			Description: courseUpdate.Description,
 			PathId:      *courseUpdate.PathId,
 			TeacherId:   *courseUpdate.TeacherId,

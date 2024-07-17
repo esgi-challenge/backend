@@ -18,7 +18,7 @@ func NewPostgresClient(c *config.Config) (*gorm.DB, error) {
 		c.Postgres.Port,
 	)
 
-	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{TranslateError: true})
 	if err != nil {
 		return nil, err
 	}
