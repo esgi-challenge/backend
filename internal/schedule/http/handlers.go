@@ -411,7 +411,7 @@ func (u *scheduleHandlers) Update() gin.HandlerFunc {
 
 		schedule := &models.Schedule{
 			Time:          *scheduleUpdate.Time,
-			QrCodeEnabled: scheduleUpdate.QrCodeEnabled,
+			QrCodeEnabled: *scheduleUpdate.QrCodeEnabled,
 			Duration:      *scheduleUpdate.Duration,
 			CourseId:      *scheduleUpdate.CourseId,
 			ClassId:       *scheduleUpdate.ClassId,

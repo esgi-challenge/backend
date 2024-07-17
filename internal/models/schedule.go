@@ -43,7 +43,7 @@ type ScheduleSignatureCode struct {
 
 type ScheduleCreate struct {
 	Time          *uint `json:"time" binding:"required"`
-	QrCodeEnabled bool  `json:"qrCodeEnabled" binding:"required"`
+	QrCodeEnabled *bool `json:"qrCodeEnabled" binding:"required"`
 	Duration      *uint `json:"duration" binding:"required"`
 	CourseId      *uint `json:"courseId" binding:"required"`
 	CampusId      *uint `json:"campusId" binding:"required"`
@@ -52,7 +52,7 @@ type ScheduleCreate struct {
 
 type ScheduleUpdate struct {
 	Time          *uint `json:"time" binding:"required"`
-	QrCodeEnabled bool  `json:"qrCodeEnabled" binding:"required"`
+	QrCodeEnabled *bool `json:"qrCodeEnabled" binding:"required"`
 	Duration      *uint `json:"duration" binding:"required"`
 	CourseId      *uint `json:"courseId" binding:"required" `
 	CampusId      *uint `json:"campusId" binding:"required"`

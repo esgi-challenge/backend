@@ -78,7 +78,7 @@ func (u *scheduleUseCase) Create(user *models.User, schedule *models.ScheduleCre
 		Time:          *schedule.Time,
 		Duration:      *schedule.Duration,
 		SignatureCode: uuid.NewString(),
-		QrCodeEnabled: schedule.QrCodeEnabled,
+		QrCodeEnabled: *schedule.QrCodeEnabled,
 		CourseId:      *schedule.CourseId,
 		CampusId:      *schedule.CampusId,
 		ClassId:       *schedule.ClassId,
