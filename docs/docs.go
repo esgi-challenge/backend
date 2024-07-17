@@ -1255,193 +1255,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/examples": {
-            "get": {
-                "description": "Get all example",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Example"
-                ],
-                "summary": "Get all example",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Example"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "post": {
-                "description": "create new example",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Example"
-                ],
-                "summary": "Create new example",
-                "parameters": [
-                    {
-                        "description": "Example infos",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Example"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/examples/{id}": {
-            "get": {
-                "description": "Get example by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Example"
-                ],
-                "summary": "Get example by id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Example"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "put": {
-                "description": "Update example",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Example"
-                ],
-                "summary": "Update example",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Example infos",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.ExampleUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Example"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete example by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Example"
-                ],
-                "summary": "Delete example by id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
         "/healthz": {
             "get": {
                 "description": "Check if API is up",
@@ -2693,6 +2506,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/schools/invite": {
+            "post": {
+                "description": "Invite a student to the school",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "School"
+                ],
+                "summary": "Invite a student to the school",
+                "parameters": [
+                    {
+                        "description": "School infos",
+                        "name": "school",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/schools/student/{id}": {
             "put": {
                 "description": "Update a student of the school",
@@ -2803,48 +2658,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/schools/{id}/invite": {
-            "post": {
-                "description": "Invite a student to the school",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "School"
-                ],
-                "summary": "Invite a student to the school",
-                "parameters": [
-                    {
-                        "description": "School infos",
-                        "name": "school",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.SchoolInvite"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {}
                     }
                 }
@@ -3491,6 +3304,9 @@ const docTemplate = `{
                 "path": {
                     "type": "string"
                 },
+                "schoolId": {
+                    "type": "integer"
+                },
                 "updatedAt": {
                     "type": "string"
                 },
@@ -3513,63 +3329,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "github_com_esgi-challenge_backend_internal_models.Example": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_esgi-challenge_backend_internal_models.ExampleCreate": {
-            "type": "object",
-            "required": [
-                "description",
-                "title"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
-                }
-            }
-        },
-        "github_com_esgi-challenge_backend_internal_models.ExampleUpdate": {
-            "type": "object",
-            "required": [
-                "description",
-                "title"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
                 }
             }
         },
@@ -3739,6 +3498,9 @@ const docTemplate = `{
                 "longName": {
                     "type": "string"
                 },
+                "school": {
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.School"
+                },
                 "schoolId": {
                     "type": "integer"
                 },
@@ -3797,7 +3559,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "document": {
-                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Class"
+                    "$ref": "#/definitions/github_com_esgi-challenge_backend_internal_models.Document"
                 },
                 "documentId": {
                     "type": "integer"
@@ -4078,9 +3840,6 @@ const docTemplate = `{
                     "maxLength": 128,
                     "minLength": 1
                 },
-                "schoolId": {
-                    "type": "integer"
-                },
                 "type": {
                     "type": "string"
                 }
@@ -4214,6 +3973,13 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

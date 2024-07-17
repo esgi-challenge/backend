@@ -12,9 +12,12 @@ import (
 	"github.com/esgi-challenge/backend/pkg/storage"
 )
 
-// @title			Backend
-// @description	Backend written in Go for the S2 ESGI Challenge
-// @BasePath		/api
+//	@title						Backend
+//	@description				Backend written in Go for the S2 ESGI Challenge
+//	@BasePath					/api
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
 func main() {
 	env := os.Getenv("APP_ENV")
 	if env == "" {

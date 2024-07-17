@@ -26,9 +26,6 @@ import (
 	courseHttp "github.com/esgi-challenge/backend/internal/course/http"
 	courseRepo "github.com/esgi-challenge/backend/internal/course/repository"
 	courseUseCase "github.com/esgi-challenge/backend/internal/course/usecase"
-	exampleHttp "github.com/esgi-challenge/backend/internal/example/http"
-	exampleRepo "github.com/esgi-challenge/backend/internal/example/repository"
-	exampleUseCase "github.com/esgi-challenge/backend/internal/example/usecase"
 	pathHttp "github.com/esgi-challenge/backend/internal/path/http"
 	pathRepo "github.com/esgi-challenge/backend/internal/path/repository"
 	pathUseCase "github.com/esgi-challenge/backend/internal/path/usecase"
@@ -65,7 +62,6 @@ import (
 
 func (s *Server) SetupHandlers() error {
 	// Repo
-	exampleRepo := exampleRepo.NewExampleRepository(s.psqlDB)
 	userRepo := userRepo.NewUserRepository(s.psqlDB)
 	schoolRepo := schoolRepo.NewSchoolRepository(s.psqlDB)
 	campusRepo := campusRepo.NewCampusRepository(s.psqlDB)
@@ -80,7 +76,6 @@ func (s *Server) SetupHandlers() error {
 	noteRepo := noteRepo.NewNoteRepository(s.psqlDB)
 
 	// UseCase
-	exampleUseCase := exampleUseCase.NewExampleUseCase(s.cfg, exampleRepo, s.logger)
 	userUseCase := userUseCase.NewUserUseCase(userRepo, s.cfg, s.logger)
 	schoolUseCase := schoolUseCase.NewSchoolUseCase(s.cfg, schoolRepo, userRepo, s.logger)
 	authUseCase := authUseCase.NewAuthUseCase(s.cfg, userRepo, s.logger)
@@ -96,7 +91,6 @@ func (s *Server) SetupHandlers() error {
 	noteUseCase := noteUseCase.NewNoteUseCase(s.cfg, noteRepo, s.logger)
 
 	// Handlers
-	exampleHandlers := exampleHttp.NewExampleHandlers(s.cfg, exampleUseCase, s.logger)
 	userHandlers := userHttp.NewUserHandlers(userUseCase, s.cfg, s.logger)
 	schoolHandlers := schoolHttp.NewSchoolHandlers(s.cfg, schoolUseCase, userUseCase, s.logger)
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, authUseCase, s.logger)
@@ -121,7 +115,6 @@ func (s *Server) SetupHandlers() error {
 	api := s.router.Group("/api")
 	wellknown := s.router.Group("/.well-known")
 
-	exampleGroup := api.Group("/examples")
 	userGroup := api.Group("/users")
 	schoolGroup := api.Group("/schools")
 	authGroup := api.Group("/auth")
@@ -144,7 +137,6 @@ func (s *Server) SetupHandlers() error {
 	websocketGroup := api.Group("/ws/chat")
 	websocketGroup.GET("/:channelId", websocketHandlers.ChatHandler)
 
-	exampleHttp.SetupExampleRoutes(exampleGroup, exampleHandlers)
 	userHttp.SetupUserRoutes(userGroup, userHandlers)
 	schoolHttp.SetupSchoolRoutes(schoolGroup, schoolHandlers)
 	authHttp.SetupAuthRoutes(authGroup, authHandlers)

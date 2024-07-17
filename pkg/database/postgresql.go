@@ -32,7 +32,6 @@ func NewPostgresClient(c *config.Config) (*gorm.DB, error) {
 
 func migrateDatabase(db *gorm.DB) error {
 	err := db.AutoMigrate(
-		&models.Example{},
 		&models.Class{},
 		&models.User{},
 		&models.School{},
