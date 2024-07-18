@@ -10,6 +10,8 @@ type Repository interface {
 	GetSign(userId uint, scheduleId uint) (*models.ScheduleSignature, error)
 	GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error)
 	GetAll(userId uint) (*[]models.Schedule, error)
+	GetAllByTeacherId(userId uint) (*[]models.Schedule, error)
+	GetAllByClassId(userId uint) (*[]models.Schedule, error)
 	GetPreloadById(scheduleId uint) (*models.Schedule, error)
 	GetById(user *models.User, id uint) (*models.Schedule, error)
 	Update(id uint, schedule *models.Schedule) (*models.Schedule, error)

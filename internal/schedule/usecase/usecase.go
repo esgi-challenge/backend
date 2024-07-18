@@ -134,7 +134,7 @@ func (u *scheduleUseCase) Sign(signature *models.ScheduleSignatureCreate, user *
 }
 
 func (u *scheduleUseCase) GetAll(user *models.User) (*[]models.ScheduleGet, error) {
-	schedules, err := u.scheduleRepo.GetAll(user.ID)
+	schedules, err := u.GetAllByUser(user)
 
 	if err != nil {
 		return nil, err
@@ -224,8 +224,22 @@ func (u *scheduleUseCase) GetSignatureCode(user *models.User, scheduleId uint) (
 	}, nil
 }
 
-func (u *scheduleUseCase) GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error) {
-	return u.scheduleRepo.GetAllBySchoolId(schoolId)
+func (u *scheduleUseCase) GetAllByUser(user *models.User) (*[]models.Schedule, error) {
+	if uint(*user.UserKind) == models.ADMINISTRATOR {
+		school, err := u.schoolRepo.GetByUser(user)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return u.scheduleRepo.GetAllBySchoolId(school.ID)
+	} else if uint(*user.UserKind) == models.TEACHER {
+		return u.scheduleRepo.GetAllByTeacherId(user.ID)
+
+	} else {
+		return u.scheduleRepo.GetAllByClassId(*user.ClassRefer)
+
+	}
 }
 
 func (u *scheduleUseCase) GetPreloadById(scheduleId uint) (*models.Schedule, error) {

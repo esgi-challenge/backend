@@ -60,6 +60,26 @@ func (r *scheduleRepo) GetSign(userId uint, scheduleId uint) (*models.ScheduleSi
 	return &signature, nil
 }
 
+func (r *scheduleRepo) GetAllByClassId(classId uint) (*[]models.Schedule, error) {
+	var schedules []models.Schedule
+
+	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Campus").Joins("Class").Joins("left join classes on classes.id = schedules.class").Where("classes.id = ?", classId).Find(&schedules).Error; err != nil {
+		return nil, err
+	}
+
+	return &schedules, nil
+}
+
+func (r *scheduleRepo) GetAllByTeacherId(teacherId uint) (*[]models.Schedule, error) {
+	var schedules []models.Schedule
+
+	if err := r.db.Model(&models.Schedule{}).Preload("Course").Preload("Campus").Preload("Class").Joins("left join courses on courses.id = schedules.course").Where("courses.teacher_id = ?", teacherId).Find(&schedules).Error; err != nil {
+		return nil, err
+	}
+
+	return &schedules, nil
+}
+
 func (r *scheduleRepo) GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error) {
 	var schedules []models.Schedule
 

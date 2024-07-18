@@ -217,14 +217,7 @@ func (u *scheduleHandlers) GetAll() gin.HandlerFunc {
 			return
 		}
 
-		school, err := u.schoolUseCase.GetByUser(user)
-		if err != nil {
-			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))
-			u.logger.Infof("Request: %v", err.Error())
-			return
-		}
-
-		schedules, err := u.scheduleUseCase.GetAllBySchoolId(school.ID)
+		schedules, err := u.scheduleUseCase.GetAllByUser(user)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(errorHandler.ErrorResponse(err))

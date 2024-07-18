@@ -8,7 +8,7 @@ type UseCase interface {
 	Create(user *models.User, schedule *models.ScheduleCreate) (*models.Schedule, error)
 	GetAll(user *models.User) (*[]models.ScheduleGet, error)
 	GetUnattended(user *models.User) (*[]models.ScheduleGet, error)
-	GetAllBySchoolId(schoolId uint) (*[]models.Schedule, error)
+	GetAllByUser(user *models.User) (*[]models.Schedule, error)
 	GetById(user *models.User, id uint) (*models.ScheduleGet, error)
 	GetPreloadById(scheduleId uint) (*models.Schedule, error)
 	Sign(signature *models.ScheduleSignatureCreate, user *models.User, id uint) (*models.ScheduleSignature, error)
