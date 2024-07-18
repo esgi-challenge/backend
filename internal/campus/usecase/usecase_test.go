@@ -4,163 +4,95 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/esgi-challenge/backend/internal/campus/mock"
 	"github.com/esgi-challenge/backend/internal/models"
+	"github.com/esgi-challenge/backend/internal/campus/mock"
+	schoolMock "github.com/esgi-challenge/backend/internal/school/mock"
+	"github.com/esgi-challenge/backend/pkg/errorHandler"
 	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"net/http"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateCampus(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	mockCampusRepo := mock.NewMockRepository(ctrl)
+	mockSchoolRepo := schoolMock.NewMockRepository(ctrl)
 	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewCampusUseCase(nil, mockRepo, logger)
 
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
+	useCase := NewCampusUseCase(nil, mockCampusRepo, mockSchoolRepo, logger)
 
-	mockRepo.EXPECT().Create(campus).Return(campus, nil)
+	t.Run("success", func(t *testing.T) {
+		user := &models.User{GormModel: models.GormModel{ID: 1}}
+		school := &models.School{GormModel: models.GormModel{ID: 1}, UserID: 1}
+		campus := &models.Campus{SchoolId: 1}
 
-	createdCampus, err := useCase.Create(campus)
+		mockSchoolRepo.EXPECT().GetById(uint(1)).Return(school, nil)
+		mockCampusRepo.EXPECT().Create(campus).Return(campus, nil)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, createdCampus)
-}
-
-func TestGetById(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewCampusUseCase(nil, mockRepo, logger)
-
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
-
-	mockRepo.EXPECT().GetById(campus.ID).Return(campus, nil)
-
-	dbCampus, err := useCase.GetById(campus.ID)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, dbCampus)
-}
-
-func TestGetAll(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewCampusUseCase(nil, mockRepo, logger)
-
-	campuss := &[]models.Campus{
-		{
-			Title:       "title1",
-			Description: "description1",
-		},
-		{
-			Title:       "title2",
-			Description: "description2",
-		},
-	}
-
-	mockRepo.EXPECT().GetAll().Return(campuss, nil)
-
-	dbCampuss, err := useCase.GetAll()
-
-	assert.NoError(t, err)
-	assert.NotNil(t, dbCampuss)
-	assert.Len(t, *dbCampuss, 2)
-	assert.Equal(t, &(*campuss)[0], &(*dbCampuss)[0])
-	assert.Equal(t, &(*campuss)[1], &(*dbCampuss)[1])
-}
-
-func TestDelete(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewCampusUseCase(nil, mockRepo, logger)
-
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
-
-	t.Run("Delete", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(campus.ID).Return(campus, nil)
-		mockRepo.EXPECT().Delete(campus.ID).Return(nil)
-
-		err := useCase.Delete(campus.ID)
-
+		createdCampus, err := useCase.Create(user, campus)
 		assert.NoError(t, err)
+		assert.Equal(t, campus, createdCampus)
 	})
 
-	t.Run("Delete Not found", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(uint(10)).Return(nil, errors.New("Not found"))
+	t.Run("school not owned by user", func(t *testing.T) {
+		user := &models.User{GormModel: models.GormModel{ID: 1}}
+		school := &models.School{GormModel: models.GormModel{ID: 1}, UserID: 2}
+		campus := &models.Campus{SchoolId: 1}
 
-		err := useCase.Delete(uint(10))
+		mockSchoolRepo.EXPECT().GetById(uint(1)).Return(school, nil)
 
+		createdCampus, err := useCase.Create(user, campus)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "Not found")
+		assert.Nil(t, createdCampus)
+		assert.Equal(t, errorHandler.HttpError{
+			HttpStatus: http.StatusForbidden,
+			HttpError:  "This school is not yours",
+		}, err)
+	})
+
+	t.Run("school not found", func(t *testing.T) {
+		user := &models.User{GormModel: models.GormModel{ID: 1}}
+		campus := &models.Campus{SchoolId: 1}
+
+		mockSchoolRepo.EXPECT().GetById(uint(1)).Return(nil, errors.New("not found"))
+
+		createdCampus, err := useCase.Create(user, campus)
+		assert.Error(t, err)
+		assert.Nil(t, createdCampus)
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestGetAllCampus(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	mockCampusRepo := mock.NewMockRepository(ctrl)
+	mockSchoolRepo := schoolMock.NewMockRepository(ctrl)
 	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewCampusUseCase(nil, mockRepo, logger)
 
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
+	useCase := NewCampusUseCase(nil, mockCampusRepo, mockSchoolRepo, logger)
 
-	fixedCampus := &models.Campus{
-		Title:       "title updated",
-		Description: "description",
-	}
+	t.Run("success", func(t *testing.T) {
+		campus := &[]models.Campus{{GormModel: models.GormModel{ID: 1}}, {GormModel: models.GormModel{ID: 2}}}
+		mockCampusRepo.EXPECT().GetAll().Return(campus, nil)
 
-	t.Run("Update", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(campus.ID).Return(campus, nil)
-		mockRepo.EXPECT().Update(campus.ID, fixedCampus).Return(fixedCampus, nil)
-
-		updatedCampus, err := useCase.Update(campus.ID, fixedCampus)
-
+		result, err := useCase.GetAll()
 		assert.NoError(t, err)
-		assert.NotNil(t, updatedCampus)
-		assert.Equal(t, updatedCampus, fixedCampus)
+		assert.Equal(t, campus, result)
 	})
 
-	t.Run("Update Not found", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(uint(10)).Return(nil, errors.New("Not found"))
+	t.Run("error", func(t *testing.T) {
+		mockCampusRepo.EXPECT().GetAll().Return(nil, errors.New("some error"))
 
-		updatedCampus, err := useCase.Update(uint(10), fixedCampus)
-
+		result, err := useCase.GetAll()
 		assert.Error(t, err)
-		assert.Nil(t, updatedCampus)
-		assert.EqualError(t, err, "Not found")
+		assert.Nil(t, result)
 	})
 }

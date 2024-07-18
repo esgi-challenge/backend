@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/esgi-challenge/backend/internal/models"
@@ -33,12 +34,12 @@ func TestGetAll(t *testing.T) {
 
 	project1 := models.Project{
 		Title:   "project",
-		EndDate: "10/10/10",
+		EndDate: time.Now(),
 	}
 
 	project2 := models.Project{
 		Title:   "project2",
-		EndDate: "20/20/20",
+		EndDate: time.Now(),
 	}
 
 	adminUser := &models.User{
@@ -84,7 +85,7 @@ func TestGetById(t *testing.T) {
 
 	project := models.Project{
 		Title:   "title",
-		EndDate: "10/10/10",
+		EndDate: time.Now(),
 	}
 
 	adminUser := &models.User{

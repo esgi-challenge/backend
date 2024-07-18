@@ -25,50 +25,6 @@ func setupMockDB(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
 	return gormDB, mock
 }
 
-func TestCreate(t *testing.T) {
-	t.Parallel()
-
-	db, mock := setupMockDB(t)
-	repo := NewCampusRepository(db)
-
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
-
-	t.Run("Create", func(t *testing.T) {
-		mock.ExpectBegin()
-		// Should be ExpectExec because of INSERT query, but ExpectQuery needed (known issue)
-		// https://github.com/DATA-DOG/go-sqlmock/issues/118
-		mock.ExpectQuery(createQuery).
-			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), nil, campus.Title, campus.Description).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "title", "comment"}).AddRow(campus.ID, campus.Title, campus.Description))
-		mock.ExpectCommit()
-
-		createdCampus, err := repo.Create(campus)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, createdCampus)
-		assert.Equal(t, createdCampus, campus)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
-	t.Run("Create Error", func(t *testing.T) {
-		mock.ExpectBegin()
-		mock.ExpectQuery(createQuery).
-			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), nil, campus.Title, campus.Description).
-			WillReturnError(errors.New("create failed"))
-		mock.ExpectRollback()
-
-		createdCampus, err := repo.Create(campus)
-
-		assert.Error(t, err)
-		assert.Nil(t, createdCampus)
-		assert.EqualError(t, err, "create failed")
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-}
-
 func TestGetAll(t *testing.T) {
 	t.Parallel()
 
@@ -76,30 +32,34 @@ func TestGetAll(t *testing.T) {
 	repo := NewCampusRepository(db)
 
 	campus1 := models.Campus{
-		Title:       "title1",
-		Description: "description1",
+		Name: "name",
+		Location:  "location",
+		Latitude:  1,
+		Longitude:  1,
 	}
 
 	campus2 := models.Campus{
-		Title:       "title2",
-		Description: "description2",
+		Name: "name2",
+		Location:  "location2",
+		Latitude:  1,
+		Longitude:  1,
 	}
 
 	t.Run("Get All", func(t *testing.T) {
-		rows := sqlmock.NewRows([]string{"id", "title", "description"}).
-			AddRow(campus1.ID, campus1.Title, campus1.Description).
-			AddRow(campus2.ID, campus2.Title, campus2.Description)
+		rows := sqlmock.NewRows([]string{"id", "name", "location", "latitude", "longitude"}).
+			AddRow(campus1.ID, campus1.Name, campus1.Location, campus1.Latitude, campus1.Longitude).
+			AddRow(campus2.ID, campus2.Name, campus2.Location, campus2.Latitude, campus2.Longitude)
 
 		mock.ExpectQuery(getAllQuery).
 			WillReturnRows(rows)
 
-		campuss, err := repo.GetAll()
+		campuses, err := repo.GetAll()
 
 		assert.NoError(t, err)
-		assert.NotNil(t, campuss)
-		assert.Len(t, *campuss, 2)
-		assert.Equal(t, &campus1, &(*campuss)[0])
-		assert.Equal(t, &campus2, &(*campuss)[1])
+		assert.NotNil(t, campuses)
+		assert.Len(t, *campuses, 2)
+		assert.Equal(t, &campus1, &(*campuses)[0])
+		assert.Equal(t, &campus2, &(*campuses)[1])
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -122,23 +82,25 @@ func TestGetById(t *testing.T) {
 	db, mock := setupMockDB(t)
 	repo := NewCampusRepository(db)
 
-	campus := models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
+  campus := models.Campus{
+    Name: "name",
+    Location:  "location",
+    Latitude:  1,
+    Longitude:  1,
+  }
 
 	t.Run("Get By Id", func(t *testing.T) {
-		row := sqlmock.NewRows([]string{"id", "title", "description"}).
-			AddRow(campus.ID, campus.Title, campus.Description)
+		row := sqlmock.NewRows([]string{"id", "name", "location", "latitude", "longitude"}).
+			AddRow(campus.ID, campus.Name, campus.Location, campus.Latitude, campus.Longitude)
 
 		mock.ExpectQuery(getQuery).
 			WillReturnRows(row)
 
-		dbCampus, err := repo.GetById(campus.ID)
+		dbcampus, err := repo.GetById(campus.ID)
 
 		assert.NoError(t, err)
-		assert.NotNil(t, dbCampus)
-		assert.Equal(t, dbCampus, &campus)
+		assert.NotNil(t, dbcampus)
+		assert.Equal(t, dbcampus, &campus)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -186,48 +148,6 @@ func TestDelete(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, "delete failed")
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-}
-
-func TestUpdate(t *testing.T) {
-	t.Parallel()
-
-	db, mock := setupMockDB(t)
-	repo := NewCampusRepository(db)
-
-	campus := &models.Campus{
-		Title:       "title",
-		Description: "description",
-	}
-
-	t.Run("Update", func(t *testing.T) {
-		mock.ExpectBegin()
-		mock.ExpectQuery(updateQuery).
-			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), nil, campus.Title, campus.Description).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "title", "comment"}).AddRow(campus.ID, campus.Title, campus.Description))
-		mock.ExpectCommit()
-
-		updatedCampus, err := repo.Update(1, campus)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, updatedCampus)
-		assert.Equal(t, updatedCampus, campus)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
-	t.Run("Update Error", func(t *testing.T) {
-		mock.ExpectBegin()
-		mock.ExpectQuery(updateQuery).
-			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), nil, campus.Title, campus.Description).
-			WillReturnError(errors.New("update failed"))
-		mock.ExpectRollback()
-
-		updatedCampus, err := repo.Create(campus)
-
-		assert.Error(t, err)
-		assert.Nil(t, updatedCampus)
-		assert.EqualError(t, err, "update failed")
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }

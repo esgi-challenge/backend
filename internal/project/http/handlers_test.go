@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"net/http"
 	"net/http/httptest"
@@ -35,9 +36,10 @@ func TestCreate(t *testing.T) {
 	handlers := NewProjectHandlers(cfg, mockUseCase, logger)
 
 	id := uint(1)
+  now := uint(10000)
 	project := &models.ProjectCreate{
 		Title:      "title",
-		EndDate:    "10/10/10/",
+		EndDate:    &now,
 		CourseId:   &id,
 		ClassId:    &id,
 		DocumentId: &id,
@@ -63,7 +65,7 @@ func TestCreate(t *testing.T) {
 
 		expectedProject := &models.Project{
 			Title:   "title",
-			EndDate: "10/10/10/",
+			EndDate: time.Now(),
 		}
 
 		mockUseCase.EXPECT().Create(gomock.Any(), gomock.Any()).Return(expectedProject, nil)
@@ -107,11 +109,11 @@ func TestGetAll(t *testing.T) {
 	paths := &[]models.Project{
 		{
 			Title:   "title1",
-			EndDate: "10/10/10",
+			EndDate: time.Now(),
 		},
 		{
 			Title:   "title2",
-			EndDate: "20/20/20",
+			EndDate: time.Now(),
 		},
 	}
 
@@ -165,9 +167,10 @@ func TestUpdate(t *testing.T) {
 	handlers := NewProjectHandlers(cfg, mockUseCase, logger)
 
 	id := uint(1)
+  now := uint(10000)
 	path := &models.ProjectUpdate{
 		Title:      "name",
-		EndDate:    "10/10/10",
+		EndDate:    &now,
 		CourseId:   &id,
 		ClassId:    &id,
 		DocumentId: &id,
@@ -194,7 +197,7 @@ func TestUpdate(t *testing.T) {
 
 		expectedProject := &models.Project{
 			Title:   "updated",
-			EndDate: "20/20/20",
+			EndDate: time.Now(),
 		}
 
 		mockUseCase.EXPECT().Update(adminUser, uint(1), gomock.Any()).Return(expectedProject, nil)

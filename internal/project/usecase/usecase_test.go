@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"testing"
+	"time"
 
 	classMock "github.com/esgi-challenge/backend/internal/class/mock"
 	courseMock "github.com/esgi-challenge/backend/internal/course/mock"
@@ -14,7 +15,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestCreatePath(t *testing.T) {
+func TestCreateProject(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -30,7 +31,7 @@ func TestCreatePath(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		user := &models.User{GormModel: models.GormModel{ID: 1}}
-		project := &models.Project{Title: "title", EndDate: "10/10/10"}
+		project := &models.Project{Title: "title", EndDate: time.Now()}
 
 		mockCourseUsecase.EXPECT().GetById(gomock.Any()).Return(nil, nil)
 		mockDocumentUsecase.EXPECT().GetById(gomock.Any(), gomock.Any()).Return(nil, nil)
@@ -44,7 +45,7 @@ func TestCreatePath(t *testing.T) {
 	})
 }
 
-func TestGetAllPaths(t *testing.T) {
+func TestGetAllProjects(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
