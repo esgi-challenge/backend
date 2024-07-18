@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/esgi-challenge/backend/internal/models"
-	"github.com/stretchr/testify/assert"
 	j "github.com/golang-jwt/jwt/v5"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerate(t *testing.T) {

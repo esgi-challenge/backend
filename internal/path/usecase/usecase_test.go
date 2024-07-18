@@ -1,21 +1,21 @@
 package usecase
 
 import (
-	"testing"
 	"errors"
+	"testing"
 
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/path/mock"
 	schoolMock "github.com/esgi-challenge/backend/internal/school/mock"
-	"github.com/esgi-challenge/backend/pkg/logger"
 	"github.com/esgi-challenge/backend/pkg/errorHandler"
+	"github.com/esgi-challenge/backend/pkg/logger"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"net/http"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreatePath(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -68,7 +68,7 @@ func TestCreatePath(t *testing.T) {
 }
 
 func TestGetAllPaths(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -98,7 +98,7 @@ func TestGetAllPaths(t *testing.T) {
 }
 
 func TestUpdatePath(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

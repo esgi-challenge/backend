@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 
-	// "errors"
 	"net/http"
 	"net/http/httptest"
 
-	// "strconv"
 	"testing"
 
 	"github.com/esgi-challenge/backend/config"
@@ -22,7 +20,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"gorm.io/gorm"
-	// "gorm.io/gorm"
 )
 
 func TestCreate(t *testing.T) {
@@ -36,7 +33,7 @@ func TestCreate(t *testing.T) {
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
 	mockSchoolUseCase := schoolMock.NewMockUseCase(ctrl)
-  cfg := &config.Config{JwtSecret: "secret"}
+	cfg := &config.Config{JwtSecret: "secret"}
 	handlers := NewPathHandlers(cfg, mockUseCase, mockSchoolUseCase, logger)
 
 	path := &models.PathCreate{
@@ -67,7 +64,7 @@ func TestCreate(t *testing.T) {
 			LongName:  "name",
 		}
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().Create(gomock.Any(), gomock.Any()).Return(expectedPath, nil)
 
 		handler := handlers.Create()
@@ -84,7 +81,7 @@ func TestCreate(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(res)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, errors.New("random server error"))
 
 		handler := handlers.Create()
@@ -105,17 +102,17 @@ func TestGetAll(t *testing.T) {
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
 	mockSchoolUseCase := schoolMock.NewMockUseCase(ctrl)
-  cfg := &config.Config{JwtSecret: "secret"}
+	cfg := &config.Config{JwtSecret: "secret"}
 	handlers := NewPathHandlers(cfg, mockUseCase, mockSchoolUseCase, logger)
 
 	paths := &[]models.Path{
 		{
-			ShortName:       "name1",
-			LongName: "name1",
+			ShortName: "name1",
+			LongName:  "name1",
 		},
 		{
-			ShortName:       "name2",
-			LongName: "name2",
+			ShortName: "name2",
+			LongName:  "name2",
 		},
 	}
 
@@ -131,7 +128,7 @@ func TestGetAll(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+token)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetAllBySchoolId(gomock.Any()).Return(paths, nil)
 
 		handlerFunc := handlers.GetAll()
@@ -147,7 +144,7 @@ func TestGetAll(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+token)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetAllBySchoolId(gomock.Any()).Return(nil, errors.New("random server error"))
 
 		handlerFunc := handlers.GetAll()
@@ -168,12 +165,12 @@ func TestUpdate(t *testing.T) {
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
 	mockSchoolUseCase := schoolMock.NewMockUseCase(ctrl)
-  cfg := &config.Config{JwtSecret: "secret"}
+	cfg := &config.Config{JwtSecret: "secret"}
 	handlers := NewPathHandlers(cfg, mockUseCase, mockSchoolUseCase, logger)
 
 	path := &models.PathUpdate{
-		ShortName:       "name",
-		LongName: "name",
+		ShortName: "name",
+		LongName:  "name",
 	}
 
 	adminUser := &models.User{
@@ -196,12 +193,12 @@ func TestUpdate(t *testing.T) {
 		ctx.Request = req
 
 		expectedPath := &models.Path{
-			ShortName:       "updated",
-			LongName: "updated",
-      SchoolId: 1,
+			ShortName: "updated",
+			LongName:  "updated",
+			SchoolId:  1,
 		}
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetById(gomock.Any()).Return(expectedPath, nil)
 		mockUseCase.EXPECT().Update(uint(1), gomock.Any()).Return(expectedPath, nil)
 
@@ -220,7 +217,7 @@ func TestUpdate(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+token)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetById(gomock.Any()).Return(&models.Path{SchoolId: 1}, nil)
 		mockUseCase.EXPECT().Update(uint(1), gomock.Any()).Return(nil, errors.New("random server error"))
 
@@ -242,7 +239,7 @@ func TestDelete(t *testing.T) {
 	logger.InitLogger()
 	mockUseCase := mock.NewMockUseCase(ctrl)
 	mockSchoolUseCase := schoolMock.NewMockUseCase(ctrl)
-  cfg := &config.Config{JwtSecret: "secret"}
+	cfg := &config.Config{JwtSecret: "secret"}
 	handlers := NewPathHandlers(cfg, mockUseCase, mockSchoolUseCase, logger)
 
 	adminUser := &models.User{
@@ -258,7 +255,7 @@ func TestDelete(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+token)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetById(gomock.Any()).Return(&models.Path{SchoolId: 1}, nil)
 		mockUseCase.EXPECT().Delete(uint(1)).Return(nil)
 
@@ -276,7 +273,7 @@ func TestDelete(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+token)
 		ctx.Request = req
 
-    mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
+		mockSchoolUseCase.EXPECT().GetByUser(gomock.Any()).Return(&models.School{GormModel: models.GormModel{ID: 1}}, nil)
 		mockUseCase.EXPECT().GetById(gomock.Any()).Return(&models.Path{SchoolId: 1}, nil)
 		mockUseCase.EXPECT().Delete(uint(10)).Return(gorm.ErrRecordNotFound)
 

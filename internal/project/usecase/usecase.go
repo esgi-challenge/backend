@@ -177,12 +177,12 @@ func (u *projectUseCase) Update(user *models.User, id uint, updatedProject *mode
 	// Temporary fix for known issue :
 	// https://github.com/go-gorm/gorm/issues/5724
 	//////////////////////////////////////
-	dbProject, err := u.GetById(user, id)
-	if err != nil {
-		return nil, err
-	}
+	// dbProject, err := u.GetById(user, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	updatedProject.CreatedAt = dbProject.CreatedAt
+	// updatedProject.CreatedAt = dbProject.CreatedAt
 	///////////////////////////////////////
 
 	updatedProject.ID = id

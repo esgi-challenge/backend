@@ -32,13 +32,13 @@ func TestGetAll(t *testing.T) {
 	repo := NewPathRepository(db)
 
 	path1 := models.Path{
-		ShortName:       "name",
-		LongName: "name",
+		ShortName: "name",
+		LongName:  "name",
 	}
 
 	path2 := models.Path{
-		ShortName:       "name",
-		LongName: "name",
+		ShortName: "name",
+		LongName:  "name",
 	}
 
 	t.Run("Get All", func(t *testing.T) {
@@ -79,8 +79,8 @@ func TestGetById(t *testing.T) {
 	repo := NewPathRepository(db)
 
 	path := models.Path{
-		ShortName:       "name",
-		LongName: "name",
+		ShortName: "name",
+		LongName:  "name",
 	}
 
 	t.Run("Get By Id", func(t *testing.T) {

@@ -13,7 +13,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-
 func TestGetAll(t *testing.T) {
 	t.Parallel()
 	gin.SetMode(gin.TestMode)
@@ -27,18 +26,18 @@ func TestGetAll(t *testing.T) {
 	handlers := NewUserHandlers(mockUseCase, nil, logger)
 
 	users := &[]models.User{
-    {
-      Firstname: "firstname",
-      Lastname: "lastname",
-      Email: "email@gmail.com",
-      Password: "password",
-    },
-    {
-      Firstname: "firstname2",
-      Lastname: "lastname2",
-      Email: "email2@gmail.com",
-      Password: "password",
-    },
+		{
+			Firstname: "firstname",
+			Lastname:  "lastname",
+			Email:     "email@gmail.com",
+			Password:  "password",
+		},
+		{
+			Firstname: "firstname2",
+			Lastname:  "lastname2",
+			Email:     "email2@gmail.com",
+			Password:  "password",
+		},
 	}
 
 	t.Run("Get all request", func(t *testing.T) {

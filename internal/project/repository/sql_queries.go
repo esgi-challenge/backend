@@ -4,8 +4,8 @@ package repository
 
 const (
 	createQuery = `INSERT INTO "projects" (.+) RETURNING`
-	getQuery    = `SELECT (.+) FROM "projects" WHERE "projects"."id" = \$1 (.+)`
-	getAllQuery = `SELECT (.+) FROM "projects" WHERE (.+)`
+	getQuery    = `SELECT (.+) FROM "projects" (.+)`
+	getAllQuery = `SELECT (.+) FROM "projects"`
 	deleteQuery = `UPDATE "projects" SET "deleted_at"=\$1 WHERE "projects"."id" = \$2 (.+)`
 	// Update use INSERT mainly because of gorm way to work that INSERT instead of UPDATE if record does not exist
 	updateQuery           = `INSERT INTO "projects" (.+) RETURNING`

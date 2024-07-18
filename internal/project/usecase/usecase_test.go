@@ -4,6 +4,9 @@ import (
 	"errors"
 	"testing"
 
+	classMock "github.com/esgi-challenge/backend/internal/class/mock"
+	courseMock "github.com/esgi-challenge/backend/internal/course/mock"
+	documentMock "github.com/esgi-challenge/backend/internal/document/mock"
 	"github.com/esgi-challenge/backend/internal/models"
 	"github.com/esgi-challenge/backend/internal/project/mock"
 	"github.com/esgi-challenge/backend/pkg/logger"
@@ -11,156 +14,68 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreatePath(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	mockProjectRepo := mock.NewMockRepository(ctrl)
+	mockCourseUsecase := courseMock.NewMockUseCase(ctrl)
+	mockClassUsecase := classMock.NewMockUseCase(ctrl)
+	mockDocumentUsecase := documentMock.NewMockUseCase(ctrl)
 	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewProjectUseCase(nil, mockRepo, logger)
 
-	project := &models.Project{
-		Title:       "title",
-		Description: "description",
-	}
+	useCase := NewProjectUseCase(nil, mockProjectRepo, mockCourseUsecase, mockClassUsecase, mockDocumentUsecase, logger)
 
-	mockRepo.EXPECT().Create(project).Return(project, nil)
+	t.Run("success", func(t *testing.T) {
+		user := &models.User{GormModel: models.GormModel{ID: 1}}
+		project := &models.Project{Title: "title", EndDate: "10/10/10"}
 
-	createdProject, err := useCase.Create(project)
+		mockCourseUsecase.EXPECT().GetById(gomock.Any()).Return(nil, nil)
+		mockDocumentUsecase.EXPECT().GetById(gomock.Any(), gomock.Any()).Return(nil, nil)
+		mockClassUsecase.EXPECT().GetById(gomock.Any()).Return(nil, nil)
+		mockProjectRepo.EXPECT().Create(project).Return(project, nil)
+		mockProjectRepo.EXPECT().GetPreloadById(project.ID).Return(project, nil)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, createdProject)
-}
-
-func TestGetById(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewProjectUseCase(nil, mockRepo, logger)
-
-	project := &models.Project{
-		Title:       "title",
-		Description: "description",
-	}
-
-	mockRepo.EXPECT().GetById(project.ID).Return(project, nil)
-
-	dbProject, err := useCase.GetById(project.ID)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, dbProject)
-}
-
-func TestGetAll(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewProjectUseCase(nil, mockRepo, logger)
-
-	projects := &[]models.Project{
-		{
-			Title:       "title1",
-			Description: "description1",
-		},
-		{
-			Title:       "title2",
-			Description: "description2",
-		},
-	}
-
-	mockRepo.EXPECT().GetAll().Return(projects, nil)
-
-	dbProjects, err := useCase.GetAll()
-
-	assert.NoError(t, err)
-	assert.NotNil(t, dbProjects)
-	assert.Len(t, *dbProjects, 2)
-	assert.Equal(t, &(*projects)[0], &(*dbProjects)[0])
-	assert.Equal(t, &(*projects)[1], &(*dbProjects)[1])
-}
-
-func TestDelete(t *testing.T) {
-	t.Parallel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewProjectUseCase(nil, mockRepo, logger)
-
-	project := &models.Project{
-		Title:       "title",
-		Description: "description",
-	}
-
-	t.Run("Delete", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(project.ID).Return(project, nil)
-		mockRepo.EXPECT().Delete(project.ID).Return(nil)
-
-		err := useCase.Delete(project.ID)
-
+		createdProject, err := useCase.Create(user, project)
 		assert.NoError(t, err)
-	})
-
-	t.Run("Delete Not found", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(uint(10)).Return(nil, errors.New("Not found"))
-
-		err := useCase.Delete(uint(10))
-
-		assert.Error(t, err)
-		assert.EqualError(t, err, "Not found")
+		assert.Equal(t, project, createdProject)
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestGetAllPaths(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	mockProjectRepo := mock.NewMockRepository(ctrl)
+	mockCourseUsecase := courseMock.NewMockUseCase(ctrl)
+	mockClassUsecase := classMock.NewMockUseCase(ctrl)
+	mockDocumentUsecase := documentMock.NewMockUseCase(ctrl)
 	logger := logger.NewLogger()
-	mockRepo := mock.NewMockRepository(ctrl)
-	useCase := NewProjectUseCase(nil, mockRepo, logger)
 
-	project := &models.Project{
-		Title:       "title",
-		Description: "description",
+	useCase := NewProjectUseCase(nil, mockProjectRepo, mockCourseUsecase, mockClassUsecase, mockDocumentUsecase, logger)
+
+	user := &models.User{
+		UserKind: models.NewUserKind(models.TEACHER),
 	}
 
-	fixedProject := &models.Project{
-		Title:       "title updated",
-		Description: "description",
-	}
+	t.Run("success", func(t *testing.T) {
+		projects := &[]models.Project{{GormModel: models.GormModel{ID: 1}}, {GormModel: models.GormModel{ID: 2}}}
+		mockProjectRepo.EXPECT().GetAllByTeacher(user).Return(projects, nil)
 
-	t.Run("Update", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(project.ID).Return(project, nil)
-		mockRepo.EXPECT().Update(project.ID, fixedProject).Return(fixedProject, nil)
-
-		updatedProject, err := useCase.Update(project.ID, fixedProject)
-
+		result, err := useCase.GetAll(user)
 		assert.NoError(t, err)
-		assert.NotNil(t, updatedProject)
-		assert.Equal(t, updatedProject, fixedProject)
+		assert.Equal(t, projects, result)
 	})
 
-	t.Run("Update Not found", func(t *testing.T) {
-		mockRepo.EXPECT().GetById(uint(10)).Return(nil, errors.New("Not found"))
+	t.Run("error", func(t *testing.T) {
+		mockProjectRepo.EXPECT().GetAllByTeacher(user).Return(nil, errors.New("some error"))
 
-		updatedProject, err := useCase.Update(uint(10), fixedProject)
-
+		result, err := useCase.GetAll(user)
 		assert.Error(t, err)
-		assert.Nil(t, updatedProject)
-		assert.EqualError(t, err, "Not found")
+		assert.Nil(t, result)
 	})
 }

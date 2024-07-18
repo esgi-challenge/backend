@@ -14,7 +14,7 @@ import (
 )
 
 func TestValidateJSON(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	type TestStruct struct {
 		Name string `json:"name" validate:"required"`
@@ -48,7 +48,7 @@ func TestValidateJSON(t *testing.T) {
 }
 
 func TestValidateRole(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	secretKey := "secret"
 	user := &models.User{
@@ -107,7 +107,7 @@ func TestValidateRole(t *testing.T) {
 }
 
 func TestValidateRoleWithoutHeader(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 
 	secretKey := "secret"
 	user := &models.User{
