@@ -29,6 +29,7 @@ func GetAssetLinks() gin.HandlerFunc {
 					PackageName: "com.example.mobile",
 					Sha256: []string{
 						"40:6D:2A:42:4A:19:D0:E4:D2:FD:9A:39:7D:5E:38:70:89:71:4E:F9:E8:C1:08:6C:8D:D8:64:EA:88:BC:BF:09",
+						"7B:5D:4B:11:F3:13:FD:22:2F:45:F9:73:B3:A5:32:68:D0:33:73:2E:24:21:A1:C1:30:6A:FB:F4:5D:6F:70:BB",
 					},
 				},
 			},
