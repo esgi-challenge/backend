@@ -25,7 +25,7 @@ func (r *noteRepo) Create(note *models.Note) (*models.Note, error) {
 func (r *noteRepo) GetAllByStudent(studentId uint) (*[]models.Note, error) {
 	var notes []models.Note
 
-	if err := r.db.Model(&models.Note{}).Preload("Project.Course").Preload("Teacher").Find(&notes).Where("student_id = ?", studentId).Error; err != nil {
+	if err := r.db.Model(&models.Note{}).Preload("Project.Course").Preload("Teacher").Where("student_id = ?", studentId).Find(&notes).Error; err != nil {
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (r *noteRepo) GetAllByStudent(studentId uint) (*[]models.Note, error) {
 func (r *noteRepo) GetAllByTeacher(teacherId uint) (*[]models.Note, error) {
 	var notes []models.Note
 
-	if err := r.db.Model(&models.Note{}).Preload("Project").Preload("Student").Find(&notes).Where("teacher_id = ?", teacherId).Error; err != nil {
+	if err := r.db.Model(&models.Note{}).Preload("Project").Preload("Student").Where("teacher_id = ?", teacherId).Find(&notes).Error; err != nil {
 		return nil, err
 	}
 
