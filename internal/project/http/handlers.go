@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/esgi-challenge/backend/config"
 	"github.com/esgi-challenge/backend/internal/models"
@@ -59,7 +60,7 @@ func (u *projectHandlers) Create() gin.HandlerFunc {
 			CourseId:   *projectCreate.CourseId,
 			ClassId:    *projectCreate.ClassId,
 			DocumentId: *projectCreate.DocumentId,
-			EndDate:    projectCreate.EndDate,
+			EndDate:    time.Unix(int64(*projectCreate.EndDate), 0),
 		}
 		projectDb, err := u.projectUseCase.Create(user, project)
 
@@ -329,7 +330,7 @@ func (u *projectHandlers) Update() gin.HandlerFunc {
 			CourseId:   *projectUpdate.CourseId,
 			ClassId:    *projectUpdate.ClassId,
 			DocumentId: *projectUpdate.DocumentId,
-			EndDate:    projectUpdate.EndDate,
+			EndDate:    time.Unix(int64(*projectUpdate.EndDate), 0),
 		}
 		projectDb, err := u.projectUseCase.Update(user, uint(idInt), project)
 
