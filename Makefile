@@ -5,7 +5,7 @@ build:
 	go build -o backend ./cmd/api/main.go
 
 test:
-	go test -v -cover ./...
+	go test -v --cover ./...
 
 format:
 	gofmt -w -s .
